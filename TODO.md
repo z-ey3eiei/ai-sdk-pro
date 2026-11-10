@@ -8,7 +8,7 @@
 - [x] Publishable @aisdkpro/client SDK: typed framework-agnostic ChatClient, SSE parsing, raw protocol chunk preservation, AbortSignal, React useAISDKProChat binding, declaration output, browser note, README examples, dry-run package build and npm Trusted Publishing workflow. Five SDK tests pass; registry setup/publication remains user-operated.
 - [x] Self-hosting infrastructure: non-root Node 22 multi-stage Docker, Compose + Caddy HTTPS without SSE buffering, private app port, secret-free .env.example, systemd fallback, start/rotation/logging runbook, Coolify guide and GitHub Actions main-push deployment with concurrency/readiness check. Liveness/readiness and real model smoke requirements are explicitly distinguished. Workflow/Compose YAML syntax passes. Docker daemon and actual VPS access are not available in this task; container/VPS/DNS deployment is not claimed.
 - [x] Read-only implementation review completed, confirmed defects corrected, meaningful live Preview and automatic tests: 10/10 pass. No secrets in tracked source or provider keys in browser output. Adapted design license and notice retained.
-- [ ] Final saved checkpoint and source bundle, following the last all-workspace production build.
+- [x] Source saved to canonical main (e3b937a3a0aff3be88b80f968e69941048eaccc4), following successful production builds and 10/10 tests. Verified source bundle contains apps, SDK, infrastructure and design spec without .env/private keys or build caches. The platform checkpoint card was not returned by the available tools, so no publication/version-card claim is made.
 
 ## External setup not claimed completed
 
