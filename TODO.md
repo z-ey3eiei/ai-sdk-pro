@@ -38,3 +38,12 @@ Checkpoint validation for BYOK: all four workspace typechecks and 18/18 regressi
 - [ ] Apply additive committed Neon migrations safely and deploy the tested login/import revision to the existing VPS. Preserve working BYOK chat, the three old Droplets, current DNS/HTTPS and server/admin credential isolation. Confirm real login and an authorized import before marking the new feature complete.
 
 - [ ] Public visitors, not only the owner, can find a visible Log in button and enter their own Dashboard. GitHub App authorization/repo selection belongs to each visitor; their imports and file views remain isolated from other users. Read-only repo access does not restrict platform usage to the owner's account. Never describe import-only screens as a working visitor-repo deployment/log system.
+
+## Next authorized phase — visitor repository build/deploy
+
+The owner explicitly requested on 2026-11-10 13:36: finish the current login/dashboard/import functionality first, then add actual repository build/deploy.
+
+- [ ] After the current phase is completed, add an authenticated Build/Deploy action, durable queued/running/succeeded/failed statuses, bounded build/deploy logs and a real resulting application URL, with per-user/project ownership and cancellation/failure handling. A button or demo log alone is not a completed deployment system.
+- [ ] Run visitor code in an isolated build/runtime environment that cannot access the platform's Docker socket, Neon/GitHub/admin credentials or other users' code. Respect existing VPS/services and resource/abuse limits. Request the owner's approval before creating new billed infrastructure or raising the approved VPS spend; do not silently run arbitrary public code beside the control plane.
+
+Login-phase deployment evidence: source 191abcb is live on the same VPS; 38/38 tests and all workspace typechecks pass, fresh production image/private smoke/public HTTPS pass. DB-backed OAuth start and secure cookies are verified; browser reaches genuine GitHub login for ai-sdk.pro. Full user authorization/session/import UAT remains pending the owner login, so the corresponding outcomes remain open.

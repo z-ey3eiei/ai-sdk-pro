@@ -42,3 +42,13 @@ curl --fail https://ai-sdk.pro/api/ready
 ```
 
 Future app updates should build a new accepted source checkpoint, verify privately, and change `APP_IMAGE` deliberately. Do not automatically deploy untested Git commits or enable inactive workflow templates. Keep the source/runtime distinction and verify actual HTTP/TLS/model behavior rather than claiming success from an API write or liveness alone.
+
+## Login/Neon rollout — application source 191abcb
+
+The accepted source 191abcb was built on the existing new VPS and privately smoke-tested before replacing the app. Runtime image is now `ai-sdk-pro-web:191abcb`, healthy/non-root with no host port mapping. The older 3e72828 image is retained for rollback. Current release is `/opt/ai-sdk-pro/releases/191abcb`; `/opt/ai-sdk-pro/runtime/deployment.json` records the source/image and previous image.
+
+Public HTTPS/Cloudflare checks pass for landing, login, workspace, platform status/session and readiness. Configuration reports ready, signed-out session is null, repository APIs reject unauthenticated callers and provider-token API is blocked. Both private and public OAuth start return an official GitHub authorization URL with Secure/HttpOnly/SameSite=None cookie flags. The browser reaches GitHub's real login page for ai-sdk.pro; full user authorization, session creation and actual repo import remain pending human login. No test user or fake import was created. All four workspace typechecks and 38 focused regression tests pass; production build passed on Sandbox and VPS.
+
+The existing Neon project proud-mountain-62804552/default branch br-sparkling-frog-b73xn84o/neondb received only the additive aisdk_pro schema. Runtime role aisdk_pro_app has app-schema access but no USAGE of the existing neon_auth schema. GitHub/Neon/Better Auth credentials are stored in private Docker runtime configuration, not source/image/public API. No DigitalOcean/SSH/owner model/MCP secret names are present in the running app. OAuth tokens are encrypted in Neon. GitHub App owner controls its permissions; the importer uses GET/read operations only and does not execute/build/deploy repository code.
+
+The owner has separately requested actual visitor-repository build/deploy after this phase. That worker/control-plane phase is not deployed yet and needs an isolation/resource decision before exposing untrusted-code execution to public users. No new billed worker infrastructure was created.
