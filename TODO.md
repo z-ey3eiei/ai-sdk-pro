@@ -8,7 +8,7 @@
 - [x] Publishable @aisdkpro/client SDK: typed framework-agnostic ChatClient, SSE parsing, raw protocol chunk preservation, AbortSignal, React useAISDKProChat binding, declaration output, browser note, README examples, dry-run package build and npm Trusted Publishing workflow. Five SDK tests pass; registry setup/publication remains user-operated.
 - [x] Self-hosting infrastructure: non-root Node 22 multi-stage Docker, Compose + Caddy HTTPS without SSE buffering, private app port, secret-free .env.example, systemd fallback, start/rotation/logging runbook, Coolify guide and GitHub Actions main-push deployment with concurrency/readiness check. Liveness/readiness and real model smoke requirements are explicitly distinguished. Workflow/Compose YAML syntax passes. Docker daemon and actual VPS access are not available in this task; container/VPS/DNS deployment is not claimed.
 - [x] Read-only implementation review completed, confirmed defects corrected, meaningful live Preview and automatic tests: 10/10 pass. No secrets in tracked source or provider keys in browser output. Adapted design license and notice retained.
-- [x] Source saved to canonical main (e3b937a3a0aff3be88b80f968e69941048eaccc4), following successful production builds and 10/10 tests. Verified source bundle contains apps, SDK, infrastructure and design spec without .env/private keys or build caches. The platform checkpoint card was not returned by the available tools, so no publication/version-card claim is made.
+- [x] Source saved to canonical main (e3b937a3a0aff3be88b80f968e69941048eaccc4), following successful production builds and 10/10 tests. Verified source bundle contains apps, SDK, infrastructure and design spec without .env/private keys or build caches. The accepted checkpoint and new GitHub destination were subsequently verified by config/git/transfer and config/git/complete. No production publication is claimed.
 
 ## External setup not claimed completed
 
@@ -16,6 +16,6 @@ Actual deployment to the user's VPS and Cloudflare DNS changes require the targe
 
 ## GitHub and initial release requested by owner
 
-- [ ] Create the new private repository z-ey3eiei/ai-sdk-pro and push the latest intended source to main through the approved repository transfer. Complete and verify the managed connection; do not claim completion from repo creation or push alone. Runtime env, provider keys and build caches must remain excluded.
-- [ ] Add initial version v0.1.0: all workspace package versions are 0.1.0, VERSION and CHANGELOG.md describe the first release, the playground displays the version, and an annotated v0.1.0 source tag is pushed to the new GitHub repository.
+- [x] Create the new private repository z-ey3eiei/ai-sdk-pro and push the latest intended source to main through the approved repository transfer. Complete and verify the managed connection; do not claim completion from repo creation or push alone. Runtime env, provider keys and build caches must remain excluded.
+- [x] Add initial version v0.1.0: all workspace package versions are 0.1.0, VERSION and CHANGELOG.md describe the first release, the playground displays the version, and an annotated v0.1.0 source tag is pushed to the new GitHub repository.
 - [x] Add apps/web/components/llm.tsx as the actual reusable chat component and render it from /chat. Preserve real UI message streaming, text/tool parts, stop, retry and new conversation; configurable app endpoints contain no provider key. All four workspace typechecks and 10/10 regression tests pass; /chat HTTP 200 renders 0.1.0.
