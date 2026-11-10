@@ -2,7 +2,7 @@
 
 `@aisdkpro/client` คือ client SDK แบบ framework-agnostic สำหรับ endpoint ที่คืน **AI SDK 6 UI Message Stream** ของ ai-sdk.pro แพ็กเกจ core ไม่มี runtime dependency และใช้ `fetch`, `ReadableStream`, `TextDecoder` และ `AbortController` ของ runtime นั้น ๆ
 
-> ai-sdk.pro เป็นโครงการอิสระ ไม่ใช่เว็บไซต์ทางการของ Vercel และไม่ได้ส่ง provider key ไปยัง browser
+> ai-sdk.pro เป็นโครงการอิสระ ไม่ใช่เว็บไซต์ทางการของ Vercel แชท public ใช้คีย์ที่ผู้ใช้กรอกเองแบบ BYOK ไม่ส่งคีย์ของเจ้าของเว็บให้ browser
 
 ## Scope boundary
 
@@ -67,7 +67,28 @@ const client = new ChatClient({
 });
 ```
 
-ห้ามใส่ `AI_API_KEY`, `ANTHROPIC_API_KEY` หรือ provider secret ในโค้ด browser ตัวอย่างข้างต้น เพราะ model credentials ต้องอยู่ฝั่ง server เท่านั้น
+ห้าม hardcode `AI_API_KEY`, `ANTHROPIC_API_KEY` หรือคีย์ของเจ้าของเว็บในโค้ด browser ตัวอย่างข้างต้น
+
+### BYOK สำหรับ public endpoint
+
+ให้รับคีย์จากช่อง password ของผู้ใช้และเก็บใน page memory เท่านั้น ส่งแยกจากข้อความด้วย `ChatStreamOptions.body` ที่ SDK รองรับอยู่แล้ว:
+
+```ts
+// apiKeyFromUserInput is user-entered at runtime, never a hardcoded owner key.
+for await (const event of client.stream(messages, {
+  body: {
+    byok: {
+      provider: 'openai',
+      model: 'gpt-5-mini',
+      apiKey: apiKeyFromUserInput,
+    },
+  },
+})) {
+  if (event.type === 'text-delta') renderDelta(event.delta);
+}
+```
+
+Production public endpoint ต้องมี BYOK ทุก request ไม่ fallback ไปคีย์ owner คีย์ส่งผ่าน HTTPS ให้ server และ fixed official provider สำหรับ request นั้นเท่านั้น ไม่เก็บใน URL, messages, storage หรือ logs ผู้ใช้จ่ายค่า API ให้ provider ของตนเอง ความพร้อมใช้งานของโมเดลขึ้นอยู่กับบัญชี provider
 
 ## React binding
 

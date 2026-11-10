@@ -48,6 +48,22 @@ describe('ChatClient', () => {
     expect(events[1]).toMatchObject({ type: 'text-delta', id: 'text-1', delta: 'hello' });
   });
 
+  it('sends BYOK in per-request body, not messages, and does not retain it for later requests', async () => {
+    const bodies: unknown[] = [];
+    const fetcher = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      bodies.push(JSON.parse(String(init?.body)));
+      return streamResponse(['data: {"type":"finish","finishReason":"stop"}\n\n']);
+    });
+    const client = new ChatClient({ fetch: fetcher });
+    const messages = [{ id: 'visitor-1', role: 'user' as const, parts: [{ type: 'text' as const, text: 'Hello' }] }];
+    const byok = { provider: 'openai', model: 'gpt-5-mini', apiKey: 'test-only-key-not-a-real-secret' };
+    await collect(client.stream(messages, { body: { byok } }));
+    await collect(client.stream(messages));
+    expect(bodies[0]).toEqual({ byok, messages });
+    expect(bodies[1]).toEqual({ messages });
+    expect(JSON.stringify(messages)).not.toContain(byok.apiKey);
+  });
+
   it('preserves protocol fields on each event chunk alongside convenience mappings', async () => {
     const rawChunks = [
       { type: 'finish', finishReason: 'stop', usage: { inputTokens: 12, outputTokens: 7 } },

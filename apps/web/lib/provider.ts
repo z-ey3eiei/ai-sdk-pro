@@ -1,5 +1,21 @@
-import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { createAnthropic } from "@ai-sdk/anthropic";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createOpenAI } from "@ai-sdk/openai";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import type { BYOKCredentials } from "./byok-config";
+import { BYOK_ENDPOINTS, parseBYOK } from "./byok-policy";
+
+type ProviderOptionValue =
+  | null
+  | string
+  | number
+  | boolean
+  | { [key: string]: ProviderOptionValue | undefined }
+  | ProviderOptionValue[];
+export type ProviderOptions = Record<
+  string,
+  { [key: string]: ProviderOptionValue | undefined }
+>;
 
 export function publicModelConfig() {
   const provider = process.env.AI_PROVIDER ?? "compatible";
@@ -15,16 +31,20 @@ export function publicModelConfig() {
         );
   return { provider, model, configured };
 }
-export function getModel() {
+
+function serverProviderConfigurationError(): Error {
+  return new Error("The legacy server AI provider is not configured.");
+}
+
+function getLegacyModel() {
   const { provider, model, configured } = publicModelConfig();
-  if (!configured)
-    throw new Error(
-      "AI provider is not configured. Set AI_API_KEY and AI_BASE_URL, or ANTHROPIC_API_KEY, on the server."
-    );
+  if (!configured) throw serverProviderConfigurationError();
+
   if (provider === "anthropic")
     return createAnthropic({
       apiKey: process.env.ANTHROPIC_API_KEY || process.env.AI_API_KEY,
-    })(model);
+    }).messages(model);
+
   const external = Boolean(process.env.AI_API_KEY && process.env.AI_BASE_URL);
   const baseURL = external
     ? process.env.AI_BASE_URL!
@@ -53,3 +73,40 @@ export function getModel() {
   });
   return compatible.chatModel(model);
 }
+
+/**
+ * Construct a provider model for exactly one request. BYOK never uses browser
+ * URLs, owner credentials, or a process-global provider instance.
+ */
+export function getModel(byok?: BYOKCredentials) {
+  if (!byok) return getLegacyModel();
+
+  const credentials = parseBYOK(byok);
+  switch (credentials.provider) {
+    case "anthropic":
+      return createAnthropic({
+        apiKey: credentials.apiKey,
+        baseURL: BYOK_ENDPOINTS.anthropic,
+      }).messages(credentials.model);
+    case "openai":
+      return createOpenAI({
+        apiKey: credentials.apiKey,
+        baseURL: BYOK_ENDPOINTS.openai,
+      }).responses(credentials.model);
+    case "google":
+      return createGoogleGenerativeAI({
+        apiKey: credentials.apiKey,
+        baseURL: BYOK_ENDPOINTS.google,
+      }).chat(credentials.model);
+  }
+}
+
+export function providerOptionsFor(byok?: BYOKCredentials): ProviderOptions | undefined {
+  if (!byok || byok.provider !== "openai") return undefined;
+
+  const openai: { store: boolean; reasoningEffort?: string } = { store: false };
+  if (byok.model === "gpt-5-mini") openai.reasoningEffort = "minimal";
+  return { openai };
+}
+
+export const AGENT_MAX_OUTPUT_TOKENS = 4096;

@@ -59,7 +59,7 @@ const features = [
     icon: Code2,
     title: "A small, typed client",
     description:
-      "Use a framework-agnostic client or a lightweight React hook. Your provider keys stay on the server.",
+      "Use a framework-agnostic client or a lightweight React hook. Bring your own key without storing it.",
     href: "/docs/client-sdk",
   },
   {
@@ -79,7 +79,7 @@ const steps = [
   },
   {
     title: "Configure your agent",
-    text: "Choose a provider and model on the server. Add tools with validated inputs. Never expose model keys to the browser.",
+    text: "Let visitors choose their provider and bring their own key. Keep agent logic and safe, validated tools on the server.",
     filename: "assistant-agent.ts",
     code: `const agent = new ToolLoopAgent({\n  model: provider(process.env.AI_MODEL),\n  instructions: 'Make useful things happen.',\n  tools: { searchDocs, fetchUrl, getCurrentTime },\n  stopWhen: stepCountIs(20),\n});`,
   },
@@ -94,7 +94,7 @@ const faqs = [
   {
     question: "What do I need installed?",
     answer:
-      "Node.js 22 and pnpm 10.18.0 for local development. For the VPS deployment, install Docker Engine and the Compose plugin. You also need a server-side key from your AI provider.",
+      "Node.js 22 and pnpm 10.18.0 for local development. For self-hosting, use Docker Engine and Compose. To use the live chat, bring an API key from Anthropic, OpenAI, or Google. Provider API usage is billed to your own account.",
   },
   {
     question: "Is this an official Vercel product?",
@@ -104,7 +104,7 @@ const faqs = [
   {
     question: "Where do my model keys live?",
     answer:
-      "Only on your server. Set AI_API_KEY and AI_BASE_URL for an OpenAI-compatible provider, or ANTHROPIC_API_KEY for Anthropic. The browser calls your backend and never receives these keys.",
+      "Your entered key stays in this page's memory, then travels over HTTPS to our server and your chosen provider for each request. It is not saved in browser storage, cookies, our database, logs, or messages. Use Forget key or close the page to clear it. We never lend out an owner key.",
   },
   {
     question: "Can I deploy to my own VPS?",
@@ -269,7 +269,7 @@ export default function Home() {
                 language="bash"
               />
               <small>
-                Configure your VPS, provider key, registry, and DNS first.
+                Configure your VPS and DNS. Visitors bring their own AI key.
                 <br />
                 Cloudflare can manage your DNS; the application runs on your
                 server.
