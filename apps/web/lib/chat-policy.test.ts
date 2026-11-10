@@ -21,6 +21,8 @@ describe("chat request policy", () => {
     expect(corsHeaders(req).get("Access-Control-Allow-Methods")).toBe(
       "POST, OPTIONS"
     );
+    expect(corsHeaders(req).get("Access-Control-Allow-Origin")).not.toBe("*");
+    expect(corsHeaders(req).get("Access-Control-Allow-Credentials")).toBeNull();
     expect(
       isAllowedOrigin(
         new Request("https://ai-sdk.pro/api/chat", {
@@ -38,12 +40,28 @@ describe("chat request policy", () => {
     vi.stubEnv("TRUST_PROXY", "true");
     expect(requestIdentity(req)).toBe("1.2.3.4");
   });
+  it("ignores malformed or comma-chained proxy identity even when proxy trust is enabled", () => {
+    vi.stubEnv("TRUST_PROXY", "true");
+    const req = new Request("https://ai-sdk.pro/api/chat", {
+      headers: {
+        "x-real-ip": "198.51.100.10, 203.0.113.20",
+        "x-forwarded-for": "198.51.100.10",
+      },
+    });
+    expect(requestIdentity(req)).toBe("shared-anonymous");
+  });
   it("bounds each anonymous quota", () => {
     const now = 1000000;
     for (let i = 0; i < 20; i++)
       expect(checkRateLimit("test-identity", now)).toBe(true);
     expect(checkRateLimit("test-identity", now)).toBe(false);
     expect(checkRateLimit("test-identity", now + 60001)).toBe(true);
+  });
+  it("applies an emergency global cap across otherwise distinct identities", () => {
+    const now = Date.now() + 600000;
+    for (let i = 0; i < 120; i++)
+      expect(checkRateLimit(`global-cap-${i}`, now)).toBe(true);
+    expect(checkRateLimit("global-cap-overflow", now)).toBe(false);
   });
   it("rejects oversized declared and actual bodies", async () => {
     const signal = new AbortController().signal;

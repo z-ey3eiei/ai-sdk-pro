@@ -74,4 +74,21 @@ describe("GitHub snapshot provider failures", () => {
       listAccessibleGitHubRepositories("synthetic-token", controller.signal)
     ).rejects.toThrow("Synthetic abort");
   });
+
+  it("does not snapshot a repository absent from the selected installation", async () => {
+    request.mockResolvedValueOnce({
+      repositories: [
+        { ...repository, id: 2, name: "other", full_name: "other/private" },
+      ],
+      total_count: 1,
+    });
+
+    await expect(
+      buildRepositorySnapshot("synthetic-token", {
+        fullName: "owner/demo",
+        installationId: 99,
+      })
+    ).rejects.toMatchObject({ name: "GitHubPermissionError" });
+    expect(request).toHaveBeenCalledTimes(1);
+  });
 });

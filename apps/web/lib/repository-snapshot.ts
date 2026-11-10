@@ -17,7 +17,7 @@ const BINARY_EXTENSIONS = new Set([
 ]);
 const DEPENDENCY_SEGMENTS = new Set([".git", ".next", "build", "coverage", "dist", "node_modules", "target", "vendor"]);
 const DEPENDENCY_FILENAMES = new Set(["bun.lock", "cargo.lock", "composer.lock", "gemfile.lock", "go.sum", "npm-shrinkwrap.json", "package-lock.json", "pnpm-lock.yaml", "yarn.lock"]);
-const SENSITIVE_NAME = /(^|\/)(?:\.env(?:\..*)?|credentials?(?:\..*)?|secrets?(?:\..*)?|id_rsa(?:\..*)?|private[_-]?key(?:\..*)?|.*\.(?:pem|key|p12|pfx|jks))$/i;
+const SENSITIVE_NAME = /(^|\/)(?:\.env(?:\..*)?|credentials?(?:\..*)?|secrets?(?:\..*)?|id_(?:rsa|dsa|ecdsa|ed25519)(?:_sk)?(?:\..*)?|deploy[_-]?key(?:\..*)?|private[_-]?key(?:\..*)?|.*\.(?:pem|key|p12|pfx|jks))$/i;
 const LANGUAGE_BY_EXTENSION: Record<string, string> = {
   c: "c", cc: "cpp", cpp: "cpp", css: "css", go: "go", h: "c", hpp: "cpp", html: "html", java: "java", js: "javascript", jsx: "javascript", json: "json", md: "markdown", mjs: "javascript", mts: "typescript", py: "python", rb: "ruby", rs: "rust", sh: "shell", sql: "sql", svg: "xml", ts: "typescript", tsx: "typescript", vue: "vue", xml: "xml", yaml: "yaml", yml: "yaml",
 };

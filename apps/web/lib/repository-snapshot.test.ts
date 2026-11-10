@@ -18,6 +18,24 @@ describe("repository snapshot safety", () => {
     expect(isSkippableRepositoryPath("src/index.ts")).toBe(false);
   });
 
+  it("omits common SSH private key filenames while keeping source files importable", () => {
+    expect(isSkippableRepositoryPath(".ssh/id_rsa")).toBe(true);
+    expect(isSkippableRepositoryPath(".ssh/id_ecdsa")).toBe(true);
+    expect(isSkippableRepositoryPath(".ssh/id_ed25519")).toBe(true);
+    expect(isSkippableRepositoryPath("keys/deploy_key")).toBe(true);
+    expect(isSkippableRepositoryPath("src/agent.ts")).toBe(false);
+
+    const snapshot = selectSnapshotCandidates([
+      { path: ".ssh/id_ed25519", sha: "private", size: 64 },
+      { path: "keys/deploy_key", sha: "deploy", size: 64 },
+      { path: "src/agent.ts", sha: "source", size: 18 },
+    ]);
+    expect(snapshot.selected.map(candidate => candidate.path)).toEqual([
+      "src/agent.ts",
+    ]);
+    expect(snapshot.skippedFiles).toBe(2);
+  });
+
   it("bounds files and per-file bytes before fetching blobs", () => {
     const result = selectSnapshotCandidates([
       { path: "src/ok.ts", sha: "1", size: 10 },
