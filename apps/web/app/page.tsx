@@ -114,7 +114,7 @@ const faqs = [
   {
     question: "Can it import, build, and deploy other repositories?",
     answer:
-      "That is the next control-plane phase, not a feature disguised as a demo. It requires a GitHub App, authorization, a persistent queue, isolated build workers, and a real deployment adapter. The Architecture page describes these boundaries.",
+      "Sign in to Workspace to import authorized read-only repository snapshots. Learn offers downloadable starters and practical guides. Deploy buttons open DevStack for you to select and review the source; they do not upload keys or claim a completed deployment. In-app visitor build/deploy is not enabled.",
   },
 ];
 export default function Home() {

@@ -71,7 +71,9 @@ type ConfigState = {
 };
 
 function providerFor(id: BYOKProviderId) {
-  return BYOK_PROVIDERS.find(provider => provider.id === id) ?? BYOK_PROVIDERS[0];
+  return (
+    BYOK_PROVIDERS.find(provider => provider.id === id) ?? BYOK_PROVIDERS[0]
+  );
 }
 
 function isValidCredentials(
@@ -106,6 +108,12 @@ export default function LLMChat({
   const [copied, setCopied] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
   const credentialsRef = useRef<BYOKCredentials | null>(null);
+
+  useEffect(() => {
+    const prompt = new URLSearchParams(window.location.search).get("prompt");
+    if (prompt && prompt.length <= 1600) setInput(prompt);
+    // Prefill only: never auto-send or accept provider credentials from a URL.
+  }, []);
 
   // This transport is intentionally stable. The ref is read for every send and
   // regeneration, so retries cannot capture an old provider key or model.
@@ -210,7 +218,9 @@ export default function LLMChat({
 
   function handleModelChange(nextModel: string) {
     if (nextModel === model) return;
-    invalidateCredentials("Model changed. Save the settings again to enable chat.");
+    invalidateCredentials(
+      "Model changed. Save the settings again to enable chat."
+    );
     setModel(nextModel);
   }
 
@@ -240,7 +250,8 @@ export default function LLMChat({
     if (!draftIsValid) {
       setConnectionStatus({
         tone: "warning",
-        message: "Enter an API key before connecting. No provider was contacted.",
+        message:
+          "Enter an API key before connecting. No provider was contacted.",
       });
       return;
     }
@@ -255,7 +266,8 @@ export default function LLMChat({
     setApiKey(nextCredentials.apiKey);
     setConnectionStatus({
       tone: "ready",
-      message: "Ready to send · key not yet verified. No provider was contacted.",
+      message:
+        "Ready to send · key not yet verified. No provider was contacted.",
     });
     clearError();
   }
@@ -472,7 +484,9 @@ export default function LLMChat({
           )}
           {!configState.byokEnabled && (
             <div className="chat-error" role="alert">
-              <p>BYOK is not enabled for this deployment, so chat is unavailable.</p>
+              <p>
+                BYOK is not enabled for this deployment, so chat is unavailable.
+              </p>
             </div>
           )}
           <div ref={endRef} />
@@ -483,7 +497,9 @@ export default function LLMChat({
               value={input}
               onChange={event => setInput(event.target.value)}
               placeholder={
-                canSend ? "Ask something. Build something." : "Connect a provider to start chatting."
+                canSend
+                  ? "Ask something. Build something."
+                  : "Connect a provider to start chatting."
               }
               rows={2}
               aria-label="Message to the agent"

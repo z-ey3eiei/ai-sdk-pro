@@ -1,3 +1,5 @@
+import { starterGuide } from "./starter-guide";
+
 export type DocEntry = {
   slug: string;
   title: string;
@@ -104,6 +106,8 @@ const clientSdk = [
   "ตัวอย่างทั่วไปด้านล่างใช้สำหรับ private development endpoint เท่านั้น ถ้าเรียก public endpoint ให้ส่ง BYOK ตามด้านบน หรือใช้ `LLMChat` จาก `apps/web/components/llm.tsx` ซึ่งมี provider/key UI และการล้างคีย์พร้อมใช้",
   "",
   "## ติดตั้ง",
+  "",
+  "SDK นี้อยู่ใน source workspace ของ ai-sdk.pro และยังไม่ได้เผยแพร่บน npm คำสั่งติดตั้ง package ด้านล่างมีไว้หลัง publication เท่านั้น ถ้าเริ่มจากหน้า Templates ให้ใช้ source starter ที่มี dependencies ทางการพร้อมแล้ว ไม่ต้องติดตั้ง @aisdkpro/client",
   "",
   `${fence}bash\npnpm add @aisdkpro/client\n${fence}`,
   "",
@@ -252,16 +256,26 @@ const architecture = [
 
 export const docs: DocEntry[] = [
   {
+    slug: "using-templates",
+    title: "Templates & DevStack",
+    description:
+      "เลือก starter ที่ใช้ได้จริง ทดลองเครื่องมือ และส่งต่อไป DevStack โดยไม่ส่ง code/key อัตโนมัติ",
+    category: "Start here",
+    body: starterGuide,
+  },
+  {
     slug: "getting-started",
     title: "Getting Started",
-    description: "เริ่มต้นใช้งาน ai-sdk.pro และเชื่อมต่อ streaming chat endpoint",
+    description:
+      "เริ่มต้นใช้งาน ai-sdk.pro และเชื่อมต่อ streaming chat endpoint",
     category: "Start here",
     body: gettingStarted,
   },
   {
     slug: "defining-agents",
     title: "Defining Agents",
-    description: "สร้าง ToolLoopAgent ด้วย tools, Zod inputSchema, step limit และ MCP",
+    description:
+      "สร้าง ToolLoopAgent ด้วย tools, Zod inputSchema, step limit และ MCP",
     category: "Build agents",
     body: definingAgents,
   },
@@ -275,7 +289,8 @@ export const docs: DocEntry[] = [
   {
     slug: "self-hosting",
     title: "Self-Hosting on a VPS",
-    description: "รันบน VPS ด้วย Node 22, Docker Compose และ Caddy streaming proxy",
+    description:
+      "รันบน VPS ด้วย Node 22, Docker Compose และ Caddy streaming proxy",
     category: "Operate",
     body: selfHosting,
   },
@@ -289,7 +304,8 @@ export const docs: DocEntry[] = [
   {
     slug: "architecture",
     title: "Architecture Roadmap",
-    description: "ข้อเสนอ control, build และ runtime separation โดยไม่อ้างว่าระบบภายนอกเชื่อมแล้ว",
+    description:
+      "ข้อเสนอ control, build และ runtime separation โดยไม่อ้างว่าระบบภายนอกเชื่อมแล้ว",
     category: "Roadmap",
     body: architecture,
   },

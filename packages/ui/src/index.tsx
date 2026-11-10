@@ -140,6 +140,18 @@ export function InstallCommand({
 }
 const searchItems = [
   {
+    title: "Templates",
+    desc: "Runnable starters, source downloads and DevStack handoff",
+    href: "/templates",
+    category: "Learn",
+  },
+  {
+    title: "Templates & DevStack",
+    desc: "คู่มือใช้ starter และเปิดไป DevStack สำหรับโฮสต์",
+    href: "/docs/using-templates",
+    category: "Documentation",
+  },
+  {
     title: "Getting started",
     desc: "Install, configure, and run your first agent",
     href: "/docs/getting-started",
@@ -242,7 +254,11 @@ export function Header({
             >
               Docs
             </Link>
-            <Link href="/#get-started" onClick={() => setMenu(false)}>
+            <Link
+              href="/templates"
+              className={active === "templates" ? "active" : ""}
+              onClick={() => setMenu(false)}
+            >
               Learn
             </Link>
             <Link

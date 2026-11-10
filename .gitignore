@@ -115,3 +115,7 @@ client/public/__manus__/version.json
 # Monorepo build caches and generated documentation
 **/.turbo/
 **/.source/
+
+# Python packaging/test caches
+__pycache__/
+*.py[cod]

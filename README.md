@@ -4,6 +4,12 @@
 
 > ai-sdk.pro เป็นแหล่งข้อมูลและซอฟต์แวร์อิสระ ไม่ใช่เว็บไซต์ทางการของ Vercel โปรดอ้างอิงเอกสารทางการของ AI SDK สำหรับรายละเอียด API รุ่นล่าสุด
 
+## เลือก Starter และใช้เครื่องมือจริง
+
+เปิด https://ai-sdk.pro/templates เพื่อเลือก Streaming Chat, Docs Assistant หรือ Agent Launchpad พร้อม source download, code previews และคำสั่งรันในเครื่อง ดูคู่มือที่ https://ai-sdk.pro/docs/using-templates และใช้ Playground/Workspace ที่มีอยู่จริง ปุ่ม Deploy เปิด recipe ของ DevStack ให้ผู้ใช้เลือก source/อนุญาตสิทธิ์/ตรวจขั้น deploy เอง ไม่ส่ง code, API key หรือยืนยัน deployment อัตโนมัติ
+
+DevStack ปัจจุบัน: https://github.com/developer-devstack/devstack.bid และ https://www.npmjs.com/package/devstack-bid ไม่มีการแก้บริการ DevStack หรือสร้าง Worker/CLI/deploy engine ซ้ำในรุ่นนี้ ติดต่อ ai-sdk.pro: [sdkbank@1origin.dev](mailto:sdkbank@1origin.dev)
+
 ## เวอร์ชันเริ่มต้น: v0.1.0
 
 เวอร์ชันตรงกับ root package.json และทุก workspace package ดูประวัติการเปลี่ยนแปลงที่ [CHANGELOG.md](CHANGELOG.md) และ [VERSION](VERSION) Git tag `v0.1.0` ระบุ source ของ release เริ่มต้น
@@ -30,7 +36,7 @@ Production ใช้ `BYOK_ONLY=true` (เป็นค่าเริ่มต�
 
 ## ขอบเขตของ foundation ชุดนี้
 
-โค้ดที่มีอยู่จริงในชุดนี้คือ public web/chat foundation, เอกสาร, `@aisdkpro/client` สำหรับ UI Message Stream และไฟล์ self-hosting สำหรับเว็บของโครงการเอง ข้อเสนอเรื่อง public SaaS control plane, build plane, runtime plane, account/tenant/quota API, GitHub App import, Coolify adapter, BYOVPS, isolated user build/runtime, artifact registry, CLI และ deployment API เป็น **สถาปัตยกรรมที่เสนอสำหรับงานถัดไป** ไม่ใช่บริการที่ติดตั้งหรือเชื่อมต่อแล้ว
+โค้ดที่มีอยู่จริงคือ public BYOK chat, GitHub login/Neon-backed personal workspace กับ read-only repository snapshot import, เอกสาร, starter source downloads, `@aisdkpro/client` สำหรับ UI Message Stream และ self-hosting ของแพลตฟอร์มเอง ระบบ in-app visitor build/runtime, deployment API, platform keys/CLI และ npm publication ยังไม่เปิดใช้งาน ไม่จำลองสถานะว่า deploy repo แล้ว และยังไม่สร้าง Worker ใหม่เพื่อทำซ้ำกับ DevStack
 
 ดังนั้น SDK ปัจจุบันรองรับการเรียก chat endpoint จริงเท่านั้น ไม่ได้สร้าง deploy/project API จำลอง ไฟล์ Docker/Caddy/GitHub Actions เป็น deployment foundation ส่วนงาน deployment จริงต้องตรวจ source revision, HTTP, DNS และ TLS บนเซิร์ฟเวอร์เป้าหมายก่อนรายงานสำเร็จ ไม่ควรสรุปจากไฟล์ configuration เพียงอย่างเดียว
 
@@ -114,3 +120,14 @@ curl --fail https://$DOMAIN/api/health
 Automation เป็น opt-in: ตั้ง repository variable `DEPLOY_ENABLED=true` หลัง VPS/secrets พร้อม หรือ `NPM_PUBLISH_ENABLED=true` หลัง npm Trusted Publisher พร้อมเท่านั้น การพุช source และ tag `v0.1.0` ครั้งแรกไม่เปิด deploy/publish ให้เอง
 
 การ deploy ครั้งนี้ใช้ source archive ผ่าน SSH ไปยัง VPS ใหม่ของเจ้าของ จึงไม่ต้องพึ่ง GitHub login บนเซิร์ฟเวอร์ รายละเอียด server access และ credential ส่งแยกแบบส่วนตัว ไม่ใส่ใน source repo ไม่มีการ publish npm package หรือเปิด CI deployment อัตโนมัติ
+
+## Starter packaging (maintainer)
+
+Source ที่ผู้ใช้ดาวน์โหลดอยู่ใน `starters/<slug>/` มี dependency รุ่น pinned ของทางการและ README ของแต่ละตัว ไม่รวม key หรือ build caches ใช้ Python 3 สำหรับแพ็กและตรวจ:
+
+```bash
+python3 -m unittest discover -s scripts -p 'test_package_starters.py'
+python3 scripts/package-starters.py --check
+```
+
+Packager ตรวจทุก starter/CRC ใน staging ก่อน promote ZIP และ manifest ด้วย atomic rename ใช้ชื่อไฟล์ตาม SHA-256 และเก็บ archive รุ่นเดิมไว้เพื่อไม่ให้ cached pages ชี้ลิงก์เสีย ฟิลเตอร์ credential patterns เป็น guard ไม่ใช่การรับประกันตรวจเจอ secret ทุกชนิด ผู้ดูแลยังต้องตรวจ source ก่อนเผยแพร่ ไม่ใส่ `.env`, `.npmrc`, keys, user data หรือ private snippets ลงใน starter

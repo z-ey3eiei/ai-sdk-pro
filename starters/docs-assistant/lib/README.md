@@ -1,0 +1,1 @@
+`knowledge.ts` เป็นข้อมูลตัวอย่างสาธารณะในไฟล์เดียวและค้นด้วย keyword scoring แบบ deterministic ไม่มี embedding, vector store, remote fetch หรือ secret ทุก tool call ถูกจำกัดด้วย inputSchema, stepCountIs(8), maxOutputTokens 900 และ timeout 55 วินาที

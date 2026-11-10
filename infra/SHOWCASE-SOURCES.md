@@ -1,0 +1,9 @@
+# Showcase source references — 2026-11-10
+
+Owner-supplied current source: https://github.com/developer-devstack/devstack.bid (main; read-only clone /home/ubuntu/reference-devstack-current). Owner-supplied public npm package: https://www.npmjs.com/package/devstack-bid. npm registry https://registry.npmjs.org/devstack-bid/latest reported version 0.1.1; its repository metadata still references agents-sdk-space/devstack.bid, so the owner-provided current repo takes precedence.
+
+Public DevStack template pages fetched successfully: https://devstack.bid/templates/nextjs-ai-chat (Next.js route/UI recipe calling OpenAI; recipe's default model must not be treated as the user's model entitlement); https://devstack.bid/templates/static-website (Vite vanilla static site recipe). Current source src/data/template-ids.ts includes nextjs-ai-chat and static-website; src/app/templates/[id]/page.tsx produces real pages for known IDs. The ai-sdk.pro authored starters are not byte-identical copies of those recipes; links are framework/usage handoff, not automatic source import.
+
+Public npm README: Node >=20, npx devstack-bid commands; login uses browser device code or hidden token prompt, cli:setup baseline and cli:deploy opt-in. deploy builds linked GitHub repository, preview by default and --prod promotes production. link --repo can begin an initial build. Local folder upload to *.devstack.bid is not currently supported; user must follow real GitHub/source selection flow. Do not execute create/link/deploy or request DevStack keys in this task.
+
+Verified owner data: ai-sdk.pro origin https://ai-sdk.pro, contact sdkbank@1origin.dev; DevStack origin https://devstack.bid. No SMTP/email sending service is configured or claimed. Public starter previews are examples, not measured response/deployment statistics. Separate worker creation is paused; no Worker/Container/Queue/R2 resource was created for ai-sdk.pro.

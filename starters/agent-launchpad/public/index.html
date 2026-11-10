@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="An editable static launchpad for an AI agent project." />
+    <title>Agent Launchpad</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="https://ai-sdk.pro/" target="_blank" rel="noreferrer">ai-sdk.pro</a>
+      <nav aria-label="Primary navigation">
+        <a href="https://ai-sdk.pro/chat" target="_blank" rel="noreferrer">Chat</a>
+        <a href="https://ai-sdk.pro/templates" target="_blank" rel="noreferrer">Templates</a>
+        <a href="https://ai-sdk.pro/workspace" target="_blank" rel="noreferrer">Workspace</a>
+      </nav>
+    </header>
+
+    <main class="wrap">
+      <section class="hero">
+        <p class="eyebrow">STATIC STARTER / EDIT THIS PAGE</p>
+        <h1>Your agent deserves a clear front door.</h1>
+        <p class="lede">
+          Replace this sentence with your own positioning, then link visitors to
+          the tool, lesson, and source you want them to review.
+        </p>
+        <div class="actions">
+          <a class="button primary" href="https://ai-sdk.pro/chat" target="_blank" rel="noreferrer">Try the real playground</a>
+          <a class="button secondary" href="https://devstack.bid/templates/static-website" target="_blank" rel="noreferrer">Open DevStack template</a>
+        </div>
+        <p class="small">The DevStack button opens an external review/handoff page. It does not upload this folder or send keys.</p>
+      </section>
+
+      <section class="grid" aria-label="Launchpad sections">
+        <article class="card">
+          <p class="eyebrow">01 / EXPLAIN</p>
+          <h2>Show the useful thing</h2>
+          <p>Edit this card in <code>public/index.html</code> to describe one concrete user outcome. Keep claims tied to behavior you can verify.</p>
+        </article>
+        <article class="card">
+          <p class="eyebrow">02 / TEACH</p>
+          <h2>Point to a lesson</h2>
+          <p>Use the real Templates catalog for runnable source and practical setup. Add your own reviewed links instead of pretending a deploy has completed.</p>
+        </article>
+        <article class="card">
+          <p class="eyebrow">03 / HAND OFF</p>
+          <h2>Let the owner review</h2>
+          <p>Hosting, secrets, repositories, and deployment remain explicit owner actions. This static page has no upload or execution backend.</p>
+        </article>
+      </section>
+
+      <section class="code-card" aria-labelledby="example-heading">
+        <div class="code-heading">
+          <div>
+            <p class="eyebrow">EXAMPLE / COPYABLE</p>
+            <h2 id="example-heading">A small bounded agent shape</h2>
+          </div>
+          <button class="copy-button" type="button" data-copy="agent-example">Copy example</button>
+        </div>
+        <pre><code id="agent-example">// EXAMPLE: adapt and review before using in your own app.
+const agent = new ToolLoopAgent({
+  model: openai("gpt-5-mini"),
+  tools: { getCurrentTime },
+  stopWhen: stepCountIs(8),
+});</code></pre>
+      </section>
+
+      <section class="contact card">
+        <p class="eyebrow">KEEP IT HONEST</p>
+        <h2>Questions about ai-sdk.pro?</h2>
+        <p>Contact <a href="mailto:sdkbank@1origin.dev">sdkbank@1origin.dev</a>. Replace this template identity and links before publishing your own launchpad.</p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Editable starter · no keys included</span>
+      <a href="https://ai-sdk.pro/templates" target="_blank" rel="noreferrer">Browse real templates</a>
+    </footer>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
