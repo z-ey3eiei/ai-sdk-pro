@@ -129,4 +129,4 @@ pnpm --filter @aisdkpro/client build
 pnpm --filter @aisdkpro/client publish:dry-run
 ```
 
-การ publish จริงใช้ GitHub Actions Trusted Publishing แบบ OIDC ใน `.github/workflows/npm-publish.yml` หลังจากผู้ดูแลลงทะเบียน repository/workflow บน npmjs.com แล้วเท่านั้น
+การ publish จริงใช้ GitHub Actions Trusted Publishing แบบ OIDC ใน `infra/workflows/npm-publish.yml` หลังจากผู้ดูแลลงทะเบียน repository/workflow บน npmjs.com แล้วเท่านั้น

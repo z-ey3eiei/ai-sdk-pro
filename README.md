@@ -42,7 +42,7 @@ pnpm typecheck
 - `packages/ui` — shared visual components
 - `packages/sdk` — `@aisdkpro/client` แบบ publishable
 - `infra` — Docker, Compose, Caddy, systemd fallback และ runbooks
-- `.github/workflows` — deploy ไป VPS ผ่าน GHCR/SSH และ npm Trusted Publishing
+- `infra/workflows` — เทมเพลต GitHub Actions สำหรับ GHCR/SSH deploy และ npm Trusted Publishing; ยังไม่ active
 
 ## Client SDK
 

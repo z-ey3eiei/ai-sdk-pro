@@ -2,6 +2,8 @@
 
 งานนี้เตรียม workflow ให้แล้ว แต่ยังไม่ได้เชื่อมต่อ VPS, GHCR หรือ domain จริง ผู้ดูแลต้องสร้าง secrets และลงทะเบียนระบบเอง
 
+Workflow ถูกเก็บเป็นเทมเพลตใน `infra/workflows` และยังไม่ active เมื่อต้องการเปิดใช้ ให้เจ้าของใช้บัญชี GitHub ที่มีสิทธิ์เหมาะสมคัดลอกไฟล์ไป `.github/workflows` แล้ว commit เอง ดู [workflow README](workflows/README.md) ห้ามใช้ credential ของ App ที่ไม่มี workflow permission เพื่อเปิดใช้งาน
+
 ## VPS preparation
 
 เตรียม Ubuntu LTS และผู้ใช้ deploy ที่ไม่ใช่ root:
@@ -40,7 +42,7 @@ Workflow ใช้ `GITHUB_TOKEN` สำหรับ push image จาก Action
 
 ## Flow
 
-`.github/workflows/deploy.yml` จะทำงานเมื่อ push ไป `main` และ `DEPLOY_ENABLED=true`:
+เมื่อเจ้าของนำเทมเพลต `infra/workflows/deploy.yml` ไปเปิดใน `.github/workflows` แล้ว workflow จะทำงานเมื่อ push ไป `main` และ `DEPLOY_ENABLED=true`:
 
 1. checkout source และ lower-case `github.repository_owner`
 2. build `infra/Dockerfile` ด้วย Docker Buildx
