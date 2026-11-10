@@ -4,6 +4,8 @@
 
 > ai-sdk.pro เป็นแหล่งข้อมูลและซอฟต์แวร์อิสระ ไม่ใช่เว็บไซต์ทางการของ Vercel โปรดอ้างอิงเอกสารทางการของ AI SDK สำหรับรายละเอียด API รุ่นล่าสุด
 
+> สำหรับการทำงานต่อจากเครื่องหรือเซสชันอื่น ให้อ่าน [PROJECT-MEMORY.md](PROJECT-MEMORY.md) ก่อน เพื่อดูสถานะล่าสุด จุดที่เก็บ source/runtime และข้อจำกัดที่ต้องรักษา
+
 ## เลือก Starter และใช้เครื่องมือจริง
 
 เปิด https://ai-sdk.pro/templates เพื่อเลือก Streaming Chat, Docs Assistant หรือ Agent Launchpad พร้อม source download, code previews และคำสั่งรันในเครื่อง ดูคู่มือที่ https://ai-sdk.pro/docs/using-templates และใช้ Playground/Workspace ที่มีอยู่จริง ปุ่ม Deploy เปิด recipe ของ DevStack ให้ผู้ใช้เลือก source/อนุญาตสิทธิ์/ตรวจขั้น deploy เอง ไม่ส่ง code, API key หรือยืนยัน deployment อัตโนมัติ
