@@ -56,3 +56,9 @@ The owner has separately requested actual visitor-repository build/deploy after 
 ## Real-user login confirmation — 2026-11-10 13:57
 
 The owner reported login succeeds on their own device. Read-only aggregate metadata confirms one GitHub account and one active session (latest created 2026-11-10 06:54:29Z), so real OAuth exchange/session persistence has succeeded. No user profile, email, access token or session token was read or reused. Imported repository count remains zero; import UAT is still unconfirmed. The owner reported two earlier errors; no repeated login was attempted to reproduce them. Error text is needed to classify the earlier failures, and no GitHub anti-abuse/ban guarantee is made.
+
+## Session persistence rollout — 2026-11-10 14:25
+
+Source `015477f` is live on VPS as `ai-sdk-pro-web:015477f` and healthy. Production image build/private smoke passed before switch; signing secret was preserved. HTTPS health/status/Login/Workspace return 200; public status reports sessionIdleSeconds=10800 and renewal from an untrusted origin returns 403. Session-cookie forwarding/token-stripping and activity/idle/UI store regressions pass (47 tests total, all workspace typechecks pass). No repeat GitHub authorization/login or user-token impersonation was performed. Existing active app sessions were capped to the same three-hour maximum through the app schema only; token/account values were not read or changed. Real user navigation UAT is still to be confirmed from their own device; repository import remains unconfirmed.
+
+Next scope is ONLY Build Worker. Platform keys/CLI/npm and full deployment control plane are deferred by the owner; no new worker resource or destructive VPS replacement has been approved.

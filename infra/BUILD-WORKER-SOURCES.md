@@ -1,0 +1,7 @@
+# Build Worker isolation references
+
+Official gVisor security model: https://gvisor.dev/docs/architecture_guide/security/. gVisor intercepts application system calls with a userspace Sentry and reduces exposure to host-kernel bugs. It is not a substitute for a secure architecture, cgroup resource limits or network policy, and it does not promise protection from all exploits/hardware side channels. Do not expose host files, Docker sockets or production credentials to user build code. A separate worker host provides an additional boundary from the existing web/control-plane service.
+
+Official install guide: https://gvisor.dev/docs/user_guide/install/. Current releases support x86_64/ARM64 and Linux 5.6+. Prefer the signed Debian/Ubuntu apt release package; Docker is configured by that package. The July 2026 multi-file release format includes runsc, the containerd shim and a gvisor-bin sidecar directory; copying only the old standalone runsc binary is insufficient for current releases. Use the supported package/tarball procedure and verify `docker run --runtime=runsc` before executing builds. Host resource quotas and container network policy are separate requirements.
+
+The worker phase is not permission to reset an existing VPS or create a new billed machine. Before an actual host change, confirm the selected target, data-loss effect and cost with the owner. A private/offline worker test is distinct from enabling public repository builds or adding the complete deployment/runtime control plane.
