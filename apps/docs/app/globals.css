@@ -1,0 +1,123 @@
+@import '@aisdkpro/ui/styles.css';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+
+:root {
+  --docs-bg: #0b0b0b;
+  --docs-panel: #111111;
+  --docs-fg: #f6f6f6;
+  --docs-muted: #aaa;
+  --docs-subtle: #747474;
+  --docs-border: #262626;
+  color-scheme: dark;
+}
+
+html.dark,
+html.dark body {
+  background: var(--docs-bg);
+  color: var(--docs-fg);
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.docs-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.docs-wordmark em {
+  border: 1px solid currentColor;
+  border-radius: 0.2rem;
+  font-size: 0.55em;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  padding: 0.18rem 0.28rem;
+}
+
+#nd-docs-layout {
+  background: var(--docs-bg);
+}
+
+.docs-markdown {
+  color: var(--docs-muted);
+  font-size: 0.9375rem;
+  line-height: 1.85;
+}
+
+.docs-markdown h2,
+.docs-markdown h3,
+.docs-markdown h4 {
+  color: var(--docs-fg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.docs-markdown h2 {
+  border-top: 1px solid var(--docs-border);
+  margin-top: 2.8rem;
+  padding-top: 1.7rem;
+}
+
+.docs-markdown h3 {
+  margin-top: 2rem;
+}
+
+.docs-markdown p,
+.docs-markdown ul,
+.docs-markdown ol,
+.docs-markdown blockquote {
+  margin-block: 1rem;
+}
+
+.docs-markdown a {
+  color: var(--docs-fg);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.docs-markdown ul,
+.docs-markdown ol {
+  padding-inline-start: 1.5rem;
+}
+
+.docs-markdown blockquote {
+  border-inline-start: 2px solid #555;
+  color: var(--docs-subtle);
+  padding-inline-start: 1rem;
+}
+
+.docs-markdown :not(pre) > code {
+  background: #191919;
+  border: 1px solid var(--docs-border);
+  border-radius: 0.25rem;
+  color: #e7e7e7;
+  font-size: 0.85em;
+  padding: 0.12rem 0.3rem;
+}
+
+.docs-markdown .code-block {
+  margin-block: 1.35rem;
+}
+
+.docs-markdown .code-block pre {
+  max-height: 34rem;
+  min-height: 0;
+}
+
+.docs-page-title {
+  letter-spacing: -0.045em;
+}
+
+@media (max-width: 640px) {
+  .docs-markdown {
+    font-size: 0.875rem;
+  }
+}

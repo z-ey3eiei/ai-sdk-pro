@@ -1,0 +1,9 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": ["AI_MODEL", "AI_API_KEY", "AI_BASE_URL", "ANTHROPIC_API_KEY", "MCP_SERVER_URL", "APP_ORIGINS"],
+  "tasks": {
+    "build": { "dependsOn": ["^build"], "outputs": [".next/**", "!.next/cache/**", "dist/**"] },
+    "typecheck": { "dependsOn": ["^typecheck"], "outputs": [] },
+    "dev": { "cache": false, "persistent": true }
+  }
+}

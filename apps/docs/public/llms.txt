@@ -1,0 +1,18 @@
+# ai-sdk.pro
+
+> Thai-first documentation for building, integrating, and self-hosting ai-sdk.pro agents. This is an independent project and is not affiliated with Vercel.
+
+## Documentation
+
+- [Getting Started](https://ai-sdk.pro/docs/getting-started): Install, configure, and connect a streaming chat endpoint.
+- [Defining Agents](https://ai-sdk.pro/docs/defining-agents): Define ToolLoopAgent tools with Zod schemas, step limits, and optional MCP.
+- [Client SDK](https://ai-sdk.pro/docs/client-sdk): Connect a React app or framework-agnostic client to the UI message stream.
+- [Self-Hosting on a VPS](https://ai-sdk.pro/docs/self-hosting): Run the service with Node, Docker Compose, Caddy, and streaming-safe proxy settings.
+- [Git Deploys](https://ai-sdk.pro/docs/git-deploys): Build a GitHub Actions deployment to GHCR and a VPS with rollback guidance.
+- [Architecture Roadmap](https://ai-sdk.pro/docs/architecture): Proposed control, build, and runtime boundaries; not a claim that external integrations are already connected.
+
+## Official references
+
+- [Vercel AI SDK](https://ai-sdk.dev)
+- [Fumadocs](https://fumadocs.dev)
+- [Next.js](https://nextjs.org)

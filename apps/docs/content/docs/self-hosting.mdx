@@ -1,0 +1,91 @@
+---
+title: "Self-Hosting on a VPS"
+description: "รันบน VPS ด้วย Node 22, Docker Compose และ Caddy streaming proxy"
+---
+# Self-Hosting on a VPS
+
+ai-sdk.pro ออกแบบให้รันบน VPS ของคุณเอง ไม่ผูกกับ Vercel ตัวอย่างนี้ใช้ Node 22, pnpm 10.18.0, Docker Compose และ Caddy เป็น reverse proxy
+
+## เตรียมเครื่อง
+
+ใช้ผู้ใช้ deploy ที่ไม่มีสิทธิ์ root สำหรับงานประจำวัน ติดตั้ง Docker Engine และ Compose plugin จากแหล่งทางการของ distribution แล้วตรวจเวอร์ชัน:
+
+```bash
+node --version   # v22.x
+pnpm --version   # 10.18.0
+docker --version
+docker compose version
+```
+
+สร้าง directory สำหรับ checkout และ env ที่อ่านได้เฉพาะผู้ใช้ deploy:
+
+```bash
+sudo install -d -o deploy -g deploy /opt/ai-sdk-pro
+cd /opt/ai-sdk-pro
+touch .env
+chmod 600 .env
+```
+
+## Environment ฝั่ง server
+
+```dotenv filename=.env
+DOMAIN=chat.example.com
+ACME_EMAIL=ops@example.com
+# Development-compatible provider fallback
+AI_PROVIDER=compatible
+AI_MODEL=gpt-5-mini
+AI_BASE_URL=https://api.example.com/v1
+AI_API_KEY=replace-me
+# For production direct Anthropic, set AI_PROVIDER=anthropic and configure the model/key for your account.
+# AI_MODEL=claude-sonnet-4-6
+# ANTHROPIC_API_KEY=replace-me
+# Optional MCP server
+# MCP_SERVER_URL=https://mcp.example.com
+# MCP_AUTH_TOKEN=replace-me
+APP_ORIGINS=https://chat.example.com
+```
+
+อย่าใส่ `.env` ใน image หรือ git repository ระบบควรอ่านค่าที่ runtime เท่านั้น หมุน key โดยอัปเดต secret file แล้ว recreate service ใน maintenance window
+
+## Compose และ Caddy
+
+ให้ Caddy อยู่หน้าแอปและส่ง response streaming ต่อโดยไม่ buffer ตัวอย่าง directive สำคัญคือ `flush_interval -1`:
+
+```caddy filename=infra/Caddyfile
+{
+  email {$ACME_EMAIL}
+}
+{$DOMAIN} {
+  @chat path /api/chat
+  header @chat {
+    Cache-Control "no-cache"
+    X-Accel-Buffering "no"
+  }
+  reverse_proxy app:3000 {
+    flush_interval -1
+  }
+}
+```
+
+รัน stack และดู log:
+
+```bash
+docker compose --env-file .env -f infra/docker-compose.yml up -d
+docker compose --env-file .env -f infra/docker-compose.yml ps
+docker compose --env-file .env -f infra/docker-compose.yml logs -f app
+```
+
+## ตรวจสอบ stream จากภายนอก
+
+```bash
+curl -N --fail-with-body https://chat.example.com/api/chat \
+  -H 'content-type: application/json' \
+  -H 'accept: text/event-stream' \
+  --data '{"messages":[{"id":"1","role":"user","parts":[{"type":"text","text":"Say hello"}]}]}'
+```
+
+ต้องเห็น data chunks ไหลต่อเนื่อง ไม่ใช่รอจน response จบทั้งหมด หาก local ทำงานแต่ public URL ค้าง ให้ audit Caddy, load balancer และ CDN buffering ตามลำดับ
+
+## สำรองเมื่อไม่ใช้ Docker
+
+สามารถรัน Next standalone ด้วย systemd ได้ แต่ต้องจัดการ Node 22, process restart, logs และ TLS เอง Docker Compose + Caddy เป็นเส้นทางหลักในเอกสารนี้

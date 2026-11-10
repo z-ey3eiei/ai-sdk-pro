@@ -1,0 +1,59 @@
+name: Publish @aisdkpro/client
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Run npm publish --dry-run instead of publishing
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.18.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check and build SDK
+        run: |
+          pnpm --filter @aisdkpro/client typecheck
+          pnpm --filter @aisdkpro/client test
+          pnpm --filter @aisdkpro/client build
+
+      - name: Publish with Trusted Publishing
+        working-directory: packages/sdk
+        env:
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            npm publish --dry-run --access public
+          else
+            npm publish --provenance --access public
+          fi

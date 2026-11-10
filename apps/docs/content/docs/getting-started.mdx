@@ -1,0 +1,123 @@
+---
+title: "Getting Started"
+description: "เริ่มต้นใช้งาน ai-sdk.pro และเชื่อมต่อ streaming chat endpoint"
+---
+# Getting Started
+
+เริ่มต้นกับ ai-sdk.pro ด้วย endpoint เดียวสำหรับ agent ของคุณ โปรเจกต์นี้เป็นเอกสารอิสระที่อธิบายการใช้งาน AI SDK และไม่ได้เป็นเว็บไซต์ทางการของ Vercel
+
+## ภาพรวม
+
+เว็บแอปของคุณควรเก็บ provider key และ agent logic ไว้ฝั่งเซิร์ฟเวอร์ ส่วน client ส่ง UI messages ไปยัง `/api/chat` และรับผลลัพธ์แบบ streaming กลับมา การแยกส่วนนี้ทำให้เปลี่ยน provider หรือย้ายจากเครื่อง local ไป VPS ได้โดยไม่ต้องเผย secret ใน browser
+
+## ติดตั้ง dependency
+
+```bash
+pnpm add ai @ai-sdk/anthropic zod
+```
+
+ถ้าใช้ monorepo นี้ ให้ติดตั้งจาก root และเลือก workspace ของเว็บ:
+
+```bash
+pnpm --filter @aisdkpro/web add ai @ai-sdk/anthropic zod
+```
+
+## ตั้งค่า environment
+
+สร้าง `.env.local` ในแอปเว็บเท่านั้น อย่า commit ไฟล์นี้หรือใส่ key ในโค้ดฝั่ง client:
+
+```dotenv
+# Server-only values; never use NEXT_PUBLIC_ for these.
+# Development fallback used by ai-sdk.pro.
+AI_PROVIDER=compatible
+AI_MODEL=gpt-5-mini
+AI_BASE_URL=https://api.example.com/v1
+AI_API_KEY=replace-with-your-compatible-provider-key
+# Production can use the direct Anthropic adapter and a model available to your account.
+# AI_PROVIDER=anthropic
+# AI_MODEL=claude-sonnet-4-6
+# ANTHROPIC_API_KEY=replace-with-your-server-key
+# Optional MCP server
+# MCP_SERVER_URL=https://mcp.example.com
+# MCP_AUTH_TOKEN=replace-with-your-mcp-secret
+```
+
+`AI_MODEL` เป็นค่าที่กำหนดเองได้ตาม provider ที่เลือก ส่วน `AI_BASE_URL` ใช้เมื่อ adapter ของคุณรองรับ OpenAI-compatible API อย่าวางค่าเหล่านี้ไว้ใน `NEXT_PUBLIC_*`
+
+## เพิ่ม route ที่ใช้ agent
+
+ตัวอย่างนี้แสดง contract ของ route ที่รับ `UIMessage[]` และส่งผลแบบ agent UI stream โปรเจกต์จริงควรเพิ่ม origin allowlist, rate limit และ timeout ตามสภาพแวดล้อมที่ deploy:
+
+```ts filename=app/api/chat/route.ts
+import { createAgentUIStreamResponse } from "ai";
+import { createAssistantAgent } from "@/agents/assistant-agent";
+
+export async function POST(request: Request) {
+  const { messages } = await request.json();
+  const { agent, close } = await createAssistantAgent();
+
+  return createAgentUIStreamResponse({
+    agent,
+    uiMessages: messages,
+    abortSignal: request.signal,
+    onFinish: async () => {
+      await close();
+    },
+  });
+}
+```
+
+> Route นี้ส่ง UI messages ให้ agent โดยตรง จึงไม่ต้องเรียก `convertToModelMessages` เอง สำหรับ production ให้ตรวจ origin, rate limit และ timeout เพิ่ม และอย่าใช้ code path ที่เผย provider key
+
+## เรียกจาก client
+
+ใช้ `useAISDKProChat` จาก `@aisdkpro/client/react` เพื่อเชื่อมต่อ endpoint เดียวกัน:
+
+```tsx filename=app/chat/page.tsx
+"use client";
+
+import { useState, type FormEvent } from "react";
+import { useAISDKProChat } from "@aisdkpro/client/react";
+
+export default function ChatPage() {
+  const [input, setInput] = useState("");
+  const { messages, sendMessage, status, stop } =
+    useAISDKProChat({ endpoint: "/api/chat" });
+
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!input.trim()) return;
+    void sendMessage({ text: input });
+    setInput("");
+  }
+
+  return (
+    <main>
+      {messages.map((message) => (
+        <article key={message.id}>
+          <strong>{message.role}</strong>
+          {message.parts.map((part, index) =>
+            part.type === "text" ? <p key={index}>{part.text}</p> : null,
+          )}
+        </article>
+      ))}
+      <form onSubmit={onSubmit}>
+        <input value={input} onChange={(event) => setInput(event.target.value)} />
+        <button type="submit" disabled={status !== "ready"}>Send</button>
+        <button type="button" onClick={stop}>Stop</button>
+      </form>
+    </main>
+  );
+}
+```
+
+## ตรวจสอบการทำงาน
+
+```bash
+pnpm dev
+curl -N http://localhost:3000/api/chat \
+  -H 'content-type: application/json' \
+  -d '{"messages":[{"id":"1","role":"user","parts":[{"type":"text","text":"What can you do?"}]}]}'
+```
+
+ถ้า stream หยุดเมื่อผ่าน reverse proxy ให้ตรวจ Caddy หรือ proxy ตัวอื่นก่อน โดยต้องไม่มี response buffering และต้องส่ง `AbortSignal` ต่อถึง model request

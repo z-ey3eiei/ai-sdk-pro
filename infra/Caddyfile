@@ -1,0 +1,16 @@
+{
+    email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+    @chat path /api/chat
+    header @chat {
+        Cache-Control "no-cache"
+        X-Accel-Buffering "no"
+    }
+
+    reverse_proxy app:3000 {
+        flush_interval -1
+        header_up X-Real-IP {remote_host}
+    }
+}

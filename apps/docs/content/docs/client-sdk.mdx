@@ -1,0 +1,94 @@
+---
+title: "Client SDK"
+description: "เชื่อมต่อแอปของคุณด้วย useAISDKProChat และ ChatClient"
+---
+# Client SDK
+
+`@aisdkpro/client` เป็น thin client สำหรับเชื่อม UI ของคุณกับ endpoint ของ ai-sdk.pro โดยไม่ย้าย model key หรือ agent logic ไป browser
+
+## ติดตั้ง
+
+```bash
+pnpm add @aisdkpro/client
+```
+
+## React hook
+
+ใช้ `useAISDKProChat` โดยส่ง path ของ endpoint หรือ URL เต็มเมื่อ frontend และ API อยู่คนละ origin:
+
+```tsx filename=app/chat/page.tsx
+"use client";
+
+import { useState, type FormEvent } from "react";
+import { useAISDKProChat } from "@aisdkpro/client/react";
+
+export function Chat() {
+  const [input, setInput] = useState("");
+  const chat = useAISDKProChat({ endpoint: "/api/chat" });
+
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!input.trim()) return;
+    void chat.sendMessage({ text: input });
+    setInput("");
+  }
+
+  return (
+    <form onSubmit={onSubmit}>
+      <div aria-live="polite">
+        {chat.messages.map((message) => (
+          <article key={message.id}>
+            <strong>{message.role}</strong>
+            {message.parts.map((part, index) =>
+              part.type === "text" ? <p key={index}>{part.text}</p> : null,
+            )}
+          </article>
+        ))}
+      </div>
+      <input
+        value={input}
+        onChange={(event) => setInput(event.target.value)}
+        aria-label="Message"
+      />
+      <button type="submit" disabled={chat.status !== "ready"}>Send</button>
+      <button type="button" onClick={chat.stop}>Stop</button>
+    </form>
+  );
+}
+```
+
+ค่าที่ขึ้นต้นด้วย `NEXT_PUBLIC_` ต้องถือว่าเป็นข้อมูลสาธารณะ ใช้ได้เฉพาะ base URL หรือ path เท่านั้น ห้ามใส่ API key ในค่าดังกล่าว การยืนยันตัวตนของ endpoint ควรใช้ session หรือ token ที่ออกแบบสำหรับ client โดยเฉพาะและตรวจฝั่ง server
+
+## การส่งข้อความแบบ programmatic
+
+หากไม่ใช้ React ให้เรียก `ChatClient` และผูก `AbortController` กับปุ่ม Stop:
+
+```ts filename=lib/chat.ts
+import type { UIMessage } from "ai";
+import { ChatClient } from "@aisdkpro/client";
+
+const client = new ChatClient({
+  baseUrl: "https://ai-sdk.pro",
+  endpoint: "/api/chat",
+});
+const controller = new AbortController();
+const messages: UIMessage[] = [{
+  id: "user-1",
+  role: "user",
+  parts: [{ type: "text", text: "Explain ToolLoopAgent." }],
+}];
+
+for await (const event of client.stream(messages, { signal: controller.signal })) {
+  if (event.type === "text-delta") process.stdout.write(event.delta);
+  if (event.type === "error") console.error(event.errorText);
+}
+
+// Call this from a cancel button.
+// client.stop();
+```
+
+## Error และ stream
+
+แสดงสถานะ `ready`, `submitted`, `streaming` และ `error` ให้ผู้ใช้เห็นตามความเหมาะสม หาก network error เกิดขึ้นให้เปิด retry ที่สร้าง request ใหม่ ส่วน abort ที่ผู้ใช้กดเองไม่ควรแสดงเป็น provider failure
+
+โค้ดตัวอย่างอ้างอิง UI message stream ของ AI SDK การ parse event อาจเปลี่ยนตามเวอร์ชัน SDK ให้ใช้ type ที่ export จากแพ็กเกจจริง และทดสอบด้วย endpoint ของคุณก่อน publish

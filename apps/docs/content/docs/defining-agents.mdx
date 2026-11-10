@@ -1,0 +1,159 @@
+---
+title: "Defining Agents"
+description: "สร้าง ToolLoopAgent ด้วย tools, Zod inputSchema, step limit และ MCP"
+---
+# Defining Agents
+
+สร้าง agent ที่เรียก tools ได้อย่างมีขอบเขตด้วย `ToolLoopAgent` จาก AI SDK 6 ตัวอย่างด้านล่างใช้ `inputSchema` ของ Zod และหยุดที่ 20 steps อย่างชัดเจน
+
+## Agent ขั้นต่ำ
+
+```ts filename=agents/assistant-agent.ts
+import { createAnthropic } from "@ai-sdk/anthropic";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { InferAgentUIMessage, ToolLoopAgent, stepCountIs, tool } from "ai";
+import { z } from "zod";
+
+function required(name: string, value: string | undefined): string {
+  if (!value) throw new Error(name + " is required");
+  return value;
+}
+
+function createModel() {
+  const provider = process.env.AI_PROVIDER ?? "compatible";
+  const modelName = process.env.AI_MODEL ?? "gpt-5-mini";
+  if (provider === "anthropic") {
+    const anthropic = createAnthropic({
+      apiKey: required("ANTHROPIC_API_KEY or AI_API_KEY", process.env.ANTHROPIC_API_KEY ?? process.env.AI_API_KEY),
+    });
+    return anthropic(modelName);
+  }
+  if (provider === "compatible") {
+    const compatible = createOpenAICompatible({
+      name: "ai-sdk-pro-compatible",
+      baseURL: required("AI_BASE_URL", process.env.AI_BASE_URL),
+      apiKey: required("AI_API_KEY", process.env.AI_API_KEY),
+    });
+    return compatible(modelName);
+  }
+  throw new Error("Unsupported AI_PROVIDER: " + provider);
+}
+
+const getCurrentTime = tool({
+  description: "Get the current time in an IANA time zone.",
+  inputSchema: z.object({
+    timeZone: z.string().default("UTC"),
+  }),
+  execute: async ({ timeZone }) =>
+    new Intl.DateTimeFormat("en-US", {
+      dateStyle: "full",
+      timeStyle: "long",
+      timeZone,
+    }).format(new Date()),
+});
+
+export const assistantAgent = new ToolLoopAgent({
+  model: createModel(),
+  instructions: "You are a concise assistant for ai-sdk.pro. Cite tool results.",
+  tools: { getCurrentTime },
+  stopWhen: stepCountIs(20),
+});
+
+export type AssistantUIMessage = InferAgentUIMessage<typeof assistantAgent>;
+```
+
+`inputSchema` คือ schema ที่ใช้ตรวจ input ของ tool ใน API รุ่นนี้ อย่าเปลี่ยนเป็น `parameters` หากต้องการให้ตัวอย่างตรงกับ AI SDK 6 และตรวจ signature ของ `ToolLoopAgent` จากเวอร์ชันที่ติดตั้งจริงเสมอ
+
+## เพิ่ม fetchUrl และ searchDocs
+
+```ts filename=agents/tools/index.ts
+import { tool } from "ai";
+import { z } from "zod";
+import { docs } from "@/lib/content";
+
+const APPROVED_HOSTS = new Set(["ai-sdk.dev", "v6.ai-sdk.dev", "fumadocs.dev", "www.fumadocs.dev"]);
+
+function approvedUrl(rawUrl: string): URL {
+  const url = new URL(rawUrl);
+  if (url.protocol !== "https:" || !APPROVED_HOSTS.has(url.hostname)) {
+    throw new Error("Only approved HTTPS documentation hosts are allowed");
+  }
+  return url;
+}
+
+async function fetchApprovedUrl(rawUrl: string): Promise<string> {
+  let url = approvedUrl(rawUrl);
+  for (let redirect = 0; redirect <= 3; redirect += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    let response: Response;
+    try {
+      response = await fetch(url, { redirect: "manual", signal: controller.signal });
+    } finally {
+      clearTimeout(timeout);
+    }
+    if (response.status >= 300 && response.status < 400) {
+      const location = response.headers.get("location");
+      if (!location) throw new Error("Redirect is missing Location");
+      url = approvedUrl(new URL(location, url).toString());
+      continue;
+    }
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    return (await response.text()).slice(0, 8000);
+  }
+  throw new Error("Too many redirects");
+}
+
+export const fetchUrl = tool({
+  description: "Fetch approved public documentation with timeout and bounded redirects.",
+  inputSchema: z.object({ url: z.string().max(2048).describe("Approved HTTPS documentation URL") }),
+  execute: fetchApprovedUrl,
+});
+
+export const searchDocs = tool({
+  description: "Search the local documentation index.",
+  inputSchema: z.object({ query: z.string().min(1) }),
+  execute: async ({ query }) => {
+    const normalized = query.toLowerCase();
+    return docs
+      .filter((doc) =>
+        (doc.title + " " + doc.description + " " + doc.body).toLowerCase().includes(normalized),
+      )
+      .map(({ slug, title, description }) => ({ slug, title, description }));
+  },
+});
+```
+
+ใน production ให้จำกัด `fetchUrl` ไว้ที่ host ที่อนุมัติ ป้องกัน SSRF และกำหนด timeout ของ fetch เอง ส่วน `searchDocs` ควรอ่าน index ที่สร้างจาก `docs` export หรือ loader ฝั่ง server ไม่ควรให้ browser เข้าถึง provider credentials
+
+## ต่อ MCP แบบ optional
+
+หากตั้ง `MCP_SERVER_URL` ให้สร้าง MCP client ต่อ request และปิด client เมื่อจบ run เพื่อไม่ค้าง connection ใน process:
+
+```ts filename=agents/mcp-tools.ts
+import { createMCPClient } from "@ai-sdk/mcp";
+
+export async function createOptionalMcpTools() {
+  const url = process.env.MCP_SERVER_URL;
+  if (!url) return { tools: {}, close: async () => {} };
+
+  const secret = process.env.MCP_AUTH_TOKEN;
+  const client = await createMCPClient({
+    transport: {
+      type: "http",
+      url,
+      headers: secret ? { Authorization: "Bearer " + secret } : undefined,
+    },
+  });
+  return {
+    tools: await client.tools(),
+    close: () => client.close(),
+  };
+}
+```
+
+ใช้ HTTP transport สำหรับ MCP ที่รันบน server และปิด client หลัง stream จบ สำหรับ route ให้สร้าง `createOptionalMcpTools()` พร้อมกับ agent แล้วส่ง `close` ไปยัง callback จบ stream การปิด client ไม่แทนการตรวจ allowlist, auth และสิทธิ์ของเครื่องมือ
+
+## ควบคุมการหยุด
+
+`stepCountIs(20)` จำกัดจำนวน steps ที่ agent ทำในหนึ่ง run ช่วยป้องกัน loop ที่ไม่จบ แต่ไม่ใช่ตัวแทนของ auth, rate limit หรือ timeout ควรส่ง `abortSignal` จาก route ไปยังการเรียก model เพื่อให้ปุ่ม Stop ยกเลิกงานจริง

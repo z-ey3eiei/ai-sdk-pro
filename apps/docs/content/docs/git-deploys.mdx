@@ -1,0 +1,84 @@
+---
+title: "Git Deploys"
+description: "สร้าง GitHub Actions deploy ไป GHCR และ VPS พร้อม rollback"
+---
+# Git Deploys
+
+คู่มือนี้ใช้ GitHub Actions สร้าง image แล้ว push ไป GHCR จากนั้น SSH เข้า VPS เพื่อ pull และ restart Compose เหมาะกับ repository ที่ทีมต้องการเห็นขั้นตอน deploy แบบตรวจสอบได้
+
+## สิ่งที่ต้องมี
+
+บน VPS ต้องมีผู้ใช้ deploy, Docker, Compose, checkout ของ repository และไฟล์ `.env` ที่สร้างบนเครื่องนั้นเอง ผู้ใช้ SSH ไม่ควรเป็น root และควรใช้ key เฉพาะสำหรับ deploy
+
+ตั้งค่า secrets และ variables ใน GitHub repository โดยใช้ค่าจริงของคุณเอง:
+
+```text
+Secrets: SSH_HOST, SSH_USER, SSH_KEY
+Variables: DEPLOY_PATH, APP_DOMAIN, GHCR_IMAGE
+```
+
+อย่าเขียนค่า secret ลง workflow แบบ literal และอย่า log environment ทั้งก้อน `SSH_KEY` ต้องเป็น private key ที่จับคู่กับ public key ใน `~/.ssh/authorized_keys` ของผู้ใช้ deploy บน VPS
+
+## Workflow รูปแบบย่อ
+
+```yaml filename=.github/workflows/deploy.yml
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/Dockerfile
+          push: true
+          tags: ${{ vars.GHCR_IMAGE }}:${{ github.sha }}
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd ${{ vars.DEPLOY_PATH }}
+            docker compose pull
+            docker compose up -d
+      - name: Health check
+        run: curl --fail --retry 10 --retry-delay 3 https://${{ vars.APP_DOMAIN }}/api/health
+```
+
+ตัวอย่างนี้เป็นโครงที่ต้องปรับชื่อ image, path, Dockerfile และสิทธิ์ GHCR ให้ตรงกับ repository ของคุณเอง จึงไม่อ้างว่ามี registry หรือ VPS ที่ตั้งค่าเสร็จแล้ว
+
+## Rollback
+
+เก็บ image tags ตาม commit SHA และบันทึก SHA ล่าสุดที่ production ใช้ เมื่อ release ใหม่มีปัญหา ให้แก้ tag ใน compose หรือไฟล์ env ของ deployment แล้วสั่ง `docker compose pull && docker compose up -d` ด้วย tag ก่อนหน้า จากนั้นตรวจ health endpoint และ stream อีกครั้ง
+
+```bash
+# Example on the VPS after selecting a known-good SHA
+export IMAGE_TAG=known-good-commit-sha
+docker compose pull
+docker compose up -d
+curl --fail https://chat.example.com/api/health
+```
+
+## ความปลอดภัยของ deploy
+
+จำกัด firewall ให้เหลือ 80/443 และ SSH จากเครือข่ายที่จำเป็น ปิดการเปิด Docker socket ให้ public, ตั้ง permission ของ `.env` เป็น 600, หมุน deploy key เมื่อมีผู้ดูแลออกจากทีม และเก็บประวัติว่า commit ใด deploy อยู่

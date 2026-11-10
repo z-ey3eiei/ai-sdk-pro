@@ -1,0 +1,62 @@
+{
+  "name": "@aisdkpro/client",
+  "version": "0.1.0",
+  "description": "Framework-agnostic client for ai-sdk.pro UI message streams.",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js",
+      "default": "./dist/react.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "publish:dry-run": "npm publish --dry-run --access public"
+  },
+  "peerDependencies": {
+    "ai": "^6.0.326",
+    "@ai-sdk/react": "^3.0.329",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1"
+  },
+  "peerDependenciesMeta": {
+    "@ai-sdk/react": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@ai-sdk/react": "3.0.329",
+    "@types/react": "19.2.1",
+    "@types/react-dom": "19.2.1",
+    "ai": "6.0.326",
+    "react": "19.2.1",
+    "react-dom": "19.2.1",
+    "tsup": "^8.5.0",
+    "typescript": "5.9.3",
+    "vitest": "^2.1.9"
+  }
+}

@@ -1,0 +1,27 @@
+# Copy to /etc/systemd/system/ai-sdk-pro.service after creating the aisdk user.
+# Keep /opt/ai-sdk-pro/.env owned by aisdk:aisdk with mode 600.
+[Unit]
+Description=ai-sdk.pro Next.js standalone server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=aisdk
+Group=aisdk
+WorkingDirectory=/opt/ai-sdk-pro/apps/web/.next/standalone
+EnvironmentFile=/opt/ai-sdk-pro/.env
+Environment=NODE_ENV=production
+Environment=HOSTNAME=127.0.0.1
+Environment=PORT=3000
+ExecStart=/usr/bin/node /opt/ai-sdk-pro/apps/web/.next/standalone/apps/web/server.js
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/ai-sdk-pro
+
+[Install]
+WantedBy=multi-user.target
