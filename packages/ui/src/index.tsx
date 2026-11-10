@@ -175,6 +175,12 @@ const searchItems = [
     href: "/chat",
     category: "Playground",
   },
+  {
+    title: "Repository workspace",
+    desc: "Sign in with GitHub and import read-only snapshots",
+    href: "/workspace",
+    category: "Platform",
+  },
 ];
 export function Header({ active }: { active?: string }) {
   const [search, setSearch] = useState(false);
@@ -241,6 +247,9 @@ export function Header({ active }: { active?: string }) {
             <Link href="/docs/client-sdk" onClick={() => setMenu(false)}>
               SDK
             </Link>
+            <Link href="/workspace" onClick={() => setMenu(false)}>
+              Workspace
+            </Link>
             <Link href="/#features" onClick={() => setMenu(false)}>
               Features
             </Link>
@@ -255,6 +264,9 @@ export function Header({ active }: { active?: string }) {
             <span>Search…</span>
             <kbd>⌘ K</kbd>
           </button>
+          <Link href="/login" className="ask-button header-login">
+            Log in
+          </Link>
           <Link href="/chat" className="ask-button">
             <Sparkles size={12} /> Ask AI
           </Link>

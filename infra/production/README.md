@@ -1,6 +1,8 @@
 # Prepared VPS production helpers
 
-These files were saved before public deployment was completed. See `../DEPLOYMENT-STATE.md` for the verified server and DNS status. They contain no API keys or private SSH keys. The installation script intentionally stops after a private app smoke check and Caddy config validation; it does not open the firewall, change DNS, or launch public HTTPS by itself.
+The current owner VPS has a live deployment; see `../DEPLOYMENT-STATE.md` for the verified runtime revision, server and DNS status. These helpers contain no API keys or private SSH keys. The installation script intentionally stops after a private app smoke check and Caddy config validation; it does not open the firewall, change DNS, or launch public HTTPS by itself.
+
+Docker Buildx is required for this BuildKit Dockerfile. It is installed on the current VPS. For a fresh Ubuntu host, check `docker buildx version` and install the distribution package `docker-buildx` if missing before running the build.
 
 From the intended clean source checkpoint, provide your separately stored private key:
 

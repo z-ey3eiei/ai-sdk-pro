@@ -1,0 +1,28 @@
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+
+import { neon } from "@neondatabase/serverless";
+
+async function main(): Promise<void> {
+  const databaseUrl = process.env.NEON_DATABASE_URL?.trim();
+  if (!databaseUrl) {
+    console.error("NEON_DATABASE_URL is required for platform:migrate.");
+    process.exitCode = 1;
+    return;
+  }
+
+  const sql = neon(databaseUrl);
+  const migrationPath = resolve(__dirname, "../migrations/0001_platform.sql");
+  const migration = await readFile(migrationPath, "utf8");
+  const statements = migration
+    .split(";")
+    .map(statement => statement.trim())
+    .filter(Boolean);
+  await sql.transaction(statements.map(statement => sql.query(statement, [])));
+  console.log("Applied platform migration 0001_platform.sql.");
+}
+
+void main().catch(() => {
+  console.error("Platform migration failed.");
+  process.exitCode = 1;
+});
