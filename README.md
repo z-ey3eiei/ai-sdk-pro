@@ -4,6 +4,22 @@
 
 > ai-sdk.pro เป็นแหล่งข้อมูลและซอฟต์แวร์อิสระ ไม่ใช่เว็บไซต์ทางการของ Vercel โปรดอ้างอิงเอกสารทางการของ AI SDK สำหรับรายละเอียด API รุ่นล่าสุด
 
+## เวอร์ชันเริ่มต้น: v0.1.0
+
+เวอร์ชันตรงกับ root package.json และทุก workspace package ดูประวัติการเปลี่ยนแปลงที่ [CHANGELOG.md](CHANGELOG.md) และ [VERSION](VERSION) Git tag `v0.1.0` ระบุ source ของ release เริ่มต้น
+
+ไฟล์ [`apps/web/components/llm.tsx`](apps/web/components/llm.tsx) เป็นคอมโพเนนต์แชท AI ที่ใช้จริงในหน้า `/chat` รองรับ streaming, tool activity, stop, retry และ new conversation โดย provider key อยู่บนเซิร์ฟเวอร์เท่านั้น:
+
+```tsx
+import LLMChat from '@/components/llm';
+
+export default function ChatPage() {
+  return <LLMChat api="/api/chat" configApi="/api/config" />;
+}
+```
+
+หากนำไปวางใน layout ที่มี header อยู่แล้ว ให้ส่ง `showHeader={false}` ห้ามเปลี่ยน `api` เป็น provider endpoint หรือใส่ model key ในคอมโพเนนต์นี้
+
 ## ขอบเขตของ foundation ชุดนี้
 
 โค้ดที่มีอยู่จริงในชุดนี้คือ public web/chat foundation, เอกสาร, `@aisdkpro/client` สำหรับ UI Message Stream และไฟล์ self-hosting สำหรับเว็บของโครงการเอง ข้อเสนอเรื่อง public SaaS control plane, build plane, runtime plane, account/tenant/quota API, GitHub App import, Coolify adapter, BYOVPS, isolated user build/runtime, artifact registry, CLI และ deployment API เป็น **สถาปัตยกรรมที่เสนอสำหรับงานถัดไป** ไม่ใช่บริการที่ติดตั้งหรือเชื่อมต่อแล้ว
@@ -84,5 +100,7 @@ curl --fail https://$DOMAIN/api/health
 ## Secrets และการ deploy
 
 ห้าม commit `.env`, API keys หรือใส่ provider values จริงใน README/CI ทุก provider key ต้องอยู่ใน runtime secret store ของ VPS หรือ Coolify เท่านั้น ก่อนใช้ npm workflow ผู้ดูแลต้องลงทะเบียน Trusted Publisher บน npmjs.com ด้วย repository และ workflow ที่ถูกต้องเอง; workflow ใน repo ทำหน้าที่ขอ OIDC token และ publish เท่านั้น
+
+Automation เป็น opt-in: ตั้ง repository variable `DEPLOY_ENABLED=true` หลัง VPS/secrets พร้อม หรือ `NPM_PUBLISH_ENABLED=true` หลัง npm Trusted Publisher พร้อมเท่านั้น การพุช source และ tag `v0.1.0` ครั้งแรกไม่เปิด deploy/publish ให้เอง
 
 ยังไม่มีการเข้าถึง VPS จริง, การตั้ง DNS/HTTPS, การลงทะเบียน npm package หรือการ deploy production ใน repository นี้

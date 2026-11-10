@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   build-and-push:
+    if: ${{ vars.DEPLOY_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.image.outputs.name }}

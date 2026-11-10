@@ -34,15 +34,19 @@ sudo -u deploy docker compose --env-file /opt/ai-sdk-pro/.env \
 
 Workflow ใช้ `GITHUB_TOKEN` สำหรับ push image จาก Actions ไป GHCR และใช้ `GHCR_TOKEN` บน VPS สำหรับ pull image จึงไม่ควรใช้ token ที่มีสิทธิ์เกินจำเป็น
 
+หลังตั้งค่า secrets และตรวจ VPS พร้อมแล้ว ให้เปิด repository variable `DEPLOY_ENABLED=true` ที่ Settings → Secrets and variables → Actions → Variables ก่อนหน้านั้น workflow จะถูก skip เพื่อไม่ให้ source push ครั้งแรกสั่ง build/publish image หรือ deploy ภายนอกโดยไม่ตั้งใจ
+
+การ publish SDK เป็นคนละเรื่อง: เปิด `NPM_PUBLISH_ENABLED=true` หลังลงทะเบียน npm Trusted Publisher แล้วเท่านั้น manual npm dry run ยังใช้งานได้โดยไม่ publish package
+
 ## Flow
 
-`.github/workflows/deploy.yml` จะทำงานเมื่อ push ไป `main`:
+`.github/workflows/deploy.yml` จะทำงานเมื่อ push ไป `main` และ `DEPLOY_ENABLED=true`:
 
 1. checkout source และ lower-case `github.repository_owner`
 2. build `infra/Dockerfile` ด้วย Docker Buildx
 3. push immutable `ghcr.io/<owner>/ai-sdk-pro-web:sha-<commit>` และ update `:latest`
 4. SSH เข้า `/opt/ai-sdk-pro`, login GHCR แล้วรัน `docker compose pull` และ `docker compose up -d`
-5. รอ `https://<DOMAIN>/api/health`; ถ้าไม่เป็น 2xx workflow ล้มเหลว
+5. รอ `https://<DOMAIN>/api/ready`; ถ้าไม่เป็น 2xx workflow ล้มเหลว
 
 มี concurrency group เดียวเพื่อไม่ให้ deploy สองชุดทับกัน และไม่มี secret inline ใน workflow
 
@@ -50,6 +54,7 @@ Workflow ใช้ `GITHUB_TOKEN` สำหรับ push image จาก Action
 
 ```bash
 curl --fail --silent --show-error https://<domain>/api/health
+curl --fail --silent --show-error https://<domain>/api/ready
 docker compose --env-file .env -f infra/docker-compose.yml ps
 docker compose --env-file .env -f infra/docker-compose.yml logs --tail=200 app
 ```

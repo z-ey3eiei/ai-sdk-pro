@@ -21,6 +21,7 @@ concurrency:
 
 jobs:
   publish:
+    if: ${{ vars.NPM_PUBLISH_ENABLED == 'true' || (github.event_name == 'workflow_dispatch' && inputs.dry_run == true) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
