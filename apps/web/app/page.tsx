@@ -21,10 +21,10 @@ import {
   ButtonLink,
   CodeBlock,
   Footer,
-  Header,
   InstallCommand,
 } from "@aisdkpro/ui";
 import PlatformDemos from "../components/PlatformDemos";
+import SiteHeader from "../components/SiteHeader";
 
 const features = [
   {
@@ -121,7 +121,7 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   return (
     <>
-      <Header />
+      <SiteHeader />
       <main className="reference-main">
         <section className="center-hero">
           <div className="hero-grid" aria-hidden="true" />

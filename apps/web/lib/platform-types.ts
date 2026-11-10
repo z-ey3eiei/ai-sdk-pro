@@ -12,12 +12,14 @@ export interface PlatformUser {
 }
 export interface PlatformSession {
   user: PlatformUser | null;
+  expiresAt?: string | null;
 }
 export interface PlatformStatus {
   configured: boolean;
   missingConfiguration: string[];
   githubAppInstallUrl: string | null;
   snapshotLimits: typeof SNAPSHOT_LIMITS;
+  sessionIdleSeconds?: number;
 }
 export interface GitHubRepository {
   id: number;

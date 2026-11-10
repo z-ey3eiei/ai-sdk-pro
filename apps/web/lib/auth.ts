@@ -12,6 +12,7 @@ import {
   requirePlatformConfig,
   trustedPlatformOrigins,
 } from "./platform-policy";
+import { PLATFORM_SESSION_POLICY } from "./session-policy";
 
 const AUTH_ENDPOINTS = new Set([
   "POST sign-in/social",
@@ -66,6 +67,7 @@ export function createPlatformAuth() {
       encryptOAuthTokens: true,
       storeStateStrategy: "database",
     },
+    session: PLATFORM_SESSION_POLICY,
     advanced: {
       useSecureCookies: secureCookies,
       defaultCookieAttributes: {
@@ -98,7 +100,10 @@ export function resetAuthForTests(): void {
 }
 
 export async function getSessionUser(request: Request) {
-  const result = await getAuth().api.getSession({ headers: request.headers });
+  const result = await getAuth().api.getSession({
+    headers: request.headers,
+    query: { disableRefresh: true },
+  });
   return result?.user ?? null;
 }
 
@@ -108,7 +113,10 @@ export async function requireSessionUser(request: Request) {
   return user;
 }
 
-export async function getGitHubAccessToken(request: Request, userId: string): Promise<string> {
+export async function getGitHubAccessToken(
+  request: Request,
+  userId: string
+): Promise<string> {
   const database = getPlatformDb();
   if (!database) throw new Error("Platform database is unavailable.");
   const rows = await database
@@ -117,12 +125,14 @@ export async function getGitHubAccessToken(request: Request, userId: string): Pr
     .where(and(eq(account.userId, userId), eq(account.providerId, "github")))
     .limit(1);
   const githubAccount = rows[0];
-  if (!githubAccount) throw new PlatformAuthenticationError("GitHub authorization is required.");
+  if (!githubAccount)
+    throw new PlatformAuthenticationError("GitHub authorization is required.");
   const result = await getAuth().api.getAccessToken({
     headers: request.headers,
     body: { accountId: githubAccount.id },
   });
-  if (!result?.accessToken) throw new PlatformAuthenticationError("GitHub authorization is required.");
+  if (!result?.accessToken)
+    throw new PlatformAuthenticationError("GitHub authorization is required.");
   return result.accessToken;
 }
 
@@ -132,5 +142,10 @@ export function publicUser(user: {
   email: string;
   image?: string | null;
 }) {
-  return { id: user.id, name: user.name, email: user.email, image: user.image ?? null };
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    image: user.image ?? null,
+  };
 }

@@ -1,16 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AlertCircle, ArrowLeft, Github, LoaderCircle, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Brand } from "@aisdkpro/ui";
 import { authClient } from "../lib/auth-client";
+import {
+  getBrowserSessionSnapshot,
+  refreshBrowserSession,
+} from "../lib/browser-session";
 import type { PlatformStatus } from "../lib/platform-types";
 
 type StatusState =
   | { kind: "loading" }
   | { kind: "ready"; status: PlatformStatus }
   | { kind: "error" };
+type SessionState = "loading" | "signed-out" | "signed-in" | "error";
 
 async function readStatus(signal: AbortSignal): Promise<PlatformStatus> {
   const response = await fetch("/api/platform/status", {
@@ -29,14 +35,47 @@ async function readStatus(signal: AbortSignal): Promise<PlatformStatus> {
 }
 
 export default function AuthLogin() {
+  const router = useRouter();
   const [statusState, setStatusState] = useState<StatusState>({ kind: "loading" });
+  const [sessionState, setSessionState] = useState<SessionState>("loading");
   const [signingIn, setSigningIn] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [oauthReturned, setOauthReturned] = useState(false);
+  const [expiredNotice, setExpiredNotice] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
     let mounted = true;
+    const params = new URLSearchParams(window.location.search);
+    const expired = params.get("expired") === "1";
+    setExpiredNotice(expired);
+
+    if (expired) {
+      // Do not silently check/renew a session on an expiry destination.
+      setSessionState("signed-out");
+    } else {
+      void refreshBrowserSession({ reason: "login-check" })
+        .then(session => {
+          if (!mounted) return;
+          if (session.signedIn) {
+            setSessionState("signed-in");
+            router.replace("/workspace");
+          } else {
+            setSessionState("signed-out");
+          }
+        })
+        .catch(() => {
+          if (!mounted) return;
+          // A failed request is not confirmation of logout. Preserve any
+          // previously validated signed-in state held by this tab.
+          if (getBrowserSessionSnapshot().signedIn) {
+            setSessionState("signed-in");
+            router.replace("/workspace");
+          } else {
+            setSessionState("error");
+          }
+        });
+    }
 
     void readStatus(controller.signal)
       .then(status => {
@@ -50,7 +89,6 @@ export default function AuthLogin() {
         }
       });
 
-    const params = new URLSearchParams(window.location.search);
     if (params.get("error") === "oauth" && mounted) {
       setOauthReturned(true);
     }
@@ -59,13 +97,13 @@ export default function AuthLogin() {
       mounted = false;
       controller.abort();
     };
-  }, []);
+  }, [router]);
 
   const configured =
     statusState.kind === "ready" && statusState.status.configured === true;
 
   async function signInWithGitHub() {
-    if (!configured || signingIn) return;
+    if (!configured || signingIn || sessionState !== "signed-out") return;
 
     setAuthError(null);
     setSigningIn(true);
@@ -117,6 +155,15 @@ export default function AuthLogin() {
               <span>GitHub sign-in was not completed. You can try again.</span>
             </div>
           )}
+          {expiredNotice && (
+            <div className="auth-alert" role="alert">
+              <AlertCircle size={16} />
+              <span>
+                Your session expired after 3 hours of inactivity. Sign in again
+                to continue.
+              </span>
+            </div>
+          )}
           {authError && (
             <div className="auth-alert" role="alert">
               <AlertCircle size={16} />
@@ -128,7 +175,7 @@ export default function AuthLogin() {
             type="button"
             className="auth-github-button"
             onClick={signInWithGitHub}
-            disabled={!configured || signingIn}
+            disabled={!configured || signingIn || sessionState !== "signed-out"}
           >
             {signingIn ? (
               <LoaderCircle className="auth-spin" size={17} />
@@ -148,6 +195,18 @@ export default function AuthLogin() {
             <p className="auth-status auth-status-error" role="status">
               <AlertCircle size={13} />
               Login setup could not be verified. Try again later.
+            </p>
+          )}
+          {sessionState === "loading" && (
+            <p className="auth-status auth-status-loading" role="status">
+              <LoaderCircle className="auth-spin" size={13} />
+              Checking your existing session…
+            </p>
+          )}
+          {sessionState === "error" && (
+            <p className="auth-status auth-status-error" role="status">
+              <AlertCircle size={13} />
+              Your session could not be verified. Try again before signing in.
             </p>
           )}
           {statusState.kind === "ready" && !statusState.status.configured && (

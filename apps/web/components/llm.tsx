@@ -18,9 +18,10 @@ import {
   Wrench,
 } from "lucide-react";
 import { Streamdown } from "streamdown";
-import { BrandMark, Header } from "@aisdkpro/ui";
+import { BrandMark } from "@aisdkpro/ui";
 import { APP_VERSION } from "../lib/version";
 import ProviderSettings from "./ProviderSettings";
+import SiteHeader from "./SiteHeader";
 import {
   BYOK_PROVIDERS,
   type BYOKCredentials,
@@ -293,7 +294,7 @@ export default function LLMChat({
 
   return (
     <>
-      {showHeader && <Header active="chat" />}
+      {showHeader && <SiteHeader active="chat" />}
       <main className="playground">
         <div className="playground-top">
           <div className="playground-title">

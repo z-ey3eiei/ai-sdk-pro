@@ -1,0 +1,5 @@
+# Session implementation references
+
+Better Auth session expiry/rolling renewal: https://better-auth.com/docs/concepts/session-management. The installed session handler supports `expiresIn`, `updateAge=0`, database validation, renewal cookies and `asResponse`. The custom public session route forwards Set-Cookie but strips the internal session object/token from JSON.
+
+GitHub authorization errors: https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-authorization-request-errors. GitHub access-token request errors: https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-oauth-app-access-token-request-errors. Callback mismatch, denied authorization and expired/incorrect verification codes are distinct from application suspension. Two unspecified errors do not identify a cause or establish an anti-abuse outcome; do not promise that GitHub will never flag an account. No repeated login attempts were made after the owner expressed concern.

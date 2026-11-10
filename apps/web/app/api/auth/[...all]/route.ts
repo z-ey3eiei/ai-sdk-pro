@@ -110,13 +110,20 @@ async function handle(
     return jsonError("Origin is not allowed.", 403);
   }
   try {
+    if (path === "get-session") {
+      const response = await getAuth().api.getSession({
+        headers: request.headers,
+        query: { disableRefresh: true },
+        asResponse: true,
+      });
+      return publicSessionResponse(response);
+    }
     const authHandlers = toNextJsHandler(getAuth());
     if (path === "sign-in/social")
       return await authHandlers.POST(await fixedSocialRequest(request));
     const handler = authHandlers[request.method as keyof typeof authHandlers];
     if (!handler) return jsonError("Method not allowed.", 405);
     const response = await handler(request);
-    if (path === "get-session") return publicSessionResponse(response);
     const headers = new Headers(response.headers);
     headers.set("Cache-Control", "no-store");
     return new Response(response.body, { status: response.status, headers });

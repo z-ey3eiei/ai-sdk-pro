@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import "@aisdkpro/ui/styles.css";
+import SessionActivity from "../components/SessionActivity";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ai-sdk.pro"),
@@ -36,7 +37,9 @@ export default function RootLayout({
       className={`dark ${GeistSans.variable}`}
       suppressHydrationWarning
     >
-      <body>{children}</body>
+      <body>
+        <SessionActivity>{children}</SessionActivity>
+      </body>
     </html>
   );
 }

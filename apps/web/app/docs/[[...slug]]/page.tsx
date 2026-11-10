@@ -2,9 +2,9 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ChevronRight } from "lucide-react";
-import { Header } from "@aisdkpro/ui";
 import { docs } from "../../../../docs/lib/content";
 import { MarkdownContent } from "@/components/MarkdownContent";
+import SiteHeader from "@/components/SiteHeader";
 
 export function generateStaticParams() {
   return docs.map(doc => ({ slug: [doc.slug] }));
@@ -41,7 +41,7 @@ export default async function DocsPage({
   const index = docs.indexOf(doc);
   return (
     <>
-      <Header active="docs" />
+      <SiteHeader active="docs" />
       <main className="docs-shell">
         <aside className="docs-sidebar">
           <h3>DOCUMENTATION</h3>

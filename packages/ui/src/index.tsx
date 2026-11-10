@@ -182,7 +182,15 @@ const searchItems = [
     category: "Platform",
   },
 ];
-export function Header({ active }: { active?: string }) {
+export function Header({
+  active,
+  accountHref = "/login",
+  accountLabel = "Log in",
+}: {
+  active?: string;
+  accountHref?: string;
+  accountLabel?: string;
+}) {
   const [search, setSearch] = useState(false);
   const [query, setQuery] = useState("");
   const [menu, setMenu] = useState(false);
@@ -264,8 +272,8 @@ export function Header({ active }: { active?: string }) {
             <span>Search…</span>
             <kbd>⌘ K</kbd>
           </button>
-          <Link href="/login" className="ask-button header-login">
-            Log in
+          <Link href={accountHref} className="ask-button header-login">
+            {accountLabel}
           </Link>
           <Link href="/chat" className="ask-button">
             <Sparkles size={12} /> Ask AI
