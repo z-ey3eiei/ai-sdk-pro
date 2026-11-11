@@ -1,6 +1,6 @@
 # ai-sdk.pro — Project Memory & Handoff
 
-อัปเดต 10 พฤศจิกายน 2026 (Asia/Bangkok) ไฟล์นี้เป็น handoff สำหรับผู้ดูแล/agent ที่กลับมาทำงานต่อจากเครื่องหรือเซสชันอื่น ไม่ใช่ secret store และไม่แทนการตรวจสถานะสดก่อนทำงาน
+อัปเดต 11 พฤศจิกายน 2026 (Asia/Bangkok) ไฟล์นี้เป็น handoff สำหรับผู้ดูแล/agent ที่กลับมาทำงานต่อจากเครื่องหรือเซสชันอื่น ไม่ใช่ secret store และไม่แทนการตรวจสถานะสดก่อนทำงาน
 
 ## 1. Repo และวิธีเริ่มงานจากที่อื่น
 
@@ -28,19 +28,19 @@ pnpm dev
 
 ### GitHub source
 
-ก่อนเพิ่มไฟล์ handoff นี้ source `main` อยู่ที่ commit `80886fe7c39cd7357e6e82a0d929e17ac42a4c4b` (`test: strengthen security boundary coverage`) ใน repo เดิม ผู้ใช้ยืนยันว่าไม่ให้สร้าง repo ใหม่ การเพิ่ม memory นี้จะทำให้มี commit ใหม่ภายหลัง ให้ใช้ `git log -1` ตรวจ SHA ล่าสุด ไม่ใช้ SHA ของ commit ก่อนหน้าแทน
+Application source checkpoint ปัจจุบันคือ `f3ecac14fcae77f331f6eb985a385acfc09c24aa` (`feat(seo): improve crawlability and social previews`) ใน repo เดิม `z-ey3eiei/ai-sdk-pro`; ไม่ได้สร้าง repo ใหม่ หลังจาก push เอกสาร handoff/state นี้ อาจมี docs-only commit ใหม่กว่า ให้ใช้ `git log -1` ตรวจ HEAD ล่าสุดเสมอ และแยก SHA ของ source ที่รันบน VPS ออกจาก commit เอกสารล่าสุด
 
-Commit `80886fe` เพิ่ม security route tests, query fixtures สำหรับ tenant isolation, auth/chat/path tests และกรองชื่อ SSH private-key ที่พบบ่อยออกจาก repository snapshot ผลตรวจ ณ commit นั้น: Vitest **76/76 ผ่าน**, `pnpm typecheck` ผ่านทั้ง 4 workspace packages และ `git diff --check` ผ่าน ไม่มีการทดสอบกับ production DB, Cloudflare inference หรือระบบจริง
+Commit `80886fe` เพิ่ม security route tests, query fixtures สำหรับ tenant isolation, auth/chat/path tests และกรองชื่อ SSH private-key ที่พบบ่อยออกจาก repository snapshot; ผล ณ commit นั้นคือ Vitest 76/76. ที่ SEO checkpoint `f3ecac1`, `pnpm test` ผ่าน **79/79 tests ใน 14 files**, `pnpm typecheck` ผ่านครบ 4 workspace packages, `pnpm build` ผ่าน และ Docker production build/private smoke ผ่าน. ไม่มีการทดสอบกับ production DB หรือเรียก Cloudflare inference
 
 ### Webdev auto-publish
 
-Webdev project ที่ผูกกับ repo คือ `wdp_dc48b360c1e3edf42b1e7395`; โดเมน managed ที่ทราบคือ `salesdash-cww5r92n.manus.space` และ `publishing.auto_publish=true` การ push ไป canonical `main` ทำให้ระบบบันทึก checkpoint และส่ง Webdev auto-publish โดยอัตโนมัติ งานล่าสุดระบบแจ้งว่า checkpoint ถูกบันทึกและส่ง auto-publish แล้ว แต่ยังไม่มีหลักฐานใน handoff นี้ว่าการเผยแพร่เสร็จสมบูรณ์ ให้ตรวจ Dashboard ก่อนอ้างว่าสำเร็จ และอย่าส่ง MCP publish ซ้ำสำหรับ checkpoint เดิม
+Webdev project ที่ผูกกับ repo คือ `wdp_dc48b360c1e3edf42b1e7395`; โดเมน managed ที่ทราบคือ `salesdash-cww5r92n.manus.space` และ `publishing.auto_publish=true` การ push ไป canonical `main` ทำให้ระบบบันทึก checkpoint และส่ง Webdev auto-publish โดยอัตโนมัติ สำหรับ source checkpoint `f3ecac1` ระบบแจ้งว่า checkpoint ถูกบันทึกและส่ง auto-publish แล้ว แต่ยังไม่มีหลักฐานว่าการเผยแพร่บน managed domain เสร็จสมบูรณ์ ให้ตรวจ Dashboard ก่อนอ้างว่าสำเร็จ และอย่าส่ง MCP publish ซ้ำสำหรับ checkpoint เดิม การ push เอกสาร handoff รอบนี้จะทำให้เกิด checkpoint/auto-publish อีกครั้ง
 
 **สำคัญ:** Webdev auto-publish เป็นคนละเส้นทางกับ production VPS `https://ai-sdk.pro` ไม่ถือว่าการ push หรือ Webdev publish เปลี่ยน runtime บน VPS แล้ว
 
 ### VPS / Cloudflare runtime
 
-ข้อมูลปฏิบัติการล่าสุดที่บันทึกไว้ใน [`infra/DEPLOYMENT-STATE.md`](infra/DEPLOYMENT-STATE.md) ระบุ VPS runtime image เป็น `ai-sdk-pro-web:0293758`, BYOK mode, Docker/Caddy และ Cloudflare DNS/HTTPS ผ่านการตรวจใน release นั้นแล้ว การเปลี่ยน commit `80886fe` เป็น security test/snapshot-filter work ไม่ได้ deploy VPS และห้ามกล่าวว่า VPS ใช้ source ใหม่นี้จนกว่าจะตรวจ release/runtime จริง
+VPS runtime ล่าสุดเป็น image `ai-sdk-pro-web:f3ecac1` (image ID `sha256:08dfe01fd036ce344de178ee9450dc70d511e46a32d4069d9886a871d3f0954f`), healthy และ `/opt/ai-sdk-pro/current` ชี้ release `f3ecac1`; rollback image `ai-sdk-pro-web:0293758` ยังอยู่ เครื่องยังทำงาน BYOK-only ผ่าน Docker/Caddy และ Cloudflare DNS/HTTPS ไม่มีการเปลี่ยน DNS/Cloudflare config ใน SEO rollout นี้ รายละเอียด rollout และ public-response checks อยู่ใน [`infra/DEPLOYMENT-STATE.md`](infra/DEPLOYMENT-STATE.md)
 
 สำหรับการดูแล VPS ให้เริ่มจาก `infra/RUNBOOK.md`, `infra/DEPLOYMENT-STATE.md` และคู่มือ operator; private key/SSH credentials ส่งแยกและต้องไม่ commit โฟลเดอร์ `.env` หรือ credentials ใด ๆ ไฟล์ `/home/ubuntu/ai-sdk-pro-vps-handoff.md` อยู่นอก repo และเป็นเอกสารเดิม; ข้อมูล repo-access ในไฟล์นั้นอาจเก่ากว่า memory นี้
 
@@ -51,6 +51,7 @@ Webdev project ที่ผูกกับ repo คือ `wdp_dc48b360c1e3edf42
 - หน้า templates 3 แบบ (`streaming-chat`, `docs-assistant`, `agent-launchpad`), ZIP downloads และคู่มือภาษาไทย
 - security coverage ล่าสุดอยู่ใน `apps/web/app/api/security-boundaries.test.ts`, `apps/web/lib/repository-queries.test.ts`, `apps/web/lib/auth-policy.test.ts`, `apps/web/lib/chat-policy.test.ts`, `apps/web/lib/github/repositories.test.ts` และ `apps/web/lib/repository-snapshot.test.ts`
 - การเปลี่ยน snapshot filter อยู่ใน `apps/web/lib/repository-snapshot.ts`; chat/provider หลักอยู่ใน `apps/web/lib/provider.ts`, `apps/web/app/api/chat/route.ts` และ `apps/web/components/llm.tsx`
+- SEO implementation อยู่ใน `apps/web/lib/seo-metadata.ts`, root/page และ dynamic templates/docs metadata, `apps/web/app/robots.ts`, `apps/web/app/sitemap.ts`, `apps/web/app/opengraph-image.tsx`; มี unit tests ใน `apps/web/lib/seo-metadata.test.ts` และ FAQ interactivity เป็น client island ใน `apps/web/components/HomeFAQ.tsx` หน้า indexable จริง 12 URLs; chat/login/workspace ยังคง `noindex` และไม่อยู่ใน sitemap
 - `apps/web` คือ Next.js web app; `apps/docs` คือ Fumadocs; `packages/sdk` คือ `@aisdkpro/client`; `packages/ui` คือ shared UI; `starters/` เก็บ starter source; `infra/` และ `scripts/` เก็บ operator/configuration/package tooling
 
 อ่าน [`README.md`](README.md), [`TODO.md`](TODO.md) และ [`plan.md`](plan.md) ประกอบกันด้วย เอกสารเหล่านั้นมีบันทึกตามเวลาและบางย่อหน้าเป็นประวัติ ณ เวลาที่เขียน; หากขัดกับสถานะสดใน GitHub/Dashboard/VPS ให้บันทึกวันที่และแหล่งตรวจสอบใหม่แทนการเชื่อข้อความเก่าโดยอัตโนมัติ

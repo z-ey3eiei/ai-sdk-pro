@@ -34,7 +34,7 @@ The rate limiter is bounded, in-memory and single-process. This deployment is a 
 
 ```bash
 cd /opt/ai-sdk-pro
-export APP_IMAGE=ai-sdk-pro-web:3e72828
+export APP_IMAGE=ai-sdk-pro-web:f3ecac1
 docker compose ps
 docker compose logs --tail=100 app caddy
 curl --fail https://ai-sdk.pro/api/health
@@ -74,3 +74,10 @@ The current GitHub connector identifies devstacksdk. The old canonical repo z-ey
 ## Verified live Showcase — 2026-11-10 18:16
 
 VPS runtime is now ai-sdk-pro-web:0293758, healthy with ports={3000/tcp:null}. Previous image 015477f remains for rollback. Staged production build/private pages/catalog/ZIP digest/privacy/three-hour session checks passed before switch and signing secret was preserved. Public HTTPS returned 200 for root/Templates/all three detail pages/using-templates guide/chat/workspace/login/health/status/route manifest/sitemap; all three downloaded ZIPs match source SHA-256/byte/file counts and CRC. Unknown starter is 404; protected repository APIs remain 401, keyless BYOK remains rejected. No OAuth replay, user-token access, model generation, repository import or DevStack deploy was performed in these checks. Existing homepage styles/layout and auth/session source were unchanged. Contact sdkbank@1origin.dev is visible on new pages; no SMTP/DNS/Caddy/auth-secret/Neon/DevStack mutation or new worker resource was made. Source GitHub push is still blocked pending owner choice of new canonical private repo; local source backup is complete.
+
+
+## SEO metadata release — 2026-11-11 09:25 ICT
+
+Application source checkpoint `f3ecac14fcae77f331f6eb985a385acfc09c24aa` was built from a verified source archive (SHA-256 `ac39072e760ca2620695fab55e296246bd252ad621fc2be830897fa36cc0960e`) and deployed on the existing VPS as `ai-sdk-pro-web:f3ecac1` (image ID `sha256:08dfe01fd036ce344de178ee9450dc70d511e46a32d4069d9886a871d3f0954f`). `/opt/ai-sdk-pro/current` points to `/opt/ai-sdk-pro/releases/f3ecac1`; `ai-sdk-pro-app-1` is healthy. Previous image `ai-sdk-pro-web:0293758` remains available for rollback. The private smoke container was removed after checks. The image build completed; it emitted a non-blocking existing warning that `apps/web/lib/version.ts` imports a named export from a default-exporting package module.
+
+Read-only production GETs using Googlebot/Twitterbot user agents confirmed: `/robots.txt` and `/sitemap.xml` return 200; sitemap contains exactly 12 canonical public content URLs; each sitemap page returns 200 with meaningful H1, route-specific 30–60-character title, 50–160-character description, matching canonical, Open Graph image, and `summary_large_image` Twitter card. `/chat`, `/login` and `/workspace` remain `noindex` and outside the sitemap. Unknown template, documentation and general paths return a real 404 with `noindex` and no canonical. `/opengraph-image` returns PNG 200; `/api/health`, `/api/ready` and `/manus-routes.json` return 200 (route manifest contains 15 entries). The readiness response still requires visitor BYOK; no model inference or database write was performed. No DNS/Cloudflare setting, DevStack service or new paid resource changed. No Google Search Console submission, indexing confirmation or ranking result is claimed.
