@@ -1,7 +1,10 @@
 import { ImageResponse } from "next/og";
-export const alt = "ai-sdk.pro — Your next idea starts here";
+
+export const alt =
+  "Build AI agents with real tools, streaming, and self-hosting on ai-sdk.pro";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
 export default function Image() {
   return new ImageResponse(
     (
@@ -36,7 +39,7 @@ export default function Image() {
             letterSpacing: -4,
           }}
         >
-          Your next idea.
+          Build real AI agents.
         </div>
         <div
           style={{
@@ -47,7 +50,7 @@ export default function Image() {
             color: "#b3b3b3",
           }}
         >
-          Starts with ai-sdk.pro.
+          Stream. Self-host.
         </div>
         <div
           style={{
@@ -57,7 +60,7 @@ export default function Image() {
             color: "#888",
           }}
         >
-          Real tools. Streaming responses. Your infrastructure.
+          Real tools. Your infrastructure. Powered by ai-sdk.pro.
         </div>
         <div
           style={{

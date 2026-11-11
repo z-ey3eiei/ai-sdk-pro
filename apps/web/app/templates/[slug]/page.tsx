@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Footer } from "@aisdkpro/ui";
 import SiteHeader from "@/components/SiteHeader";
 import StarterDetail from "@/components/templates/StarterDetail";
+import { createSeoMetadata } from "@/lib/seo-metadata";
 import { getStarter, starterTemplates } from "@/lib/starter-catalog";
 
 type StarterRouteProps = {
@@ -18,25 +19,19 @@ export async function generateMetadata({
 }: StarterRouteProps): Promise<Metadata> {
   const { slug } = await params;
   const template = getStarter(slug);
-  const canonicalUrl = `https://ai-sdk.pro/templates/${slug}`;
+  if (!template) notFound();
 
-  if (!template) {
-    return {
-      title: "Starter not found",
-      alternates: { canonical: canonicalUrl },
-    };
-  }
-
-  return {
-    title: template.title,
+  return createSeoMetadata({
+    title: `${template.title} Starter`,
     description: template.description,
-    alternates: { canonical: canonicalUrl },
-    openGraph: {
-      title: `${template.title} · ai-sdk.pro`,
-      description: template.description,
-      url: canonicalUrl,
-    },
-  };
+    path: `/templates/${template.slug}`,
+    keywords: [
+      template.title,
+      `${template.category} AI starter`,
+      "AI SDK 6",
+      "downloadable source code",
+    ],
+  });
 }
 
 export default async function StarterPage({ params }: StarterRouteProps) {

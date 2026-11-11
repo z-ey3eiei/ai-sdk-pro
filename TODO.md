@@ -77,3 +77,10 @@ Owner restriction 17:42: **do not change the existing design**. Preserve homepag
 Owner-confirmed contact: sdkbank@1origin.dev for ai-sdk.pro. Use actual domain/repository/package/contact data; any starter snippets are clearly labeled examples. No fictional metrics, users, successful deployment URLs, provider responses, SMTP setup or company details. Changes must remain staged/checked and preserve existing design, DNS, auth secrets, Neon data and DevStack services.
 
 Current Showcase evidence: source tests/build/packaging and live VPS rollout/public HTTPS/download checks passed for 0293758 on 2026-11-10 18:16. Existing signing secret/session/BYOK/private port/design preserved. Fourth outcome remains open only for GitHub source checkpoint: old z-ey3eiei/ai-sdk-pro is inaccessible to current devstacksdk connector; new private target awaits owner confirmation. Local source ZIP backup is verified. No Worker or duplicate DevStack deploy engine was created.
+
+
+## SEO improvements — 2026-11-11
+
+- [ ] Public landing, templates, template-detail and documentation pages expose meaningful initial HTML with route-specific titles, descriptions, canonical URLs and complete Open Graph/Twitter previews using the actual `https://ai-sdk.pro` origin. Keep titles/descriptions accurate to shipped capabilities; do not add fictional metrics, ratings or deployment claims.
+- [ ] Sitemap contains only real, canonical, indexable public content routes; robots advertises that sitemap and does not block crawlers from seeing HTML `noindex` directives. API routes stay excluded, and private login/workspace pages and the interactive BYOK chat remain `noindex` and outside the sitemap.
+- [ ] Unknown template/document routes return an actual 404 and are not given a misleading canonical URL or indexable metadata. Preserve existing route manifest coverage and keep private repository content behind authorization.

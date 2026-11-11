@@ -2,22 +2,22 @@ import type { Metadata } from "next";
 import { Footer } from "@aisdkpro/ui";
 import SiteHeader from "@/components/SiteHeader";
 import TemplatesCatalog from "@/components/templates/TemplatesCatalog";
+import { createSeoMetadata } from "@/lib/seo-metadata";
 import { starterTemplates } from "@/lib/starter-catalog";
 
-const canonicalUrl = "https://ai-sdk.pro/templates";
-
-export const metadata: Metadata = {
-  title: "Starter templates",
+export const metadata: Metadata = createSeoMetadata({
+  title: "AI agent starter templates",
   description:
-    "ดาวน์โหลด starter ที่ใช้งานได้จริง เรียนรู้ขั้นตอน local setup และเลือก deploy บน DevStack ด้วยตัวเอง",
-  alternates: { canonical: canonicalUrl },
-  openGraph: {
-    title: "Starter templates · ai-sdk.pro",
-    description:
-      "Runnable starters, source downloads and a clear DevStack handoff.",
-    url: canonicalUrl,
-  },
-};
+    "Download AI agent starters for streaming chat, local documentation search, and static websites. Get source code, setup steps, and a clear DevStack handoff.",
+  path: "/templates",
+  keywords: [
+    "AI agent starters",
+    "streaming chat template",
+    "documentation assistant",
+    "AI SDK 6 examples",
+    "self-hosted AI",
+  ],
+});
 
 export default function TemplatesPage() {
   return (

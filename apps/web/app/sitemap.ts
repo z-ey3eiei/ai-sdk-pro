@@ -1,21 +1,27 @@
 import type { MetadataRoute } from "next";
 import { docs } from "../../docs/lib/content";
+import { SITE_ORIGIN } from "../lib/seo-metadata";
 import { starterTemplates } from "../lib/starter-catalog";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    { url: "https://ai-sdk.pro", changeFrequency: "weekly", priority: 1 },
     {
-      url: "https://ai-sdk.pro/templates",
+      url: SITE_ORIGIN,
+      changeFrequency: "weekly",
+      priority: 1,
+    },
+    {
+      url: `${SITE_ORIGIN}/templates`,
       changeFrequency: "weekly",
       priority: 0.9,
     },
     ...starterTemplates.map(starter => ({
-      url: `https://ai-sdk.pro/templates/${starter.slug}`,
+      url: `${SITE_ORIGIN}/templates/${starter.slug}`,
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),
     ...docs.map(doc => ({
-      url: `https://ai-sdk.pro/docs/${doc.slug}`,
+      url: `${SITE_ORIGIN}/docs/${doc.slug}`,
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),

@@ -1,34 +1,44 @@
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import type { Metadata } from "next";
 import { ChevronRight } from "lucide-react";
 import { docs } from "../../../../docs/lib/content";
 import { MarkdownContent } from "@/components/MarkdownContent";
 import SiteHeader from "@/components/SiteHeader";
+import { createSeoMetadata } from "@/lib/seo-metadata";
 
 export function generateStaticParams() {
   return docs.map(doc => ({ slug: [doc.slug] }));
 }
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug?: string[] }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const doc = docs.find(d => d.slug === slug?.[0]);
-  return {
-    title: doc?.title ?? "Documentation",
-    description: doc?.description,
-    alternates: { canonical: doc ? `/docs/${doc.slug}` : "/docs" },
-    openGraph: {
-      title: `${doc?.title ?? "Documentation"} · ai-sdk.pro`,
-      description: doc?.description,
-      url: doc
-        ? `https://ai-sdk.pro/docs/${doc.slug}`
-        : "https://ai-sdk.pro/docs",
-    },
-  };
+  if (!slug?.length) redirect("/docs/getting-started");
+
+  const doc = docs.find(item => item.slug === slug.join("/"));
+  if (!doc) notFound();
+
+  const title =
+    doc.slug === "client-sdk" ? "Client SDK Guide & Usage" : `${doc.title} Guide`;
+  return createSeoMetadata({
+    title,
+    description: doc.description,
+    path: `/docs/${doc.slug}`,
+    type: "article",
+    locale: "th_TH",
+    keywords: [
+      doc.title,
+      "คู่มือ AI agent",
+      "AI SDK documentation",
+      "พัฒนา AI agent",
+    ],
+  });
 }
+
 export default async function DocsPage({
   params,
 }: {
@@ -36,8 +46,10 @@ export default async function DocsPage({
 }) {
   const { slug } = await params;
   if (!slug?.length) redirect("/docs/getting-started");
-  const doc = docs.find(d => d.slug === slug.join("/"));
+
+  const doc = docs.find(item => item.slug === slug.join("/"));
   if (!doc) notFound();
+
   const index = docs.indexOf(doc);
   return (
     <>
@@ -62,10 +74,7 @@ export default async function DocsPage({
           <h1>{doc.title}</h1>
           <p className="docs-description">{doc.description}</p>
           <MarkdownContent content={doc.body.replace(/^# .+\n/, "")} />
-          <nav
-            className="docs-pagination"
-            aria-label="Documentation navigation"
-          >
+          <nav className="docs-pagination" aria-label="Documentation navigation">
             {index > 0 && (
               <Link href={`/docs/${docs[index - 1].slug}`}>
                 <small>PREVIOUS</small>
