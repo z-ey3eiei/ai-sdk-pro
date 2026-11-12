@@ -93,5 +93,8 @@ Current Showcase evidence: canonical source checkpoint `f3ecac14fcae77f331f6eb98
 
 ## Typography refresh — 2026-11-12
 
-- [ ] Use one consistent Thai/Latin sans family across `apps/web`, `apps/docs` and shared UI, loaded with Next.js `next/font` from the root layouts. Apply it to body copy, headings, navigation, forms, cards and docs; keep code/technical snippets monospaced. Preserve the current black/red visual design, type hierarchy, sizes, spacing and component layout.
-- [ ] Build-time font assets are self-hosted by Next.js with no browser request to Google Fonts; both web and docs production builds typecheck and compile with the shared font variable.
+- [x] Use one consistent Thai/Latin sans family across `apps/web`, `apps/docs` and shared UI, loaded with Next.js `next/font` from the root layouts. Apply it to body copy, headings, navigation, forms, cards and docs; keep code/technical snippets monospaced. Preserve the current black/red visual design, type hierarchy, sizes, spacing and component layout.
+- [x] Build-time font assets are self-hosted by Next.js with no browser request to Google Fonts; both web and docs production builds typecheck and compile with the shared font variable.
+
+
+**Production evidence — 2026-11-12:** checkpoint `bc5aac7287952bb92f8514d906196b221934bf31` is running as healthy image `ai-sdk-pro-web:bc5aac7`; rollback image `f3ecac1` remains available. `pnpm test` passed 79/79, `pnpm typecheck` passed all 4 workspaces, and `pnpm build` passed. Live crawler GETs confirmed IBM Plex Sans Thai on seven routes, no Google Fonts URLs in HTML/CSS, all 16 unique homepage WOFF2 files return HTTP 200, and public health/readiness remain healthy with BYOK required. No inference, database write, DNS/Cloudflare change or DevStack operation was performed.

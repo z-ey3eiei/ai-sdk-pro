@@ -1,6 +1,6 @@
 # ai-sdk.pro — Project Memory & Handoff
 
-อัปเดต 11 พฤศจิกายน 2026 (Asia/Bangkok) ไฟล์นี้เป็น handoff สำหรับผู้ดูแล/agent ที่กลับมาทำงานต่อจากเครื่องหรือเซสชันอื่น ไม่ใช่ secret store และไม่แทนการตรวจสถานะสดก่อนทำงาน
+อัปเดต 12 พฤศจิกายน 2026 (Asia/Bangkok) ไฟล์นี้เป็น handoff สำหรับผู้ดูแล/agent ที่กลับมาทำงานต่อจากเครื่องหรือเซสชันอื่น ไม่ใช่ secret store และไม่แทนการตรวจสถานะสดก่อนทำงาน
 
 ## 1. Repo และวิธีเริ่มงานจากที่อื่น
 
@@ -28,31 +28,42 @@ pnpm dev
 
 ### GitHub source
 
-Application source checkpoint ปัจจุบันคือ `f3ecac14fcae77f331f6eb985a385acfc09c24aa` (`feat(seo): improve crawlability and social previews`) ใน repo เดิม `z-ey3eiei/ai-sdk-pro`; ไม่ได้สร้าง repo ใหม่ หลังจาก push เอกสาร handoff/state นี้ อาจมี docs-only commit ใหม่กว่า ให้ใช้ `git log -1` ตรวจ HEAD ล่าสุดเสมอ และแยก SHA ของ source ที่รันบน VPS ออกจาก commit เอกสารล่าสุด
+Application source checkpoint ล่าสุดคือ `bc5aac7287952bb92f8514d906196b221934bf31` (`feat: use IBM Plex Sans Thai via next/font`) ใน repo เดิม `z-ey3eiei/ai-sdk-pro`; ไม่ได้สร้าง repo ใหม่ หากมี docs-only commit ใหม่กว่า ให้ใช้ `git log -1` ตรวจ HEAD ล่าสุด และแยก SHA ของ source ที่รันบน VPS ออกจาก commit เอกสารล่าสุด
 
-Commit `80886fe` เพิ่ม security route tests, query fixtures สำหรับ tenant isolation, auth/chat/path tests และกรองชื่อ SSH private-key ที่พบบ่อยออกจาก repository snapshot; ผล ณ commit นั้นคือ Vitest 76/76. ที่ SEO checkpoint `f3ecac1`, `pnpm test` ผ่าน **79/79 tests ใน 14 files**, `pnpm typecheck` ผ่านครบ 4 workspace packages, `pnpm build` ผ่าน และ Docker production build/private smoke ผ่าน. ไม่มีการทดสอบกับ production DB หรือเรียก Cloudflare inference
+- `80886fe` เพิ่ม security route tests, query fixtures สำหรับ tenant isolation, auth/chat/path tests และกรองชื่อ SSH private-key ที่พบบ่อยออกจาก repository snapshot
+- `f3ecac1` เพิ่ม SEO metadata/canonical/social previews, sitemap/robots และ true 404 behavior
+- `bc5aac7` เปลี่ยน sans หลักเป็น IBM Plex Sans Thai ผ่าน `next/font` และ self-hosted WOFF2
+
+ผลตรวจล่าสุด: `pnpm test` ผ่าน **79/79 tests ใน 14 files**, `pnpm typecheck` ผ่านครบ **4 workspace packages**, และ `pnpm build` ของ monorepo ผ่าน รวมทั้ง build standalone docs. Production Docker build และ private smoke ผ่าน; build มี warning ที่ไม่บล็อกเกี่ยวกับ named `version` export ใน `apps/web/lib/version.ts` ซึ่งยังไม่ได้แก้
 
 ### Webdev auto-publish
 
-Webdev project ที่ผูกกับ repo คือ `wdp_dc48b360c1e3edf42b1e7395`; โดเมน managed ที่ทราบคือ `salesdash-cww5r92n.manus.space` และ `publishing.auto_publish=true` การ push ไป canonical `main` ทำให้ระบบบันทึก checkpoint และส่ง Webdev auto-publish โดยอัตโนมัติ สำหรับ source checkpoint `f3ecac1` ระบบแจ้งว่า checkpoint ถูกบันทึกและส่ง auto-publish แล้ว แต่ยังไม่มีหลักฐานว่าการเผยแพร่บน managed domain เสร็จสมบูรณ์ ให้ตรวจ Dashboard ก่อนอ้างว่าสำเร็จ และอย่าส่ง MCP publish ซ้ำสำหรับ checkpoint เดิม การ push เอกสาร handoff รอบนี้จะทำให้เกิด checkpoint/auto-publish อีกครั้ง
+Webdev project ที่ผูกกับ repo คือ `wdp_dc48b360c1e3edf42b1e7395`; managed domain ที่ทราบคือ `salesdash-cww5r92n.manus.space` และ `publishing.auto_publish=true` การ push ไป canonical `main` ทำให้ระบบบันทึก checkpoint และส่ง Webdev auto-publish โดยอัตโนมัติ สำหรับ source checkpoint `f3ecac1` ระบบแจ้งว่า checkpoint ถูกบันทึกและส่ง auto-publish แล้ว แต่ยังไม่มีหลักฐานว่าการเผยแพร่บน managed domain เสร็จสมบูรณ์; อย่าส่ง MCP publish ซ้ำสำหรับ checkpoint เดิม ให้ตรวจ Dashboard ก่อนอ้างผล ส่วน checkpoint `bc5aac7` และ docs-only handoff commit ที่ตามมา ให้ตรวจสถานะแยกกันใน Dashboard
 
 **สำคัญ:** Webdev auto-publish เป็นคนละเส้นทางกับ production VPS `https://ai-sdk.pro` ไม่ถือว่าการ push หรือ Webdev publish เปลี่ยน runtime บน VPS แล้ว
 
 ### VPS / Cloudflare runtime
 
-VPS runtime ล่าสุดเป็น image `ai-sdk-pro-web:f3ecac1` (image ID `sha256:08dfe01fd036ce344de178ee9450dc70d511e46a32d4069d9886a871d3f0954f`), healthy และ `/opt/ai-sdk-pro/current` ชี้ release `f3ecac1`; rollback image `ai-sdk-pro-web:0293758` ยังอยู่ เครื่องยังทำงาน BYOK-only ผ่าน Docker/Caddy และ Cloudflare DNS/HTTPS ไม่มีการเปลี่ยน DNS/Cloudflare config ใน SEO rollout นี้ รายละเอียด rollout และ public-response checks อยู่ใน [`infra/DEPLOYMENT-STATE.md`](infra/DEPLOYMENT-STATE.md)
+- **สถานะ:** production `https://ai-sdk.pro` เปิดใช้งานและตอบ HTTPS; container `ai-sdk-pro-app-1` อยู่สถานะ healthy, Caddy ทำ HTTPS และ app port `3000` อยู่ใน Docker network เท่านั้น (ไม่ได้ bind ออก public host)
+- **image ล่าสุด:** `ai-sdk-pro-web:bc5aac7`, image ID `sha256:70e8e582130dff8b8a08af96ea01a4a398f4ccc5d56f80b44c4859a3a1e908db`; `/opt/ai-sdk-pro/current` ชี้ `/opt/ai-sdk-pro/releases/bc5aac7`
+- **rollback:** `ai-sdk-pro-web:f3ecac1` และ image เก่ากว่า `ai-sdk-pro-web:0293758` ยังอยู่
+- Private smoke ตรวจ SSR/root/chat/docs/routes/readiness; readiness ยังคง `ready-for-byok`, `byokRequired=true`, `ownerProviderConfigured=false` ไม่มี inference, DB write, DNS/Cloudflare config change หรือ DevStack operation ใน font release นี้
+- Production GET checks หลัง deploy ยืนยัน routes `/`, `/templates`, template detail, `/chat`, `/docs/getting-started`, `/workspace`, `/login` แสดง IBM Plex Sans Thai, ไม่มี `fonts.googleapis.com`/`fonts.gstatic.com` ใน HTML/CSS และ WOFF2 ที่ถูกอ้างถึงตอบ 200; API health ตอบ 200, manifest มี 15 route entries และ invalid template ตอบ 404
+- รายละเอียด run/rollback และ checks อยู่ใน [`infra/DEPLOYMENT-STATE.md`](infra/DEPLOYMENT-STATE.md); เริ่มก่อนงาน VPS จาก `infra/RUNBOOK.md` และ `infra/production/README.md`
 
-สำหรับการดูแล VPS ให้เริ่มจาก `infra/RUNBOOK.md`, `infra/DEPLOYMENT-STATE.md` และคู่มือ operator; private key/SSH credentials ส่งแยกและต้องไม่ commit โฟลเดอร์ `.env` หรือ credentials ใด ๆ ไฟล์ `/home/ubuntu/ai-sdk-pro-vps-handoff.md` อยู่นอก repo และเป็นเอกสารเดิม; ข้อมูล repo-access ในไฟล์นั้นอาจเก่ากว่า memory นี้
+คู่มือ operator เดิมอยู่นอก repo ที่ `/home/ubuntu/ai-sdk-pro-vps-handoff.md`; ไฟล์นี้เป็นเอกสารเดิมและข้อมูล repo access อาจล้าสมัยกว่า memory นี้
 
 ## 3. สิ่งที่มีอยู่ใน source ปัจจุบัน
 
 - Public chat ใช้ **BYOK**: ผู้ใช้เลือก Anthropic/OpenAI/Google และให้ provider key ของตนเอง คีย์ไม่ใช่ owner key และต้องไม่ persist ใน browser storage, DB, logs, URL หรือ message parts
 - GitHub login, Neon-backed personal workspace, repository import แบบ read-only, session idle policy 3 ชั่วโมง และ per-user ownership checks
 - หน้า templates 3 แบบ (`streaming-chat`, `docs-assistant`, `agent-launchpad`), ZIP downloads และคู่มือภาษาไทย
-- security coverage ล่าสุดอยู่ใน `apps/web/app/api/security-boundaries.test.ts`, `apps/web/lib/repository-queries.test.ts`, `apps/web/lib/auth-policy.test.ts`, `apps/web/lib/chat-policy.test.ts`, `apps/web/lib/github/repositories.test.ts` และ `apps/web/lib/repository-snapshot.test.ts`
-- การเปลี่ยน snapshot filter อยู่ใน `apps/web/lib/repository-snapshot.ts`; chat/provider หลักอยู่ใน `apps/web/lib/provider.ts`, `apps/web/app/api/chat/route.ts` และ `apps/web/components/llm.tsx`
-- SEO implementation อยู่ใน `apps/web/lib/seo-metadata.ts`, root/page และ dynamic templates/docs metadata, `apps/web/app/robots.ts`, `apps/web/app/sitemap.ts`, `apps/web/app/opengraph-image.tsx`; มี unit tests ใน `apps/web/lib/seo-metadata.test.ts` และ FAQ interactivity เป็น client island ใน `apps/web/components/HomeFAQ.tsx` หน้า indexable จริง 12 URLs; chat/login/workspace ยังคง `noindex` และไม่อยู่ใน sitemap
-- `apps/web` คือ Next.js web app; `apps/docs` คือ Fumadocs; `packages/sdk` คือ `@aisdkpro/client`; `packages/ui` คือ shared UI; `starters/` เก็บ starter source; `infra/` และ `scripts/` เก็บ operator/configuration/package tooling
+- Security coverage ล่าสุดอยู่ใน `apps/web/app/api/security-boundaries.test.ts`, `apps/web/lib/repository-queries.test.ts`, `apps/web/lib/auth-policy.test.ts`, `apps/web/lib/chat-policy.test.ts`, `apps/web/lib/github/repositories.test.ts` และ `apps/web/lib/repository-snapshot.test.ts`
+- Snapshot filter อยู่ใน `apps/web/lib/repository-snapshot.ts`; chat/provider หลักอยู่ใน `apps/web/lib/provider.ts`, `apps/web/app/api/chat/route.ts` และ `apps/web/components/llm.tsx`
+- SEO อยู่ใน `apps/web/lib/seo-metadata.ts`, root/page และ dynamic templates/docs metadata, `apps/web/app/robots.ts`, `apps/web/app/sitemap.ts`, `apps/web/app/opengraph-image.tsx`; tests อยู่ใน `apps/web/lib/seo-metadata.test.ts` และ FAQ interactivity เป็น client island ใน `apps/web/components/HomeFAQ.tsx`. มี 12 indexable public URLs; chat/login/workspace ยังคง `noindex` และไม่อยู่ใน sitemap
+- **ฟอนต์:** `apps/web/app/layout.tsx` และ `apps/docs/app/layout.tsx` โหลด `IBM_Plex_Sans_Thai` ด้วย `next/font/google`, weights 400/500/600/700, subsets `latin` และ `thai`, `display: swap`; Next ดาวน์โหลดและเสิร์ฟ WOFF2 จาก `/_next/static/media/` บน origin ของเว็บ ไม่มี browser request ไป Google Fonts. `packages/ui/src/styles.css` ชี้ sans token ไปยัง font variable เดียวกัน; code/technical snippets ยังใช้ monospace; `apps/docs/app/globals.css` ไม่มี Arial fallback สำหรับ body
+- เอกสาร Next.js ที่ใช้อ้างอิงตามลิงก์เจ้าของ: [Font component / next/font](https://nextjs.org/docs/app/api-reference/components/font)
+- `apps/web` คือ Next.js web app; `apps/docs` คือ standalone Fumadocs app; `packages/sdk` คือ `@aisdkpro/client`; `packages/ui` คือ shared UI; `starters/` เก็บ starter source; `infra/` และ `scripts/` เก็บ operator/configuration/package tooling
 
 อ่าน [`README.md`](README.md), [`TODO.md`](TODO.md) และ [`plan.md`](plan.md) ประกอบกันด้วย เอกสารเหล่านั้นมีบันทึกตามเวลาและบางย่อหน้าเป็นประวัติ ณ เวลาที่เขียน; หากขัดกับสถานะสดใน GitHub/Dashboard/VPS ให้บันทึกวันที่และแหล่งตรวจสอบใหม่แทนการเชื่อข้อความเก่าโดยอัตโนมัติ
 
