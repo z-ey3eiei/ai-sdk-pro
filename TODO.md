@@ -89,3 +89,9 @@ Current Showcase evidence: canonical source checkpoint `f3ecac14fcae77f331f6eb98
 
 
 **Production evidence — 2026-11-11:** checkpoint `f3ecac14fcae77f331f6eb985a385acfc09c24aa` runs healthy on the existing VPS; previous image `0293758` remains available. Read-only crawler GETs verified the 12-URL sitemap, per-route metadata/canonicals/social previews, API-only robots exclusion, noindex pages, genuine 404s, OG image and route manifest. No inference or database write was performed.
+
+
+## Typography refresh — 2026-11-12
+
+- [ ] Use one consistent Thai/Latin sans family across `apps/web`, `apps/docs` and shared UI, loaded with Next.js `next/font` from the root layouts. Apply it to body copy, headings, navigation, forms, cards and docs; keep code/technical snippets monospaced. Preserve the current black/red visual design, type hierarchy, sizes, spacing and component layout.
+- [ ] Build-time font assets are self-hosted by Next.js with no browser request to Google Fonts; both web and docs production builds typecheck and compile with the shared font variable.

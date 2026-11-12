@@ -21,7 +21,7 @@ html.dark body {
 
 body {
   min-height: 100vh;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-app-sans), sans-serif;
 }
 
 .docs-wordmark {

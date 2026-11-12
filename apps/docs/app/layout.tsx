@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
+import { IBM_Plex_Sans_Thai } from "next/font/google";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import "./globals.css";
+
+const appSans = IBM_Plex_Sans_Thai({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin", "thai"],
+  display: "swap",
+  variable: "--font-app-sans",
+});
 
 const siteUrl = "https://ai-sdk.pro";
 const docsDescription =
@@ -48,7 +56,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="th" className="dark" suppressHydrationWarning>
+    <html
+      lang="th"
+      className={`dark ${appSans.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         <RootProvider
           theme={{ attribute: "class", defaultTheme: "dark", enableSystem: false }}

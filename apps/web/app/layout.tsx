@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
+import { IBM_Plex_Sans_Thai } from "next/font/google";
 import "@aisdkpro/ui/styles.css";
 import SessionActivity from "../components/SessionActivity";
 import {
@@ -7,6 +7,13 @@ import {
   SITE_DESCRIPTION,
   SITE_ORIGIN,
 } from "../lib/seo-metadata";
+
+const appSans = IBM_Plex_Sans_Thai({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin", "thai"],
+  display: "swap",
+  variable: "--font-app-sans",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
@@ -34,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${GeistSans.variable}`}
+      className={`dark ${appSans.variable}`}
       suppressHydrationWarning
     >
       <body>

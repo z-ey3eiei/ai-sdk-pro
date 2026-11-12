@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @source '../../../apps/web/**/*.{ts,tsx}';
 @source './**/*.{ts,tsx}';
+@theme inline {
+  --font-sans: var(--font-app-sans), Arial, Helvetica, sans-serif;
+}
 :root {
   --bg: #fafafa;
   --fg: #151515;
@@ -35,7 +38,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--fg);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-app-sans), sans-serif;
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
 }
@@ -436,12 +439,12 @@ kbd {
   align-items: center;
   gap: 5px;
   font-size: 12px;
-  font-family: Arial, sans-serif;
+  font-family: inherit;
   font-weight: 500;
   color: var(--fg);
 }
 .anthropic-logo {
-  font-family: Georgia, serif;
+  font-family: inherit;
   font-size: 13px;
   letter-spacing: 1px;
   font-weight: 600;
@@ -535,7 +538,7 @@ kbd {
   color: var(--fg);
 }
 .demo-avatar {
-  font-family: Arial, sans-serif;
+  font-family: inherit;
   width: 24px;
   height: 24px;
   background: var(--soft);
@@ -1807,7 +1810,7 @@ kbd {
   --red: #ff0000;
 }
 body {
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-app-sans), sans-serif;
 }
 .site-header {
   height: 64px;
