@@ -27,7 +27,7 @@ export default function StarterDetail({
     <>
       <div className="starter-detail-container">
         <nav className="starter-detail-breadcrumb" aria-label="Breadcrumb">
-          <Link href="/templates">Templates</Link>
+          <Link href="/templates">เทมเพลต</Link>
           <span aria-hidden="true">/</span>
           <span>{template.title}</span>
         </nav>
@@ -40,7 +40,7 @@ export default function StarterDetail({
               </span>
               <div>
                 <span className="starter-detail-kicker">
-                  {template.category} STARTER
+                  STARTER · {template.category}
                 </span>
                 <h1>{template.title}</h1>
               </div>
@@ -49,7 +49,7 @@ export default function StarterDetail({
             <p className="starter-detail-description">{template.description}</p>
           </div>
           <p className="starter-detail-framework">
-            <strong>Built with</strong>
+            <strong>เทคโนโลยีและข้อมูล</strong>
             {template.framework}
             <br />
             ai-sdk.pro starter · DevStack recipe: {template.devstackTemplateId}
@@ -63,14 +63,14 @@ export default function StarterDetail({
             target="_blank"
             rel="noopener noreferrer"
           >
-            Deploy on DevStack <ArrowUpRight size={14} aria-hidden="true" />
+            เปิด DevStack <ArrowUpRight size={14} aria-hidden="true" />
           </a>
           <a
             className="starter-detail-download"
             href={template.downloadUrl}
             download
           >
-            Download source <Download size={14} aria-hidden="true" />
+            ดาวน์โหลด source <Download size={14} aria-hidden="true" />
           </a>
           <Link className="starter-detail-link" href={template.tryUrl}>
             ลองถาม agent <ArrowUpRight size={13} aria-hidden="true" />
@@ -86,7 +86,7 @@ export default function StarterDetail({
 
         <div className="starter-devstack-notice">
           <div>
-            <strong>DevStack handoff แบบให้คุณเป็นคนตัดสินใจ</strong>
+            <strong>DevStack handoff: ตรวจสอบและยืนยันด้วยตัวคุณเอง</strong>
             <p>
               ปุ่มนี้พาไป DevStack เพื่อ login เลือก source และ review recipe
               ด้วยตัวเอง ไม่มีการอัปโหลดอัตโนมัติ ไม่มีการโอน API key
@@ -111,7 +111,7 @@ export default function StarterDetail({
               className="starter-detail-section"
               aria-labelledby="starter-preview-title"
             >
-              <h2 id="starter-preview-title">What you will see</h2>
+              <h2 id="starter-preview-title">ตัวอย่างโค้ด</h2>
               <p className="starter-preview-note">
                 ภาพด้านล่างเป็น static code/mock preview
                 เพื่ออธิบายโครงสร้างเท่านั้น ไม่ใช่ live response
@@ -130,7 +130,7 @@ export default function StarterDetail({
               className="starter-detail-section"
               aria-labelledby="starter-setup-title"
             >
-              <h2 id="starter-setup-title">Run it locally</h2>
+              <h2 id="starter-setup-title">เริ่มใช้งานในเครื่อง</h2>
               <p>
                 ดาวน์โหลด archive แล้วรันคำสั่งด้านล่างในเครื่องของคุณ
                 คำสั่งนี้เป็น local setup เท่านั้น ไม่มีการส่ง source หรือ key
@@ -149,7 +149,7 @@ export default function StarterDetail({
               className="starter-detail-section"
               aria-labelledby="starter-features-title"
             >
-              <h2 id="starter-features-title">Included in this starter</h2>
+              <h2 id="starter-features-title">สิ่งที่รวมใน starter นี้</h2>
               <ul className="starter-feature-list">
                 {template.features.map(feature => (
                   <li key={feature}>{feature}</li>
@@ -163,7 +163,7 @@ export default function StarterDetail({
               className="starter-archive-card"
               aria-labelledby="starter-archive-title"
             >
-              <h2 id="starter-archive-title">Archive details</h2>
+              <h2 id="starter-archive-title">รายละเอียดไฟล์ archive</h2>
               <dl className="starter-archive-list">
                 <div>
                   <dt>Files</dt>
@@ -186,7 +186,7 @@ export default function StarterDetail({
               className="starter-local-guide"
               aria-labelledby="starter-guide-title"
             >
-              <h2 id="starter-guide-title">Need a map?</h2>
+              <h2 id="starter-guide-title">คู่มือและขั้นตอนถัดไป</h2>
               <p>
                 คู่มืออธิบาย BYOK, local setup และวิธีตรวจ source ก่อนเปิด
                 DevStack
@@ -200,7 +200,7 @@ export default function StarterDetail({
               className="starter-detail-section starter-requirements-section"
               aria-labelledby="starter-requirements-title"
             >
-              <h2 id="starter-requirements-title">Requirements</h2>
+              <h2 id="starter-requirements-title">สิ่งที่ต้องเตรียม</h2>
               <ul className="starter-requirement-list">
                 {template.requirements.map(requirement => (
                   <li key={requirement}>{requirement}</li>

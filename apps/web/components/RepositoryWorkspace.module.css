@@ -1,0 +1,530 @@
+.shell {
+  min-height: 100vh;
+  color: #272321;
+  background: #f6f5f4;
+  font-family: var(--font-ibm-plex-sans-thai), "IBM Plex Sans Thai", sans-serif;
+}
+.shell :global(.workspace-sidebar) {
+  background: #242120;
+  color: #f7f4f2;
+  border-right: 1px solid #373230;
+}
+.shell :global(.workspace-product-label),
+.shell :global(.workspace-sidebar-kicker) {
+  color: #f28b83;
+  letter-spacing: 0.13em;
+  font-size: 10px;
+  font-weight: 700;
+}
+.shell :global(.workspace-nav-item) {
+  border-radius: 9px;
+  color: #c9c2bf;
+  transition: 0.18s ease;
+}
+.shell :global(.workspace-nav-item:hover),
+.shell :global(.workspace-nav-item.active) {
+  color: #fff;
+  background: #393230;
+}
+.shell :global(.workspace-nav-item.active) {
+  box-shadow: inset 3px 0 #df4b45;
+}
+.shell :global(.workspace-sidebar-note) {
+  margin: 22px 16px;
+  padding: 14px;
+  border: 1px solid #4a403d;
+  border-radius: 12px;
+  background: #2d2927;
+  color: #e8ded9;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.shell :global(.workspace-sidebar-note svg) {
+  color: #ee8a7f;
+}
+.shell :global(.workspace-sidebar-footer) {
+  color: #aaa09b;
+}
+.shell :global(.workspace-main) {
+  min-width: 0;
+}
+.shell :global(.workspace-topbar) {
+  min-height: 66px;
+  background: #fff;
+  border-bottom: 1px solid #e9e5e3;
+}
+.shell :global(.workspace-breadcrumb) {
+  color: #766f6b;
+  font-size: 13px;
+}
+.shell :global(.workspace-breadcrumb a) {
+  color: #a92a2b;
+  font-weight: 600;
+}
+.shell :global(.workspace-content) {
+  width: min(1280px, 100%);
+  margin: 0 auto;
+  padding: clamp(22px, 4vw, 42px);
+}
+.shell :global(.workspace-hero) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 330px);
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 28px;
+}
+.shell :global(.workspace-eyebrow) {
+  color: #a82d2d;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+.shell :global(.workspace-hero h1) {
+  max-width: 680px;
+  margin: 8px 0 10px;
+  color: #252120;
+  font-size: clamp(27px, 3.5vw, 38px);
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+}
+.shell :global(.workspace-hero p) {
+  max-width: 650px;
+  margin: 0;
+  color: #68615d;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.shell :global(.workspace-limit-card) {
+  padding: 18px;
+  border: 1px solid #e8d9d5;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fff 10%, #fff7f5);
+  box-shadow: 0 8px 24px #34231e08;
+}
+.shell :global(.workspace-limit-card-title) {
+  display: flex;
+  gap: 8px;
+  color: #8f292a;
+  font-size: 12px;
+  font-weight: 700;
+}
+.shell :global(.workspace-limit-card strong),
+.shell :global(.workspace-limit-card > span:last-child) {
+  display: block;
+  margin-top: 9px;
+}
+.shell :global(.workspace-limit-card strong) {
+  color: #292321;
+  font-size: 15px;
+}
+.shell :global(.workspace-limit-card > span:last-child) {
+  color: #77706c;
+  font-size: 11px;
+  line-height: 1.65;
+}
+.shell :global(.workspace-toolbar) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 30px;
+  background: #fff;
+  border: 1px solid #e9e5e3;
+  border-radius: 14px;
+}
+.shell :global(.workspace-tabs) {
+  display: flex;
+  gap: 5px;
+}
+.shell :global(.workspace-tabs button) {
+  min-height: 40px;
+  border: 0;
+  border-radius: 9px;
+  padding: 0 13px;
+  color: #6f6763;
+  background: transparent;
+  font:
+    600 12px var(--font-ibm-plex-sans-thai),
+    "IBM Plex Sans Thai",
+    sans-serif;
+}
+.shell :global(.workspace-tabs button.active) {
+  color: #922526;
+  background: #fff0ed;
+}
+.shell :global(.workspace-tabs button span) {
+  margin-left: 7px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  color: #69605c;
+  background: #f0eeec;
+  font-size: 10px;
+}
+.shell :global(.workspace-search) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+  margin-left: auto;
+  padding: 0 11px;
+  height: 40px;
+  border: 1px solid #e8e3e1;
+  border-radius: 9px;
+  color: #89817c;
+  background: #fff;
+}
+.shell :global(.workspace-search input) {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  color: #302b29;
+  background: transparent;
+  font:
+    13px var(--font-ibm-plex-sans-thai),
+    "IBM Plex Sans Thai",
+    sans-serif;
+}
+.shell :global(.workspace-icon-button),
+.shell :global(.workspace-button) {
+  transition: 0.18s ease;
+}
+.shell :global(.workspace-icon-button) {
+  border: 1px solid #e5dfdc;
+  border-radius: 9px;
+  color: #625a56;
+  background: #fff;
+}
+.shell :global(.workspace-icon-button:hover) {
+  color: #a62c2d;
+  background: #fff4f1;
+}
+.shell :global(.workspace-section-heading) {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 12px;
+  margin: 0 0 15px;
+}
+.shell :global(.workspace-section-heading h2) {
+  margin: 4px 0 0;
+  font-size: 21px;
+  color: #2c2725;
+}
+.shell :global(.workspace-section-count) {
+  color: #746c68;
+  font-size: 12px;
+}
+.shell :global(.workspace-provider-note) {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px 17px;
+  margin-bottom: 15px;
+  border: 1px solid #e9e2df;
+  border-radius: 12px;
+  color: #5f5753;
+  background: #fff;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.shell :global(.workspace-provider-note > svg) {
+  flex: 0 0 auto;
+  color: #a72c2c;
+  margin-top: 2px;
+}
+.shell :global(.workspace-provider-note p) {
+  flex: 1;
+  margin: 0;
+}
+.shell :global(.workspace-install-link) {
+  flex: 0 0 auto;
+  color: #a52b2c;
+  font-weight: 600;
+}
+.shell :global(.workspace-capped-note) {
+  padding: 10px 13px;
+  color: #765016;
+  background: #fff8e9;
+  border-radius: 9px;
+  font-size: 12px;
+}
+.shell :global(.workspace-repo-grid) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.shell :global(.workspace-repo-card) {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #e8e3e1;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 4px 16px #322a2707;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+.shell :global(a.workspace-repo-card:hover),
+.shell :global(.workspace-repo-card-github:hover) {
+  transform: translateY(-2px);
+  border-color: #dfb8b3;
+  box-shadow: 0 12px 26px #322a2710;
+}
+.shell :global(.workspace-repo-card-heading) {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.shell :global(.workspace-repo-mark) {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: #a72c2c;
+  background: #fff0ed;
+}
+.shell :global(.workspace-repo-card-title) {
+  min-width: 0;
+  flex: 1;
+}
+.shell :global(.workspace-repo-card-title strong) {
+  display: block;
+  overflow: hidden;
+  color: #292523;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+.shell :global(.workspace-repo-card-title span) {
+  display: block;
+  margin-top: 4px;
+  color: #817975;
+  font-size: 11px;
+}
+.shell :global(.workspace-card-arrow),
+.shell :global(.workspace-card-external) {
+  color: #8b817c;
+}
+.shell :global(.workspace-repo-description) {
+  min-height: 38px;
+  margin: 15px 0;
+  color: #665e5a;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.shell :global(.workspace-repo-meta) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  color: #726a66;
+  font-size: 10px;
+}
+.shell :global(.workspace-repo-meta > span) {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.shell :global(.workspace-visibility-badge) {
+  padding: 4px 7px;
+  border-radius: 99px;
+  color: #5f5753;
+  background: #f2f0ee;
+}
+.shell :global(.workspace-repo-commit) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid #efedeb;
+  color: #77706c;
+  font-size: 10px;
+}
+.shell :global(.workspace-repo-commit code) {
+  color: #38312e;
+  font-size: 10px;
+}
+.shell :global(.workspace-truncated) {
+  margin-left: auto;
+  color: #9a5d14;
+  font-weight: 700;
+}
+.shell :global(.workspace-repo-action-row) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 13px;
+  border-top: 1px solid #efedeb;
+}
+.shell :global(.workspace-read-only-label) {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #42724e;
+  font-size: 10px;
+}
+.shell :global(.workspace-button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 13px;
+  border-radius: 9px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+.shell :global(.workspace-button-primary) {
+  color: #fff;
+  background: #ad2d2e;
+  border: 1px solid #ad2d2e;
+}
+.shell :global(.workspace-button-primary:hover) {
+  background: #922425;
+}
+.shell :global(.workspace-button-secondary) {
+  color: #514945;
+  background: #fff;
+  border: 1px solid #ded8d5;
+}
+.shell :global(.workspace-button-secondary:hover) {
+  color: #9e292a;
+  border-color: #d9aaa5;
+  background: #fff8f6;
+}
+.shell :global(.workspace-state-panel) {
+  padding: clamp(26px, 5vw, 48px);
+  border: 1px solid #e8e3e1;
+  border-radius: 16px;
+  background: #fff;
+  text-align: center;
+}
+.shell :global(.workspace-state-icon) {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 13px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  color: #a82c2d;
+  background: #fff0ed;
+}
+.shell :global(.workspace-state-panel h2) {
+  margin: 0 0 7px;
+  color: #2c2725;
+  font-size: 21px;
+}
+.shell :global(.workspace-state-panel p) {
+  max-width: 560px;
+  margin: 0 auto 17px;
+  color: #6d6561;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.shell :global(.workspace-inline-alert) {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  color: #942829;
+  background: #fff0ed;
+  border: 1px solid #efcfca;
+  border-radius: 10px;
+  font-size: 12px;
+}
+.shell :global(.workspace-inline-alert span) {
+  flex: 1;
+}
+.shell :global(.workspace-inline-alert button) {
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+@media (max-width: 850px) {
+  .shell :global(.workspace-hero) {
+    grid-template-columns: 1fr;
+  }
+  .shell :global(.workspace-limit-card) {
+    max-width: none;
+  }
+  .shell :global(.workspace-repo-grid) {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 650px) {
+  .shell :global(.workspace-sidebar) {
+    display: none;
+  }
+  .shell :global(.workspace-content) {
+    padding: 22px 16px 36px;
+  }
+  .shell :global(.workspace-account-copy) {
+    display: none;
+  }
+  .shell :global(.workspace-toolbar) {
+    flex-wrap: wrap;
+  }
+  .shell :global(.workspace-tabs) {
+    width: 100%;
+  }
+  .shell :global(.workspace-tabs button) {
+    flex: 1;
+    padding: 0 7px;
+    font-size: 11px;
+  }
+  .shell :global(.workspace-search) {
+    margin-left: 0;
+    flex: 1;
+  }
+  .shell :global(.workspace-provider-note) {
+    flex-wrap: wrap;
+  }
+  .shell :global(.workspace-install-link) {
+    margin-left: 28px;
+  }
+}
+
+/* Readable metadata and keyboard-safe controls. */
+.shell :global(.workspace-product-label),
+.shell :global(.workspace-sidebar-kicker),
+.shell :global(.workspace-tabs button span),
+.shell :global(.workspace-repo-meta),
+.shell :global(.workspace-repo-commit),
+.shell :global(.workspace-repo-commit code),
+.shell :global(.workspace-read-only-label) {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.shell :global(.workspace-search) {
+  color: #6f6763;
+}
+
+.shell :global(.workspace-repo-card-title span),
+.shell :global(.workspace-card-arrow),
+.shell :global(.workspace-card-external),
+.shell :global(.workspace-repo-meta),
+.shell :global(.workspace-repo-commit) {
+  color: #6f6763;
+}
+
+.shell :global(.workspace-tabs button),
+.shell :global(.workspace-button) {
+  min-height: 44px;
+}
+
+.shell :global(.workspace-tabs button:focus-visible),
+.shell :global(.workspace-search input:focus-visible),
+.shell :global(.workspace-button:focus-visible) {
+  outline: 3px solid #a72c2c;
+  outline-offset: 3px;
+}

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Brand } from "@aisdkpro/ui";
+import styles from "./RepositoryViewer.module.css";
 import type {
   RepositoryDetail,
   RepositoryFile,
@@ -140,13 +141,13 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
   );
 
   return (
-    <main className="repository-viewer-page">
+    <main className={`repository-viewer-page ${styles.page}`}>
       <header className="repository-viewer-topbar">
         <div className="repository-viewer-topbar-inner">
           <Brand />
           <div className="repository-viewer-topbar-links">
             <Link href="/workspace" className="repository-viewer-back-link">
-              <ArrowLeft size={14} /> Back to workspace
+              <ArrowLeft size={14} /> กลับไปพื้นที่ทำงาน
             </Link>
           </div>
         </div>
@@ -155,8 +156,8 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
       {detailState.kind === "loading" && (
         <section className="repository-viewer-state">
           <LoaderCircle className="repository-viewer-spin" size={24} />
-          <h1>Loading repository snapshot</h1>
-          <p>Fetching current metadata and the pinned file list.</p>
+          <h1>กำลังโหลด snapshot ของ repository</h1>
+          <p>กำลังโหลดข้อมูล repository และรายการไฟล์ที่ผูกกับ commit</p>
         </section>
       )}
 
@@ -171,14 +172,14 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
               className="repository-viewer-button repository-viewer-button-secondary"
               onClick={() => setRefreshKey(value => value + 1)}
             >
-              <RefreshCw size={14} /> Try again
+              <RefreshCw size={14} /> ลองอีกครั้ง
             </button>
             {detailState.error.kind === "signed-out" && (
               <Link
                 href="/login"
                 className="repository-viewer-button repository-viewer-button-primary"
               >
-                Sign in
+                เข้าสู่ระบบ
               </Link>
             )}
           </div>
@@ -190,10 +191,10 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
           <section className="repository-viewer-header">
             <div className="repository-viewer-heading-row">
               <div className="repository-viewer-title-block">
-                <span className="repository-viewer-eyebrow">IMPORTED SNAPSHOT</span>
+                <span className="repository-viewer-eyebrow">SNAPSHOT ที่นำเข้า</span>
                 <h1>{detail.repository.fullName}</h1>
                 <p>
-                  {detail.repository.description || "No repository description provided."}
+                  {detail.repository.description || "ไม่มีคำอธิบาย repository"}
                 </p>
               </div>
               <div className="repository-viewer-header-actions">
@@ -203,38 +204,38 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
                   rel="noreferrer"
                   className="repository-viewer-button repository-viewer-button-secondary"
                 >
-                  <Github size={14} /> Open on GitHub
+                  <Github size={14} /> เปิดบน GitHub
                 </a>
                 <Link
                   href="/workspace"
                   className="repository-viewer-button repository-viewer-button-primary"
                 >
-                  <Library size={14} /> All repositories
+                  <Library size={14} /> ดู repository ทั้งหมด
                 </Link>
               </div>
             </div>
             <div className="repository-viewer-meta-grid">
               <div>
-                <span>Visibility</span>
+                <span>การมองเห็น</span>
                 <strong>
                   {detail.repository.private ? <LockKeyhole size={13} /> : <Github size={13} />}
-                  {detail.repository.private ? "Private" : "Public"}
+                  {detail.repository.private ? "ส่วนตัว" : "สาธารณะ"}
                 </strong>
               </div>
               <div>
-                <span>Default branch</span>
+                <span>Branch หลัก</span>
                 <strong>
                   <GitBranch size={13} /> {detail.repository.defaultBranch}
                 </strong>
               </div>
               <div>
-                <span>Pinned commit SHA</span>
+                <span>Commit SHA ที่ snapshot อ้างอิง</span>
                 <strong className="repository-viewer-commit">
-                  {detail.repository.commitSha || "Unavailable"}
+                  {detail.repository.commitSha || "ไม่พร้อมใช้งาน"}
                 </strong>
               </div>
               <div>
-                <span>Imported</span>
+                <span>วันที่นำเข้า</span>
                 <strong>{formatDate(detail.repository.importedAt)}</strong>
               </div>
             </div>
@@ -243,24 +244,24 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
           <section className="repository-viewer-scope-note">
             <ShieldCheck size={16} />
             <p>
-              This view is a server-persisted, read-only snapshot: up to {detail.snapshotLimits.maxFiles} files,
-              {" "}{formatBytes(detail.snapshotLimits.maxFileBytes)} per file, and {formatBytes(detail.snapshotLimits.maxTotalBytes)} total.
-              {" "}{detail.repository.skippedFiles} files were skipped during import; binaries, dependencies, and sensitive paths are not shown.
+              หน้านี้แสดง snapshot แบบอ่านอย่างเดียวที่บันทึกบนเซิร์ฟเวอร์: ไม่เกิน {detail.snapshotLimits.maxFiles} ไฟล์,
+              {" "}{formatBytes(detail.snapshotLimits.maxFileBytes)} ต่อไฟล์ และ {formatBytes(detail.snapshotLimits.maxTotalBytes)} รวม
+              {" "}{detail.repository.skippedFiles} ไฟล์ถูกข้ามระหว่างนำเข้า โดยไม่แสดงไฟล์ไบนารี dependencies และ path ที่ละเอียดอ่อน
             </p>
-            {detail.repository.snapshotTruncated && <span>Snapshot cap reached</span>}
+            {detail.repository.snapshotTruncated && <span>ถึงขีดจำกัด snapshot</span>}
           </section>
 
-          <section className="repository-viewer-workbench" aria-label="Repository source viewer">
+          <section className="repository-viewer-workbench" aria-label="ตัวดู source snapshot">
             <aside className="repository-viewer-files">
               <div className="repository-viewer-files-heading">
                 <div>
-                  <span className="repository-viewer-eyebrow">SOURCE FILES</span>
-                  <h2>{detail.files.length} included</h2>
+                  <span className="repository-viewer-eyebrow">ไฟล์ใน snapshot</span>
+                  <h2>{detail.files.length} ไฟล์ที่รวมไว้</h2>
                 </div>
                 <FileCode2 size={17} />
               </div>
               {detail.files.length > 0 ? (
-                <div className="repository-viewer-file-list" role="listbox" aria-label="Snapshot files">
+                <div className="repository-viewer-file-list" role="listbox" aria-label="ไฟล์ใน snapshot">
                   {detail.files.map(file => (
                     <button
                       type="button"
@@ -278,7 +279,7 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
                 </div>
               ) : (
                 <div className="repository-viewer-empty-files">
-                  <p>No text files were included in this snapshot.</p>
+                  <p>ไม่มีไฟล์ข้อความที่ถูกรวมไว้ใน snapshot นี้</p>
                 </div>
               )}
             </aside>
@@ -287,10 +288,10 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
               <div className="repository-viewer-code-heading">
                 <div>
                   <span className="repository-viewer-code-path">
-                    {selectedPath || "No file selected"}
+                    {selectedPath || "ยังไม่ได้เลือกไฟล์"}
                   </span>
                   <span className="repository-viewer-code-subtitle">
-                    {selectedSummary ? `${formatBytes(selectedSummary.bytes)} · pinned snapshot` : "Select a file to inspect its text"}
+                    {selectedSummary ? `${formatBytes(selectedSummary.bytes)} · snapshot ตาม commit` : "เลือกไฟล์เพื่ออ่านเนื้อหา"}
                   </span>
                 </div>
                 <LanguagePill language={selectedSummary?.language || null} />
@@ -298,7 +299,7 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
               {fileState.kind === "loading" && (
                 <div className="repository-viewer-code-state">
                   <LoaderCircle className="repository-viewer-spin" size={20} />
-                  <span>Loading file contents…</span>
+                  <span>กำลังโหลดเนื้อหาไฟล์…</span>
                 </div>
               )}
               {fileState.kind === "error" && (
@@ -310,7 +311,7 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
                       href="/login"
                       className="repository-viewer-button repository-viewer-button-primary"
                     >
-                      Sign in
+                      เข้าสู่ระบบ
                     </Link>
                   )}
                 </div>
@@ -318,7 +319,7 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
               {fileState.kind === "idle" && (
                 <div className="repository-viewer-code-state">
                   <FileCode2 size={20} />
-                  <span>Select a text file from the snapshot.</span>
+                  <span>เลือกไฟล์ข้อความจากรายการ snapshot เพื่อดูเนื้อหา</span>
                 </div>
               )}
               {fileState.kind === "ready" && (

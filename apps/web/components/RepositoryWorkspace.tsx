@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Brand } from "@aisdkpro/ui";
+import styles from "./RepositoryWorkspace.module.css";
 import { authClient } from "../lib/auth-client";
 import type {
   GitHubRepository,
@@ -103,16 +104,16 @@ function WorkspaceChrome({
   logoutPending: boolean;
 }) {
   return (
-    <main className="workspace-shell">
+    <main className={`workspace-shell ${styles.shell}`}>
       <aside className="workspace-sidebar">
         <div className="workspace-sidebar-top">
           <Brand />
-          <span className="workspace-product-label">WORKSPACE</span>
+          <span className="workspace-product-label">พื้นที่ทำงาน</span>
         </div>
         <nav className="workspace-nav" aria-label="Workspace navigation">
           <Link href="/workspace" className="workspace-nav-item active">
             <Library size={16} />
-            <span>Repositories</span>
+            <span>คลังโค้ด</span>
           </Link>
           <Link href="/docs/architecture" className="workspace-nav-item">
             <Database size={16} />
@@ -123,13 +124,12 @@ function WorkspaceChrome({
         <div className="workspace-sidebar-note">
           <ShieldCheck size={15} />
           <p>
-            Read-only workspace. Imported code is never built, executed, or
-            deployed automatically.
+            พื้นที่นี้อ่านข้อมูลอย่างเดียว snapshot จะไม่ถูก clone, build, run หรือ deploy
           </p>
         </div>
         <div className="workspace-sidebar-footer">
           <span className="workspace-sidebar-kicker">AI-SDK.PRO</span>
-          <span>Repository import preview</span>
+          <span>ตรวจสอบ snapshot จาก repository</span>
         </div>
       </aside>
 
@@ -138,14 +138,14 @@ function WorkspaceChrome({
           <div className="workspace-breadcrumb">
             <Link href="/workspace">Workspace</Link>
             <ChevronRight size={14} />
-            <span>Repositories</span>
+            <span>คลังโค้ด</span>
           </div>
           <div className="workspace-account">
             {user ? (
               <>
                 <span className="workspace-account-copy">
                   <strong>{displayName(user)}</strong>
-                  <span>GitHub account</span>
+                  <span>บัญชี GitHub</span>
                 </span>
                 <span className="workspace-avatar" aria-hidden="true">
                   {initials(user)}
@@ -155,8 +155,8 @@ function WorkspaceChrome({
                   className="workspace-icon-button"
                   onClick={onLogout}
                   disabled={logoutPending}
-                  aria-label="Sign out"
-                  title="Sign out"
+                  aria-label="ออกจากระบบ"
+                  title="ออกจากระบบ"
                 >
                   {logoutPending ? (
                     <LoaderCircle className="workspace-spin" size={15} />
@@ -167,7 +167,7 @@ function WorkspaceChrome({
               </>
             ) : (
               <Link href="/login" className="workspace-sign-in-link">
-                Sign in
+                เข้าสู่ระบบ
               </Link>
             )}
           </div>
@@ -203,7 +203,7 @@ function RepositoryPrivateBadge({ isPrivate }: { isPrivate: boolean }) {
   return (
     <span className="workspace-visibility-badge">
       {isPrivate ? <LockKeyhole size={12} /> : <Globe2 size={12} />}
-      {isPrivate ? "Private" : "Public"}
+      {isPrivate ? "ส่วนตัว" : "สาธารณะ"}
     </span>
   );
 }
@@ -221,13 +221,13 @@ function ImportedRepositoryCard({ repository }: { repository: ImportedRepository
         <span className="workspace-repo-card-title">
           <strong>{repository.fullName}</strong>
           <span>
-            Imported {formatDate(repository.importedAt)}
+            นำเข้าเมื่อ {formatDate(repository.importedAt)}
           </span>
         </span>
         <ChevronRight className="workspace-card-arrow" size={17} />
       </div>
       <p className="workspace-repo-description">
-        {repository.description || "No repository description provided."}
+        {repository.description || "ไม่มีคำอธิบาย repository"}
       </p>
       <div className="workspace-repo-meta">
         <RepositoryPrivateBadge isPrivate={repository.private} />
@@ -235,14 +235,14 @@ function ImportedRepositoryCard({ repository }: { repository: ImportedRepository
           <GitBranch size={12} /> {repository.defaultBranch}
         </span>
         <span>
-          <GitBranch size={12} /> {repository.importedFiles} files
+          <GitBranch size={12} /> {repository.importedFiles} ไฟล์
         </span>
         <span>{formatBytes(repository.totalBytes)}</span>
       </div>
       <div className="workspace-repo-commit">
-        <span>Pinned commit</span>
-        <code>{repository.commitSha.slice(0, 12) || "Unavailable"}</code>
-        {repository.snapshotTruncated && <span className="workspace-truncated">CAP REACHED</span>}
+        <span>Commit ที่ snapshot อ้างอิง</span>
+        <code>{repository.commitSha.slice(0, 12) || "ไม่พร้อมใช้งาน"}</code>
+        {repository.snapshotTruncated && <span className="workspace-truncated">ถึงขีดจำกัด</span>}
       </div>
     </Link>
   );
@@ -267,21 +267,21 @@ function GitHubRepositoryCard({
         </span>
         <span className="workspace-repo-card-title">
           <strong>{repository.fullName}</strong>
-          <span>Updated {formatDate(repository.updatedAt)}</span>
+          <span>อัปเดตเมื่อ {formatDate(repository.updatedAt)}</span>
         </span>
         <a
           className="workspace-card-external"
           href={repository.htmlUrl}
           target="_blank"
           rel="noreferrer"
-          aria-label={`Open ${repository.fullName} on GitHub`}
+          aria-label={`เปิด ${repository.fullName} บน GitHub`}
           onClick={event => event.stopPropagation()}
         >
           <ExternalLink size={15} />
         </a>
       </div>
       <p className="workspace-repo-description">
-        {repository.description || "No repository description provided."}
+        {repository.description || "ไม่มีคำอธิบาย repository"}
       </p>
       <div className="workspace-repo-meta">
         <RepositoryPrivateBadge isPrivate={repository.private} />
@@ -289,11 +289,11 @@ function GitHubRepositoryCard({
           <GitBranch size={12} /> {repository.defaultBranch}
         </span>
         {repository.language && <span>{repository.language}</span>}
-        <span>{repository.stargazersCount} stars</span>
+        <span>{repository.stargazersCount} ดาว</span>
       </div>
       <div className="workspace-repo-action-row">
         <span className="workspace-read-only-label">
-          <ShieldCheck size={12} /> Read-only import
+          <ShieldCheck size={12} /> นำเข้าแบบอ่านอย่างเดียว
         </span>
         <button
           type="button"
@@ -304,10 +304,10 @@ function GitHubRepositoryCard({
           {importing ? (
             <LoaderCircle className="workspace-spin" size={14} />
           ) : imported ? (
-            "Imported"
+            "นำเข้าแล้ว"
           ) : (
             <>
-              <Download size={14} /> Import snapshot
+              <Download size={14} /> นำเข้า snapshot
             </>
           )}
         </button>
@@ -476,23 +476,23 @@ export default function RepositoryWorkspace() {
       {phase === "loading" && (
         <StatePanel
           icon={<LoaderCircle className="workspace-spin" size={22} />}
-          title="Checking workspace access"
-          description="Verifying your session and loading current repository data."
+          title="กำลังตรวจสอบสิทธิ์พื้นที่ทำงาน"
+          description="กำลังตรวจสอบเซสชันและโหลดข้อมูล repository ที่ได้รับอนุญาต"
         />
       )}
 
       {phase === "error" && (
         <StatePanel
           icon={<CircleAlert size={22} />}
-          title="Workspace unavailable"
-          description={requestError || "The current repository data could not be loaded."}
+          title="ยังไม่สามารถเปิดพื้นที่ทำงานได้"
+          description={requestError || "โหลดข้อมูล repository ในขณะนี้ไม่ได้"}
           action={
             <button
               type="button"
               className="workspace-button workspace-button-secondary"
               onClick={() => setRefreshKey(value => value + 1)}
             >
-              <RefreshCw size={14} /> Try again
+              <RefreshCw size={14} /> ลองอีกครั้ง
             </button>
           }
         />
@@ -501,14 +501,14 @@ export default function RepositoryWorkspace() {
       {phase === "signed-out" && (
         <StatePanel
           icon={<Github size={22} />}
-          title="Sign in to view repositories"
+          title="เข้าสู่ระบบเพื่อดู repository"
           description={
             requestError ||
-            "There is no active session. Sign in with GitHub to access your authorized repository list."
+            "ไม่มีเซสชันที่ใช้งานอยู่ เข้าสู่ระบบด้วย GitHub เพื่อดูรายการ repository ที่คุณอนุญาต"
           }
           action={
             <Link href="/login" className="workspace-button workspace-button-primary">
-              Continue to login <ArrowUpRight size={14} />
+              ไปหน้าเข้าสู่ระบบ <ArrowUpRight size={14} />
             </Link>
           }
         />
@@ -517,19 +517,19 @@ export default function RepositoryWorkspace() {
       {phase === "setup" && (
         <StatePanel
           icon={<CircleAlert size={22} />}
-          title="Workspace setup is pending"
+          title="การตั้งค่าพื้นที่ทำงานยังไม่พร้อม"
           description={
             requestError ||
-            "GitHub App or Neon configuration is not ready. No repository request was attempted."
+            "การตั้งค่า GitHub App หรือ Neon ยังไม่พร้อม ระบบจึงยังไม่ได้ร้องขอรายการ repository"
           }
           action={
             <div className="workspace-setup-details">
               {status?.missingConfiguration?.length ? (
                 <span>
-                  Missing configuration labels: {status.missingConfiguration.join(", ")}
+                  รายการตั้งค่าที่ยังขาด: {status.missingConfiguration.join(", ")}
                 </span>
               ) : (
-                <span>The app owner needs to finish platform configuration.</span>
+                <span>เจ้าของแอปต้องดำเนินการตั้งค่าระบบให้เสร็จ</span>
               )}
             </div>
           }
@@ -540,22 +540,21 @@ export default function RepositoryWorkspace() {
         <>
           <section className="workspace-hero">
             <div>
-              <span className="workspace-eyebrow">REPOSITORY CONTROL PLANE</span>
-              <h1>Review your codebase, without running it.</h1>
+              <span className="workspace-eyebrow">พื้นที่ตรวจสอบ REPOSITORY</span>
+              <h1>ตรวจดูซอร์สโค้ด โดยไม่เรียกใช้งาน</h1>
               <p>
-                Import a bounded snapshot from an authorized GitHub repository,
-                pin it to the returned commit, and inspect the source in one place.
+                นำเข้า snapshot ที่มีขอบเขตจาก repository ที่อนุญาต ผูกกับ commit ที่ระบบตอบกลับ แล้วตรวจดูไฟล์ได้ในที่เดียว โดยไม่ clone, build, run หรือ deploy โค้ด
               </p>
             </div>
             <div className="workspace-limit-card">
               <span className="workspace-limit-card-title">
-                <ShieldCheck size={14} /> Snapshot scope
+                <ShieldCheck size={14} /> ขอบเขต snapshot
               </span>
               <strong>
-                {status.snapshotLimits.maxFiles} files · {formatBytes(status.snapshotLimits.maxTotalBytes)} total
+                ไม่เกิน {status.snapshotLimits.maxFiles} ไฟล์ · รวม {formatBytes(status.snapshotLimits.maxTotalBytes)}
               </strong>
               <span>
-                {formatBytes(status.snapshotLimits.maxFileBytes)} maximum per file · binaries and sensitive paths skipped
+                ไฟล์ละไม่เกิน {formatBytes(status.snapshotLimits.maxFileBytes)} · ข้ามไฟล์ไบนารีและ path ที่ละเอียดอ่อน
               </span>
             </div>
           </section>
@@ -571,7 +570,7 @@ export default function RepositoryWorkspace() {
           )}
 
           <section className="workspace-toolbar" aria-label="Repository controls">
-            <div className="workspace-tabs" role="tablist" aria-label="Repository source">
+            <div className="workspace-tabs" role="tablist" aria-label="แหล่ง repository">
               <button
                 type="button"
                 role="tab"
@@ -579,7 +578,7 @@ export default function RepositoryWorkspace() {
                 className={tab === "imported" ? "active" : ""}
                 onClick={() => setTab("imported")}
               >
-                <Library size={14} /> Imported snapshots
+                <Library size={14} /> Snapshot ที่นำเข้า
                 <span>{importedRepositories.length}</span>
               </button>
               <button
@@ -589,17 +588,17 @@ export default function RepositoryWorkspace() {
                 className={tab === "github" ? "active" : ""}
                 onClick={() => setTab("github")}
               >
-                <Github size={14} /> GitHub available
+                <Github size={14} /> จาก GitHub
                 <span>{githubRepositories.repositories.length}</span>
               </button>
             </div>
             <label className="workspace-search">
               <Search size={15} />
-              <span className="sr-only">Search repositories</span>
+              <span className="sr-only">ค้นหา repository</span>
               <input
                 value={query}
                 onChange={event => setQuery(event.target.value)}
-                placeholder="Search repositories…"
+                placeholder="ค้นหา repository…"
                 type="search"
               />
             </label>
@@ -618,10 +617,10 @@ export default function RepositoryWorkspace() {
             <section className="workspace-section" aria-labelledby="imported-title">
               <div className="workspace-section-heading">
                 <div>
-                  <span className="workspace-eyebrow">PERSISTED FOR THIS ACCOUNT</span>
-                  <h2 id="imported-title">Imported snapshots</h2>
+                  <span className="workspace-eyebrow">บันทึกไว้สำหรับบัญชีนี้</span>
+                  <h2 id="imported-title">Snapshot ที่นำเข้า</h2>
                 </div>
-                <span className="workspace-section-count">{filteredImported.length} shown</span>
+                <span className="workspace-section-count">แสดง {filteredImported.length} รายการ</span>
               </div>
               {filteredImported.length > 0 ? (
                 <div className="workspace-repo-grid">
@@ -632,11 +631,11 @@ export default function RepositoryWorkspace() {
               ) : (
                 <StatePanel
                   icon={<Library size={20} />}
-                  title={query ? "No matching snapshots" : "No imported snapshots yet"}
+                  title={query ? "ไม่พบ snapshot ที่ตรงกัน" : "ยังไม่มี snapshot ที่นำเข้า"}
                   description={
                     query
-                      ? "Try another repository name or clear the search."
-                      : "Choose GitHub available to import an authorized repository. Imported snapshots will appear here after the server confirms them."
+                      ? "ลองค้นด้วยชื่อ repository อื่น หรือล้างคำค้น"
+                      : "เลือกแท็บจาก GitHub เพื่อดู repository ที่อนุญาตและนำเข้า snapshot รายการจะแสดงที่นี่เมื่อเซิร์ฟเวอร์ยืนยันแล้ว"
                   }
                   action={
                     !query ? (
@@ -645,7 +644,7 @@ export default function RepositoryWorkspace() {
                         className="workspace-button workspace-button-secondary"
                         onClick={() => setTab("github")}
                       >
-                        Browse GitHub repositories <ArrowUpRight size={14} />
+                        เรียกดู repository จาก GitHub <ArrowUpRight size={14} />
                       </button>
                     ) : undefined
                   }
@@ -656,17 +655,15 @@ export default function RepositoryWorkspace() {
             <section className="workspace-section" aria-labelledby="github-title">
               <div className="workspace-section-heading">
                 <div>
-                  <span className="workspace-eyebrow">READ-ONLY GITHUB APP ACCESS</span>
-                  <h2 id="github-title">Available repositories</h2>
+                  <span className="workspace-eyebrow">สิทธิ์ GitHub App · อ่านอย่างเดียว</span>
+                  <h2 id="github-title">Repository ที่เลือกได้</h2>
                 </div>
-                <span className="workspace-section-count">{filteredGithub.length} shown</span>
+                <span className="workspace-section-count">แสดง {filteredGithub.length} รายการ</span>
               </div>
               <div className="workspace-provider-note">
                 <Github size={16} />
                 <p>
-                  These are the repositories returned for your current GitHub App
-                  installations. Import stores only a bounded source snapshot;
-                  it does not clone, execute, build, or deploy repository code.
+                  รายการนี้มาจาก GitHub App installations ปัจจุบัน การนำเข้าจะบันทึกเฉพาะ source snapshot ตามขีดจำกัดที่กำหนด ไม่ clone, execute, build หรือ deploy โค้ด
                 </p>
                 {githubInstallUrl && (
                   <a
@@ -675,14 +672,13 @@ export default function RepositoryWorkspace() {
                     rel="noreferrer"
                     className="workspace-install-link"
                   >
-                    Open GitHub App setup <ExternalLink size={13} />
+                    ตั้งค่า GitHub App <ExternalLink size={13} />
                   </a>
                 )}
               </div>
               {githubRepositories.capped && (
                 <p className="workspace-capped-note">
-                  GitHub returned a capped list. Refine your installation selection
-                  or search to locate a repository.
+                  GitHub ส่งรายการมาแบบจำกัดผลลัพธ์ ปรับ repository ที่เลือกในการติดตั้งหรือค้นหาชื่อที่ต้องการ
                 </p>
               )}
               {filteredGithub.length > 0 ? (
@@ -700,11 +696,11 @@ export default function RepositoryWorkspace() {
               ) : (
                 <StatePanel
                   icon={<Github size={20} />}
-                  title={query ? "No matching repositories" : "No repositories available"}
+                  title={query ? "ไม่พบ repository ที่ตรงกัน" : "ไม่มี repository ให้เลือก"}
                   description={
                     query
-                      ? "Try another name or clear the search."
-                      : "No repositories were returned for the current GitHub App access. Use the installation link above if you need to change the selected repositories."
+                      ? "ลองใช้ชื่ออื่นหรือล้างคำค้น"
+                      : "ไม่พบ repository ภายใต้สิทธิ์ GitHub App ปัจจุบัน ใช้ลิงก์การติดตั้งด้านบนเพื่อปรับรายการที่เลือก"
                   }
                 />
               )}

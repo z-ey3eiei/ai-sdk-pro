@@ -59,11 +59,11 @@ export default function ProviderSettings({
   const status = !byokEnabled
     ? {
         tone: "warning" as const,
-        message: "BYOK is unavailable in this deployment.",
+        message: "Deployment นี้ยังไม่เปิด BYOK",
       }
     : connectionStatus ?? {
         tone: "neutral" as const,
-        message: "Not connected. Save a provider key to enable chat.",
+        message: "ยังไม่เชื่อมต่อ ใส่ provider key เพื่อเปิดใช้งานแชต",
       };
 
   return (
@@ -77,19 +77,19 @@ export default function ProviderSettings({
         <div className="provider-settings-heading-copy">
           <span className="provider-settings-kicker">
             <KeyRound size={13} aria-hidden="true" />
-            {byokRequired ? "BYOK required" : "Bring your own key"}
+            {byokRequired ? "ต้องใช้ BYOK" : "ใช้ provider key ของคุณเอง"}
           </span>
-          <h2 id="provider-settings-title">Use your own provider</h2>
+          <h2 id="provider-settings-title">เลือก provider สำหรับแชตนี้</h2>
           <p id="provider-settings-description">
-            Choose a service and model for this chat. Your key is sent over
-            HTTPS to this server and the selected provider, never stored by this
-            app, and used only from this tab&apos;s memory. Your provider bills
-            your account; model availability depends on that account.
+            เลือก service และ model สำหรับบทสนทนานี้ key จะถูกส่งผ่าน HTTPS ไปยัง
+            เซิร์ฟเวอร์นี้และ provider ที่เลือก ไม่ถูกบันทึกโดยแอป และใช้จาก memory
+            ของ tab นี้เท่านั้น ค่าใช้จ่ายเรียกเก็บจากบัญชี provider ของคุณ
+            ความพร้อมใช้งานของ model ขึ้นกับบัญชีนั้น
           </p>
         </div>
         <div className="provider-settings-security" aria-label="Key handling">
           <ShieldCheck size={17} aria-hidden="true" />
-          <span>Memory only</span>
+          <span>อยู่ใน tab นี้เท่านั้น</span>
         </div>
       </div>
 
@@ -127,7 +127,7 @@ export default function ProviderSettings({
             ))}
           </select>
           <span className="provider-settings-field-note">
-            Availability depends on your provider account.
+            ความพร้อมใช้งานขึ้นกับบัญชี provider ของคุณ
           </span>
         </div>
 
@@ -149,8 +149,8 @@ export default function ProviderSettings({
             disabled={!byokEnabled}
           />
           <span id="byok-api-key-help" className="provider-settings-field-note">
-            Entry is local only. Connect does not verify the key or call a
-            provider.
+            คีย์ที่พิมพ์อยู่ในหน่วยความจำของ tab นี้เท่านั้น การกด Connect ยังไม่ตรวจสอบ key
+            และยังไม่เรียก provider
           </span>
         </div>
       </div>
@@ -170,9 +170,9 @@ export default function ProviderSettings({
             href={selectedProvider.keyUrl}
             target="_blank"
             rel="noreferrer"
-            aria-label={`Get a ${selectedProvider.label} API key (opens in a new tab)`}
+            aria-label={`เปิดหน้าออก ${selectedProvider.label} API key ในแท็บใหม่`}
           >
-            Get a key <ExternalLink size={12} aria-hidden="true" />
+            รับ key <ExternalLink size={12} aria-hidden="true" />
           </a>
           <button
             className="provider-settings-button provider-settings-button-primary"
@@ -180,30 +180,30 @@ export default function ProviderSettings({
             onClick={onConnect}
             disabled={!byokEnabled || !draftIsValid || isActive}
           >
-            {isActive ? "Saved in memory" : "Connect / save in memory"}
+            {isActive ? "เก็บไว้ในหน่วยความจำแล้ว" : "เชื่อม / เก็บในหน่วยความจำ"}
           </button>
           <button
             className="provider-settings-button provider-settings-button-quiet"
             type="button"
             onClick={onForget}
             disabled={!apiKey && !activeCredentials}
-            aria-label="Forget the API key from this tab"
+            aria-label="ล้าง API key จาก tab นี้"
           >
             <Trash2 size={13} aria-hidden="true" />
-            Forget key
+            ล้าง key
           </button>
         </div>
       </div>
 
       {configLoading && (
         <p className="provider-settings-config-note" role="status">
-          Loading chat configuration…
+          กำลังโหลดการตั้งค่าแชต…
         </p>
       )}
       {configError && !configLoading && (
         <p className="provider-settings-config-note" role="alert">
-          Chat configuration is temporarily unavailable. BYOK remains required;
-          no key was included in that check.
+          การตั้งค่าแชตยังตรวจสอบไม่ได้ชั่วคราว ระบบยังคงกำหนดให้ใช้ BYOK
+          และไม่ได้ส่ง key ไปกับการตรวจสอบนี้
         </p>
       )}
     </section>

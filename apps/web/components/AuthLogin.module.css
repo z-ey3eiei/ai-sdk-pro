@@ -1,0 +1,164 @@
+.page :global(.auth-topbar) {
+  width: min(1180px, calc(100% - 48px));
+  margin-inline: auto;
+}
+.page :global(.auth-stage) {
+  min-height: calc(100vh - 82px);
+  padding: clamp(40px, 8vh, 88px) 24px;
+  display: grid;
+  place-items: start center;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    #fff0ed 0,
+    #f8f7f6 48%,
+    #f3f2f1 100%
+  );
+}
+.page :global(.auth-card) {
+  width: min(100%, 560px);
+  padding: clamp(28px, 5vw, 48px);
+  border: 1px solid #e8e3e1;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 24px 70px #25201d12;
+}
+.page :global(.auth-card-mark) {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  color: #b52627;
+  background: #fff0ed;
+  margin-bottom: 25px;
+}
+.page :global(.auth-eyebrow),
+.page :global(.auth-card) h1,
+.page :global(.auth-card) p {
+  font-family: var(--font-ibm-plex-sans-thai), "IBM Plex Sans Thai", sans-serif;
+}
+.page :global(.auth-eyebrow) {
+  color: #a42b2c;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+.page :global(.auth-card) h1 {
+  color: #211f1e;
+  font-size: clamp(27px, 4vw, 36px);
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  margin: 10px 0 12px;
+}
+.page :global(.auth-intro) {
+  color: #625d5a;
+  font-size: 15px;
+  line-height: 1.8;
+  margin: 0 0 25px;
+}
+.page :global(.auth-github-button) {
+  width: 100%;
+  min-height: 52px;
+  justify-content: center;
+  border: 0;
+  border-radius: 11px;
+  background: #b52627;
+  color: #fff;
+  font:
+    600 15px var(--font-ibm-plex-sans-thai),
+    sans-serif;
+  box-shadow: 0 5px 14px #b5262726;
+}
+.page :global(.auth-github-button:hover:not(:disabled)) {
+  background: #982021;
+}
+.page :global(.auth-github-button:disabled) {
+  opacity: 0.55;
+}
+.page :global(.auth-alert),
+.page :global(.auth-setup-note) {
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 0 0 16px;
+}
+.page :global(.auth-alert) {
+  display: flex;
+  gap: 10px;
+  color: #8f2525;
+  background: #fff2f0;
+  border: 1px solid #f2ceca;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.page :global(.auth-status) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin: 14px 0 0;
+}
+.page :global(.auth-status-loading) {
+  color: #68615d;
+}
+.page :global(.auth-status-error) {
+  color: #9f2929;
+}
+.page :global(.auth-setup-note) {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  color: #704b18;
+  background: #fff8e9;
+  border: 1px solid #f0dfb9;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.page :global(.auth-setup-note p) {
+  margin: 4px 0;
+}
+.page :global(.auth-setup-note ul) {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+.page :global(.auth-trust-row) {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #eeeae8;
+  color: #45413f;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.page :global(.auth-trust-row svg) {
+  flex: 0 0 auto;
+  color: #39724d;
+  margin-top: 2px;
+}
+.page :global(.auth-privacy) {
+  margin: 12px 0 0;
+  color: #77716d;
+  font-size: 12px;
+  line-height: 1.75;
+}
+.page :global(a),
+.page :global(button) {
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+@media (max-width: 600px) {
+  .page :global(.auth-topbar) {
+    width: calc(100% - 32px);
+  }
+  .page :global(.auth-stage) {
+    min-height: calc(100vh - 70px);
+    padding: 28px 16px;
+  }
+  .page :global(.auth-card) {
+    border-radius: 17px;
+    padding: 26px 22px;
+  }
+}

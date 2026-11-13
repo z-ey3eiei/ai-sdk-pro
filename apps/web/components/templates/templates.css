@@ -177,7 +177,9 @@
   border: 1px solid var(--border);
   border-radius: 9px;
   background: var(--panel);
-  transition: border-color 0.15s, transform 0.15s;
+  transition:
+    border-color 0.15s,
+    transform 0.15s;
 }
 
 .starter-card:hover {
@@ -846,6 +848,175 @@
 
   .starter-detail-link {
     justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .starter-card {
+    transition: none;
+  }
+
+  .starter-card:hover {
+    transform: none;
+  }
+}
+
+/* Readability, touch targets and clear hierarchy for the starter catalog. */
+.templates-page-kicker,
+.starter-catalog-kicker,
+.starter-detail-kicker {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.templates-page-intro h1 {
+  max-width: 900px;
+  font-size: clamp(36px, 5.6vw, 66px);
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+}
+
+.starter-search {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.starter-search input {
+  min-height: 42px;
+  font-size: 14px;
+}
+
+.starter-filter-label,
+.starter-filter-button,
+.starter-results-row,
+.starter-card-category,
+.starter-card-meta,
+.starter-card-action,
+.starter-detail-breadcrumb,
+.starter-detail-action-note,
+.starter-detail-framework,
+.starter-archive-list dt,
+.starter-archive-list dd,
+.starter-local-guide p,
+.starter-workspace-link,
+.starter-contact-link,
+.starter-catalog-contact {
+  font-size: 12px;
+}
+
+.starter-filter-button {
+  min-height: 40px;
+  padding: 8px 11px;
+}
+
+.starter-filter-count,
+.starter-card-features span,
+.starter-archive-list code {
+  font-size: 11px;
+}
+
+.starter-card {
+  border-radius: 12px;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.starter-card:hover {
+  border-color: color-mix(in srgb, var(--fg) 35%, var(--border));
+  box-shadow: 0 12px 34px color-mix(in srgb, var(--fg) 7%, transparent);
+}
+
+.starter-card-link {
+  padding: clamp(18px, 2vw, 24px);
+}
+
+.starter-card-copy h3 {
+  line-height: 1.35;
+}
+
+.starter-card-description {
+  min-height: 4.8em;
+}
+
+.starter-card-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 15px;
+  padding-top: 13px;
+  border-top: 1px solid var(--border);
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.starter-detail-actions {
+  gap: 12px;
+}
+
+.starter-detail-deploy,
+.starter-detail-download,
+.starter-detail-link {
+  min-height: 44px;
+  border-radius: 8px;
+}
+
+.starter-devstack-notice,
+.starter-archive-card,
+.starter-local-guide {
+  border-radius: 10px;
+}
+
+.starter-detail-content {
+  align-items: start;
+}
+
+.starter-card-link:focus-visible,
+.starter-detail-container a:focus-visible,
+.starter-detail-container button:focus-visible,
+.starter-catalog button:focus-visible,
+.starter-catalog input:focus-visible,
+.starter-empty-state button:focus-visible {
+  outline: 3px solid #ff7474;
+  outline-offset: 3px;
+  border-radius: 5px;
+}
+
+@media (min-width: 901px) {
+  .starter-detail-sidebar {
+    position: sticky;
+    top: 20px;
+  }
+}
+
+@media (max-width: 900px) {
+  .starter-detail-sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .starter-catalog-heading > p {
+    text-align: left;
+  }
+
+  .starter-detail-content {
+    padding-top: 30px;
+  }
+}
+
+@media (max-width: 540px) {
+  .starter-card-description {
+    min-height: 0;
+  }
+
+  .starter-filter-list {
+    gap: 7px;
   }
 }
 

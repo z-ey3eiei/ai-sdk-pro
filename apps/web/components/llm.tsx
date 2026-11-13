@@ -30,21 +30,21 @@ import {
 
 const suggestions = [
   {
-    title: "Build my first agent",
-    text: "Use searchDocs to explain how I can define my first ToolLoopAgent with tools.",
-    detail: "Learn the fundamentals with local docs.",
+    title: "สร้าง agent ตัวแรก",
+    text: "ใช้ searchDocs อธิบายวิธีเริ่ม ToolLoopAgent และเพิ่ม tools สำหรับงานของฉัน",
+    detail: "ทำความเข้าใจ agent จากเอกสารในโปรเจกต์",
     icon: Code2,
   },
   {
-    title: "Deploy on my VPS",
-    text: "Search the docs and explain how I can self-host this project with Docker and Caddy.",
-    detail: "Your infrastructure. Your rules.",
+    title: "Self-host บน VPS",
+    text: "ค้นเอกสารและอธิบายวิธี self-host โปรเจกต์นี้ด้วย Docker และ Caddy",
+    detail: "ตรวจขั้นตอนบน infrastructure ของคุณเอง",
     icon: Globe2,
   },
   {
-    title: "Explore the SDK",
-    text: "Use searchDocs to show how the React client SDK connects to the streaming endpoint.",
-    detail: "Connect your own app in a few lines.",
+    title: "เชื่อม Client SDK",
+    text: "ใช้ searchDocs แสดงวิธีเชื่อม React client SDK กับ streaming endpoint",
+    detail: "ดู typed client และตัวอย่างการใช้งาน",
     icon: FileText,
   },
 ];
@@ -187,6 +187,7 @@ export default function LLMChat({
   }, [configApi]);
 
   useEffect(() => {
+    if (!messages.length) return;
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, status]);
 
@@ -302,7 +303,7 @@ export default function LLMChat({
     }
   }
 
-  const modelLabel = selectedModel?.label ?? "Choose a model";
+  const modelLabel = selectedModel?.label ?? "เลือกรุ่นโมเดล";
 
   return (
     <>
@@ -311,8 +312,8 @@ export default function LLMChat({
         <div className="playground-top">
           <div className="playground-title">
             <BrandMark size={18} />
-            Agent playground <span>v{APP_VERSION}</span>
-            <span>LIVE</span>
+            AI agent playground <span>v{APP_VERSION}</span>
+            <span>BYOK</span>
           </div>
           <div className="playground-actions">
             <span className="model-tag">
@@ -328,13 +329,42 @@ export default function LLMChat({
                 clearError();
                 setInput("");
               }}
-              aria-label="Start a new chat"
+              aria-label="เริ่มบทสนทนาใหม่"
             >
               <Plus size={13} aria-hidden="true" />
-              New chat
+              เริ่มใหม่
             </button>
           </div>
         </div>
+        <section className="chat-guide" aria-labelledby="chat-guide-title">
+          <div className="chat-guide-heading">
+            <div>
+              <span className="chat-guide-kicker">วิธีเริ่มใช้งาน</span>
+              <h2 id="chat-guide-title">คุยกับ agent ใน 3 ขั้นตอน</h2>
+            </div>
+            <span className="chat-guide-badge">BYOK · key อยู่ใน tab นี้</span>
+          </div>
+          <ol className="chat-guide-steps">
+            <li>
+              <span>01</span>
+              <strong>เลือก provider และ model</strong>
+            </li>
+            <li>
+              <span>02</span>
+              <strong>ใส่ key แล้วกด Connect</strong>
+            </li>
+            <li>
+              <span>03</span>
+              <strong>ส่งคำถามหรือเลือกตัวอย่าง</strong>
+            </li>
+          </ol>
+          <p>
+            Key อยู่ใน memory ของ tab และจะถูกส่งผ่าน HTTPS เมื่อส่งคำขอไปยัง
+            ai-sdk.pro และ provider ที่เลือก ไม่บันทึกใน browser storage,
+            database, logs หรือข้อความสนทนา ปิด tab หรือกด Forget key
+            เพื่อล้างจากหน่วยความจำของหน้านี้
+          </p>
+        </section>
         <div className="chat-content">
           <ProviderSettings
             provider={provider}
@@ -358,11 +388,11 @@ export default function LLMChat({
               <span className="welcome-mark">
                 <BrandMark size={33} />
               </span>
-              <h1>What will you build?</h1>
+              <h1>วันนี้อยากสร้างอะไร?</h1>
               <p>
-                One agent. Real tools. A world of possibilities.
+                ทดลอง agent ที่ใช้ tools และตอบกลับแบบ streaming
                 <br />
-                Ask about agents, your SDK, or self-hosting.
+                ถามเรื่อง agent, SDK หรือการ self-host โปรเจกต์นี้
               </p>
               <div className="suggestions">
                 {suggestions.map(s => (
@@ -442,7 +472,9 @@ export default function LLMChat({
                             ) : (
                               <Copy size={11} />
                             )}
-                            {copied === message.id ? "Copied" : "Copy response"}
+                            {copied === message.id
+                              ? "คัดลอกแล้ว"
+                              : "คัดลอกคำตอบ"}
                           </button>
                         )}
                       </div>
@@ -455,7 +487,7 @@ export default function LLMChat({
           {status === "submitted" && (
             <div className="thinking" role="status" aria-live="polite">
               <BrandMark size={15} />
-              Thinking
+              กำลังประมวลผล
               <span>
                 <i />
                 <i />
@@ -466,8 +498,8 @@ export default function LLMChat({
           {error && (
             <div className="chat-error" role="alert">
               <p>
-                The provider could not complete this request. Check the selected
-                provider, model, and key, then retry.
+                Provider ไม่สามารถทำคำขอนี้ให้เสร็จได้ ตรวจ provider, model และ
+                key แล้วลองอีกครั้ง
               </p>
               <button
                 type="button"
@@ -478,15 +510,13 @@ export default function LLMChat({
                 }}
                 disabled={busy || !canSend}
               >
-                <RotateCcw size={11} aria-hidden="true" /> Retry
+                <RotateCcw size={11} aria-hidden="true" /> ลองอีกครั้ง
               </button>
             </div>
           )}
           {!configState.byokEnabled && (
             <div className="chat-error" role="alert">
-              <p>
-                BYOK is not enabled for this deployment, so chat is unavailable.
-              </p>
+              <p>Deployment นี้ยังไม่เปิด BYOK จึงยังส่งข้อความไม่ได้</p>
             </div>
           )}
           <div ref={endRef} />
@@ -498,11 +528,11 @@ export default function LLMChat({
               onChange={event => setInput(event.target.value)}
               placeholder={
                 canSend
-                  ? "Ask something. Build something."
-                  : "Connect a provider to start chatting."
+                  ? "ถามเกี่ยวกับ agent, SDK หรือ self-hosting…"
+                  : "เลือก provider และ Connect ก่อนเริ่มสนทนา"
               }
               rows={2}
-              aria-label="Message to the agent"
+              aria-label="ข้อความถึง agent"
               aria-describedby="composer-note"
               onKeyDown={event => {
                 if (
@@ -517,14 +547,14 @@ export default function LLMChat({
             />
             <div className="composer-controls">
               <span className="composer-hint">
-                3 tools available · Shift + Enter for a new line
+                มี tools 3 รายการ · Shift + Enter เพื่อขึ้นบรรทัดใหม่
               </span>
               {busy ? (
                 <button
                   className="send-button"
                   type="button"
                   onClick={() => stop()}
-                  aria-label="Stop generation"
+                  aria-label="หยุดการสร้างคำตอบ"
                 >
                   <Square size={12} fill="currentColor" aria-hidden="true" />
                 </button>
@@ -533,7 +563,7 @@ export default function LLMChat({
                   className="send-button"
                   type="submit"
                   disabled={!input.trim() || !canSend}
-                  aria-label="Send message"
+                  aria-label="ส่งข้อความ"
                 >
                   <ArrowUp size={17} aria-hidden="true" />
                 </button>
@@ -541,8 +571,8 @@ export default function LLMChat({
             </div>
           </form>
           <p id="composer-note" className="composer-note">
-            AI can make mistakes. Verify important details. Chat is not stored
-            on our server.
+            AI อาจตอบผิด ตรวจสอบข้อมูลสำคัญก่อนนำไปใช้ ·
+            บทสนทนาไม่ถูกเก็บบนเซิร์ฟเวอร์
           </p>
         </div>
       </main>

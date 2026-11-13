@@ -1,0 +1,401 @@
+.page {
+  min-height: 100vh;
+  color: #292523;
+  background: #f6f5f4;
+  font-family: var(--font-ibm-plex-sans-thai), "IBM Plex Sans Thai", sans-serif;
+}
+.page :global(.repository-viewer-topbar) {
+  background: #fff;
+  border-bottom: 1px solid #e9e5e3;
+}
+.page :global(.repository-viewer-topbar-inner) {
+  width: min(1280px, calc(100% - 48px));
+  min-height: 66px;
+  margin: auto;
+}
+.page :global(.repository-viewer-back-link) {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #9f292a;
+  font-size: 12px;
+  font-weight: 600;
+}
+.page :global(.repository-viewer-header),
+.page :global(.repository-viewer-scope-note),
+.page :global(.repository-viewer-workbench),
+.page :global(.repository-viewer-state) {
+  width: min(1280px, calc(100% - 48px));
+  margin-inline: auto;
+}
+.page :global(.repository-viewer-header) {
+  margin-top: 32px;
+  padding: clamp(22px, 3vw, 32px);
+  border: 1px solid #e8e3e1;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 28px #332a2708;
+}
+.page :global(.repository-viewer-heading-row) {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+}
+.page :global(.repository-viewer-eyebrow) {
+  color: #a72b2c;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+.page :global(.repository-viewer-title-block h1) {
+  margin: 7px 0 6px;
+  color: #282321;
+  font-size: clamp(25px, 3.4vw, 34px);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.page :global(.repository-viewer-title-block p) {
+  margin: 0;
+  color: #6f6763;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.page :global(.repository-viewer-header-actions) {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.page :global(.repository-viewer-button) {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.18s ease;
+}
+.page :global(.repository-viewer-button-secondary) {
+  color: #504844;
+  border: 1px solid #ded8d5;
+  background: #fff;
+}
+.page :global(.repository-viewer-button-secondary:hover) {
+  border-color: #d8aaa5;
+  color: #9d292a;
+  background: #fff8f6;
+}
+.page :global(.repository-viewer-button-primary) {
+  color: #fff;
+  border: 1px solid #ad2d2e;
+  background: #ad2d2e;
+}
+.page :global(.repository-viewer-button-primary:hover) {
+  background: #922425;
+}
+.page :global(.repository-viewer-meta-grid) {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #efedeb;
+}
+.page :global(.repository-viewer-meta-grid > div) {
+  min-width: 0;
+}
+.page :global(.repository-viewer-meta-grid > div > span) {
+  display: block;
+  margin-bottom: 7px;
+  color: #827a75;
+  font-size: 10px;
+}
+.page :global(.repository-viewer-meta-grid strong) {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: #37312e;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.page :global(.repository-viewer-commit) {
+  font-family: ui-monospace, monospace;
+  font-size: 10px !important;
+}
+.page :global(.repository-viewer-scope-note) {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-top: 14px;
+  padding: 14px 17px;
+  border: 1px solid #dbe8de;
+  border-radius: 12px;
+  color: #48634e;
+  background: #f3faf4;
+}
+.page :global(.repository-viewer-scope-note svg) {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+.page :global(.repository-viewer-scope-note p) {
+  flex: 1;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.page :global(.repository-viewer-scope-note > span) {
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border-radius: 99px;
+  color: #8b5713;
+  background: #fff0d7;
+  font-size: 9px;
+  font-weight: 700;
+}
+.page :global(.repository-viewer-workbench) {
+  display: grid;
+  grid-template-columns: minmax(250px, 320px) minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 14px;
+  margin-bottom: 48px;
+}
+.page :global(.repository-viewer-files),
+.page :global(.repository-viewer-code-pane) {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e4dfdc;
+  border-radius: 13px;
+  background: #fff;
+}
+.page :global(.repository-viewer-files-heading) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #ece8e6;
+}
+.page :global(.repository-viewer-files-heading h2) {
+  margin: 4px 0 0;
+  color: #302a28;
+  font-size: 16px;
+}
+.page :global(.repository-viewer-files-heading > svg) {
+  color: #a52d2d;
+}
+.page :global(.repository-viewer-file-list) {
+  max-height: 560px;
+  overflow: auto;
+  padding: 7px;
+}
+.page :global(.repository-viewer-file-list button) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 9px;
+  border: 0;
+  border-radius: 7px;
+  color: #5a524e;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+.page :global(.repository-viewer-file-list button:hover) {
+  background: #f7f4f2;
+}
+.page :global(.repository-viewer-file-list button.active) {
+  color: #922526;
+  background: #fff0ed;
+}
+.page :global(.repository-viewer-file-name) {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font:
+    11px ui-monospace,
+    SFMono-Regular,
+    monospace;
+}
+.page :global(.repository-viewer-file-bytes) {
+  flex: 0 0 auto;
+  color: #8a817c;
+  font-size: 9px;
+}
+.page :global(.repository-viewer-empty-files) {
+  padding: 22px 16px;
+  color: #77706c;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.page :global(.repository-viewer-code-heading) {
+  min-height: 61px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 17px;
+  border-bottom: 1px solid #e7e2df;
+  background: #fbfaf9;
+}
+.page :global(.repository-viewer-code-path) {
+  display: block;
+  overflow-wrap: anywhere;
+  color: #302a28;
+  font:
+    12px ui-monospace,
+    monospace;
+}
+.page :global(.repository-viewer-code-subtitle) {
+  display: block;
+  margin-top: 4px;
+  color: #817975;
+  font-size: 10px;
+}
+.page :global(.repository-viewer-language) {
+  padding: 4px 8px;
+  border-radius: 99px;
+  color: #77504b;
+  background: #f5e9e6;
+  font-size: 10px;
+}
+.page :global(.repository-viewer-code) {
+  min-height: 320px;
+  max-height: 650px;
+  overflow: auto;
+  margin: 0;
+  padding: 20px;
+  color: #ede9e7;
+  background: #242120;
+  font:
+    12px/1.75 ui-monospace,
+    SFMono-Regular,
+    monospace;
+  tab-size: 2;
+  white-space: pre;
+}
+.page :global(.repository-viewer-code-state) {
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  color: #706864;
+  text-align: center;
+  font-size: 12px;
+}
+.page :global(.repository-viewer-code-error) {
+  color: #a12d2d;
+}
+.page :global(.repository-viewer-state) {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 42px;
+  padding: 32px;
+  border: 1px solid #e8e3e1;
+  border-radius: 16px;
+  color: #a62c2d;
+  background: #fff;
+  text-align: center;
+}
+.page :global(.repository-viewer-state h1) {
+  margin: 0;
+  color: #2c2725;
+  font-size: 23px;
+}
+.page :global(.repository-viewer-state p) {
+  max-width: 520px;
+  margin: 0;
+  color: #706864;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.page :global(.repository-viewer-state-actions) {
+  display: flex;
+  gap: 8px;
+  margin-top: 7px;
+}
+@media (max-width: 800px) {
+  .page :global(.repository-viewer-workbench) {
+    grid-template-columns: 1fr;
+  }
+  .page :global(.repository-viewer-file-list) {
+    max-height: 260px;
+  }
+  .page :global(.repository-viewer-meta-grid) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .page :global(.repository-viewer-topbar-inner),
+  .page :global(.repository-viewer-header),
+  .page :global(.repository-viewer-scope-note),
+  .page :global(.repository-viewer-workbench),
+  .page :global(.repository-viewer-state) {
+    width: calc(100% - 28px);
+  }
+  .page :global(.repository-viewer-heading-row) {
+    flex-direction: column;
+  }
+  .page :global(.repository-viewer-header-actions) {
+    width: 100%;
+  }
+  .page :global(.repository-viewer-header-actions .repository-viewer-button) {
+    flex: 1;
+  }
+  .page :global(.repository-viewer-scope-note) {
+    flex-wrap: wrap;
+  }
+  .page :global(.repository-viewer-meta-grid) {
+    gap: 16px 10px;
+  }
+  .page :global(.repository-viewer-code) {
+    font-size: 11px;
+    padding: 15px;
+  }
+}
+
+/* Improve small repository metadata and preserve comfortable touch targets. */
+.page :global(.repository-viewer-eyebrow),
+.page :global(.repository-viewer-meta-grid > div > span),
+.page :global(.repository-viewer-file-bytes),
+.page :global(.repository-viewer-code-subtitle),
+.page :global(.repository-viewer-language),
+.page :global(.repository-viewer-commit) {
+  font-size: 11px !important;
+  line-height: 1.5;
+}
+
+.page :global(.repository-viewer-meta-grid > div > span),
+.page :global(.repository-viewer-file-bytes),
+.page :global(.repository-viewer-code-subtitle) {
+  color: #6f6763;
+}
+
+.page :global(.repository-viewer-button) {
+  min-height: 44px;
+}
+
+.page :global(.repository-viewer-file-list button) {
+  min-height: 42px;
+}
+
+.page :global(.repository-viewer-button:focus-visible),
+.page :global(.repository-viewer-file-list button:focus-visible),
+.page :global(.repository-viewer-back-link:focus-visible) {
+  outline: 3px solid #a72c2c;
+  outline-offset: 3px;
+}
