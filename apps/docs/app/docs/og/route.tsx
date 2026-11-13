@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { docs } from '@/lib/content';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export function GET(request: Request) {
   const slug = new URL(request.url).searchParams.get('slug');
