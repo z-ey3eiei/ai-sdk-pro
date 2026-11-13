@@ -104,13 +104,13 @@ Completion means a route-by-route pass over the entire agreed frontend scope, in
 
 ### Design direction
 
-ยึด identity black/red ที่มีอยู่ แต่ปรับโครงสร้างให้เป็น technical workbench ที่อ่านง่าย: พื้นหลังดำ/ถ่านเป็น canvas, surface/card หลายระดับที่แยกขอบชัด, accent แดงจำกัดไว้ที่ action/สถานะสำคัญ และใช้สีสถานะที่มี contrast เพียงพอ หลีกเลี่ยงตัวอักษรเทาอ่อนเกินไปบนดำ เพิ่ม focus ring ที่มองเห็นได้ และรักษา layout ไม่ให้การ์ดหรือ code ยุบ/ล้นบนจอเล็ก
+ใช้หน้า Vercel ที่ผู้ใช้ส่งมา (`https://vercel.com/`) เป็น visual mood reference เท่านั้น: canvas สีขาว/off-white, typography สีดำชัดและมีขนาดที่สร้างลำดับ, negative space มาก, navigation เรียบ, เส้นแบ่ง neutral บาง และ controls สี monochrome ที่ไม่ตกแต่งเกินจำเป็น ลด gradient/glow และจำนวนการ์ดที่ไม่มีหน้าที่ โดยจัดการ์ดเฉพาะจุดที่ช่วยอธิบายลำดับงานและสถานะจริง Default เป็น light theme; ให้ theme toggle เดิมใช้ dark mode ได้อย่างสอดคล้องเมื่อผู้ใช้เลือก
 
-ใช้ IBM Plex Sans Thai ที่ self-host ผ่าน `next/font` สำหรับ UI/ข้อความไทย-อังกฤษ และ monospace สำหรับ terminal/command/log; ปรับ type scale, line-height และ weight ให้หัวข้อ, metadata, helper text และ code แยกชั้นกันชัดเจน จัดระยะ card/panel ตาม density ของข้อมูล: desktop ใช้ sidebar และ work area, tablet ยุบ navigation, mobile เปลี่ยน sidebar เป็น Drawer และเรียง panel ตามลำดับงาน
+ใช้ IBM Plex Sans Thai ที่ self-host ผ่าน `next/font` สำหรับ UI/ข้อความไทย-อังกฤษ และ monospace สำหรับ terminal/command/log; ปรับ type scale, line-height และ weight ให้หัวข้อ, metadata, helper text และ code แยกชั้นกันชัดเจน จัดลำดับ hero ให้มีหัวข้อเด่น พื้นที่หายใจ และ workflow illustration ของ ai-sdk.pro ที่ไม่ยืมโลโก้ Vercel; desktop ใช้ sidebar/work area ที่โปร่ง, tablet ยุบ navigation, mobile เปลี่ยน sidebar เป็น Drawer และเรียง panel ตามลำดับงาน
 
 Interaction philosophy คือทุก control ตอบสนองด้วย state ที่คาดเดาได้, keyboard accessible และไม่ทำให้ demo ดูเป็น production: wizard เปลี่ยน step ได้, filter/search ทำงานกับ sample fixtures, tab/menu/dialog มี focus management, copy command แสดง toast, และปุ่ม deploy ใน prototype ต้องไม่รันงานจริงหรือแสดงความสำเร็จปลอม เคารพ `prefers-reduced-motion`
 
-Brand essence: “เครื่องมือเตรียมเว็บให้พร้อม build/deploy จาก server ที่คุณควบคุมได้ โดยไม่ซ่อนว่าแต่ละ integration ทำได้ถึงขั้นไหน” น้ำเสียงตรง ชัด และบอก boundary ก่อน CTA ตัวอย่าง microcopy: “ดูเส้นทางจาก repo ถึง deployment” และ “หน้าจอนี้เป็น prototype — ยังไม่เชื่อม terminal หรือ deploy จริง” ใช้ mark/wordmark ai-sdk.pro ปัจจุบันและ accent #ff0000; ไม่สร้างโลโก้หรือ business metric สมมติ
+Brand essence: “เครื่องมือเตรียมเว็บให้พร้อม build/deploy จาก server ที่คุณควบคุมได้ โดยไม่ซ่อนว่าแต่ละ integration ทำได้ถึงขั้นไหน” รักษา wordmark ai-sdk.pro และใช้แดงเดิมเป็น accent เล็กน้อยบนฐาน monochrome; ห้ามใช้ triangle/logo/assets/copy/customer logos ของ Vercel หรือทำให้เข้าใจว่ามี affiliation ใช้เฉพาะข้อมูลจริงและตัวอย่างที่ติดป้ายชัดเจน ไม่มี business metrics หรือ deployment success สมมติ การอ้างอิง mood ใหม่นี้เป็นคำสั่งล่าสุดของผู้ใช้และ supersedes ข้อจำกัด “do not change existing design” เดิมสำหรับ frontend prototype branch นี้เท่านั้น; ไม่ใช่การอนุญาตให้ merge/deploy production
 
 ### Delivery boundary
 

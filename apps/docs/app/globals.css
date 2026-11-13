@@ -1,8 +1,20 @@
-@import '@aisdkpro/ui/styles.css';
-@import 'fumadocs-ui/css/neutral.css';
-@import 'fumadocs-ui/css/preset.css';
+@import "@aisdkpro/ui/styles.css";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
 
 :root {
+  --docs-bg: #ffffff;
+  --docs-panel: #ffffff;
+  --docs-panel-raised: #f7f7f7;
+  --docs-fg: #171717;
+  --docs-muted: #525252;
+  --docs-subtle: #6b6b6b;
+  --docs-border: #e5e5e5;
+  --docs-accent: #b42318;
+  color-scheme: light;
+}
+
+:root.dark {
   --docs-bg: #090909;
   --docs-panel: #111111;
   --docs-panel-raised: #151515;
@@ -14,10 +26,15 @@
   color-scheme: dark;
 }
 
-html.dark,
-html.dark body {
+html,
+html body {
   background: var(--docs-bg);
   color: var(--docs-fg);
+  color-scheme: light;
+}
+
+html.dark,
+html.dark body {
   color-scheme: dark;
 }
 
@@ -37,13 +54,18 @@ body {
 }
 
 .docs-wordmark em {
-  border: 1px solid #713333;
+  border: 1px solid #e7c9c6;
   border-radius: 0.25rem;
-  color: #ff7777;
+  color: #9f2118;
   font-size: 0.55em;
   font-style: normal;
   letter-spacing: 0.08em;
   padding: 0.18rem 0.32rem;
+}
+
+html.dark .docs-wordmark em {
+  border-color: #713333;
+  color: #ff7777;
 }
 
 #nd-docs-layout {
@@ -57,9 +79,16 @@ body {
   --fd-primary-foreground: #fff;
 }
 
-#nd-docs-layout :where(a, button, input, select, textarea, [tabindex]):focus-visible {
-  outline: 2px solid #ff7474;
+#nd-docs-layout
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid #a3271d;
   outline-offset: 3px;
+}
+
+html.dark
+  #nd-docs-layout
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline-color: #ff7474;
 }
 
 #nd-docs-layout :where(a) {
@@ -69,19 +98,29 @@ body {
 .docs-context-note {
   max-width: 76ch;
   margin: 0 auto 1.5rem;
-  border: 1px solid #422828;
+  border: 1px solid #e5e5e5;
   border-inline-start: 3px solid var(--docs-accent);
   border-radius: 0.55rem;
-  background: linear-gradient(110deg, #171010, #101010 70%);
-  color: #c9bebe;
+  background: #f8f8f8;
+  color: #525252;
   font-size: 0.875rem;
   line-height: 1.7;
   padding: 0.8rem 1rem;
 }
 
+html.dark .docs-context-note {
+  border-color: #422828;
+  background: linear-gradient(110deg, #171010, #101010 70%);
+  color: #c9bebe;
+}
+
 .docs-context-note strong {
-  color: #f4dada;
+  color: #171717;
   font-weight: 600;
+}
+
+html.dark .docs-context-note strong {
+  color: #f4dada;
 }
 
 .docs-markdown {
@@ -132,16 +171,27 @@ body {
 }
 
 .docs-markdown a {
-  color: #ff7777;
+  color: #a3271d;
   text-decoration: underline;
-  text-decoration-color: #8f4545;
+  text-decoration-color: #b46b64;
   text-underline-offset: 0.2em;
-  transition: color 140ms ease, text-decoration-color 140ms ease;
+  transition:
+    color 140ms ease,
+    text-decoration-color 140ms ease;
 }
 
 .docs-markdown a:hover {
-  color: #ffaaaa;
+  color: #7f1d16;
   text-decoration-color: currentColor;
+}
+
+html.dark .docs-markdown a {
+  color: #ff9999;
+  text-decoration-color: #8f4545;
+}
+
+html.dark .docs-markdown a:hover {
+  color: #ffaaaa;
 }
 
 .docs-markdown ul,
@@ -154,19 +204,29 @@ body {
 }
 
 .docs-markdown blockquote {
-  border-inline-start: 2px solid #704040;
-  color: #c5baba;
+  border-inline-start: 2px solid #d4d4d4;
+  color: #525252;
   padding-inline-start: 1rem;
 }
 
+html.dark .docs-markdown blockquote {
+  border-color: #704040;
+  color: #c5baba;
+}
+
 .docs-markdown :not(pre) > code {
-  background: #191919;
+  background: #f4f4f4;
   border: 1px solid var(--docs-border);
   border-radius: 0.3rem;
-  color: #f0d0d0;
+  color: #333333;
   font-size: 0.86em;
   padding: 0.12rem 0.34rem;
   overflow-wrap: anywhere;
+}
+
+html.dark .docs-markdown :not(pre) > code {
+  background: #191919;
+  color: #f0d0d0;
 }
 
 .docs-markdown .code-block {
@@ -179,8 +239,12 @@ body {
   min-height: 0;
   max-width: 100%;
   overflow: auto;
-  border: 1px solid #292929;
+  border: 1px solid #e5e5e5;
   border-radius: 0.65rem;
+}
+
+html.dark .docs-markdown .code-block pre {
+  border-color: #292929;
 }
 
 .docs-page-title {

@@ -218,9 +218,9 @@ export function Header({
   const [search, setSearch] = useState(false);
   const [query, setQuery] = useState("");
   const [menu, setMenu] = useState(false);
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(false);
   useEffect(() => {
-    const saved = localStorage.getItem("aisdkpro-theme") !== "light";
+    const saved = localStorage.getItem("aisdkpro-theme") === "dark";
     setDark(saved);
     document.documentElement.classList.toggle("dark", saved);
   }, []);

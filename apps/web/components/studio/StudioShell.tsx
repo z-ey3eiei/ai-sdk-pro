@@ -132,11 +132,29 @@ export default function StudioShell() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [name, setName] = useState("");
+  const [nameError, setNameError] = useState("");
   const [framework, setFramework] = useState("Next.js");
+  const [target, setTarget] = useState("");
+  const [targetError, setTargetError] = useState("");
   const [step, setStep] = useState(1);
   const [created, setCreated] = useState(false);
   const [notice, setNotice] = useState("");
   const [isMobileNavigation, setIsMobileNavigation] = useState(false);
+  const goForward = () => {
+    if (step === 1 && !name.trim()) {
+      setNameError("กรุณาระบุชื่อโปรเจกต์ก่อนดำเนินการต่อ");
+      document.getElementById("projectName")?.focus();
+      return;
+    }
+    if (step === 2 && !target) {
+      setTargetError("เลือก deployment target สำหรับ draft ก่อนดำเนินการต่อ");
+      document.getElementById("target-option-vercel")?.focus();
+      return;
+    }
+    setNameError("");
+    setTargetError("");
+    setStep(step + 1);
+  };
   useEffect(() => {
     const media = window.matchMedia("(max-width: 760px)");
     const update = () => setIsMobileNavigation(media.matches);
@@ -561,12 +579,17 @@ export default function StudioShell() {
                     </p>
                     <div>
                       <b>{name || "Untitled project"}</b>
-                      <small>{framework} · repository ยังไม่เชื่อมต่อ</small>
+                      <small>
+                        {framework} · {target} · repository ยังไม่เชื่อมต่อ
+                      </small>
                     </div>
                     {button("เริ่ม draft ใหม่", () => {
                       setCreated(false);
                       setStep(1);
                       setName("");
+                      setNameError("");
+                      setTarget("");
+                      setTargetError("");
                     })}
                   </div>
                 ) : (
@@ -592,7 +615,7 @@ export default function StudioShell() {
                         {step === 1
                           ? "สร้างรายการตั้งค่าใน browser โดยไม่เชื่อมบัญชีหรือ repository."
                           : step === 2
-                            ? "เลือก framework สำหรับแสดงตัวอย่างเท่านั้น."
+                            ? "เลือก framework และ target สำหรับ draft ตัวอย่าง — ยังไม่เชื่อมต่อบริการจริง."
                             : "ยืนยันขอบเขต prototype ก่อนสร้าง draft."}
                       </p>
                       {step === 1 && (
@@ -601,12 +624,23 @@ export default function StudioShell() {
                           <Input
                             id="projectName"
                             value={name}
-                            onChange={e => setName(e.target.value)}
+                            onChange={e => {
+                              setName(e.target.value);
+                              setNameError("");
+                            }}
+                            aria-invalid={Boolean(nameError)}
+                            aria-describedby="project-name-help"
+                            required
                             placeholder="เช่น storefront-web"
                             maxLength={60}
                           />
-                          <small>
-                            บันทึกชั่วคราวใน state ของหน้านี้เท่านั้น
+                          <small
+                            id="project-name-help"
+                            role={nameError ? "alert" : undefined}
+                            className={nameError ? styles.formError : undefined}
+                          >
+                            {nameError ||
+                              "จำเป็น · บันทึกชั่วคราวใน state ของหน้านี้เท่านั้น"}
                           </small>
                           <label htmlFor="repoUrl">
                             Repository URL (ไม่เชื่อมต่อ)
@@ -623,40 +657,124 @@ export default function StudioShell() {
                         </div>
                       )}
                       {step === 2 && (
-                        <div className={styles.optionList}>
-                          {["Next.js", "Astro", "Vite", "Node.js อื่น ๆ"].map(
-                            x => (
-                              <Button
-                                onClick={() => setFramework(x)}
-                                className={`${styles.option} ${framework === x ? styles.optionSelected : ""}`}
-                                key={x}
-                              >
-                                <span>{x}</span>
-                                <span>
-                                  {framework === x ? (
-                                    <Check size={16} />
-                                  ) : (
-                                    "เลือก"
-                                  )}
-                                </span>
-                              </Button>
-                            )
-                          )}
+                        <div className={styles.wizardSelections}>
+                          <div className={styles.wizardOptionGroup}>
+                            <div className={styles.optionGroupHeading}>
+                              <span>Framework</span>
+                              <small>เลือก 1 รายการ</small>
+                            </div>
+                            <div
+                              className={styles.optionList}
+                              role="group"
+                              aria-label="Framework"
+                            >
+                              {[
+                                "Next.js",
+                                "Astro",
+                                "Vite",
+                                "Node.js อื่น ๆ",
+                              ].map(x => (
+                                <Button
+                                  onClick={() => setFramework(x)}
+                                  className={`${styles.option} ${framework === x ? styles.optionSelected : ""}`}
+                                  aria-pressed={framework === x}
+                                  key={x}
+                                >
+                                  <span>{x}</span>
+                                  <span>
+                                    {framework === x ? (
+                                      <Check size={16} />
+                                    ) : (
+                                      "เลือก"
+                                    )}
+                                  </span>
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+                          <div className={styles.wizardOptionGroup}>
+                            <div className={styles.optionGroupHeading}>
+                              <span>Deployment target</span>
+                              <small>ยังไม่เชื่อมต่อ</small>
+                            </div>
+                            <div
+                              className={styles.optionList}
+                              role="group"
+                              aria-label="Deployment target"
+                              aria-describedby="target-help"
+                            >
+                              {demoTargets.map((item, index) => (
+                                <Button
+                                  id={
+                                    index === 0
+                                      ? "target-option-vercel"
+                                      : undefined
+                                  }
+                                  onClick={() => {
+                                    setTarget(item.name);
+                                    setTargetError("");
+                                  }}
+                                  className={`${styles.option} ${styles.targetOption} ${target === item.name ? styles.optionSelected : ""}`}
+                                  aria-pressed={target === item.name}
+                                  aria-label={`${item.name} — ${item.description}`}
+                                  key={item.name}
+                                >
+                                  <span className={styles.optionText}>
+                                    <b>{item.name}</b>
+                                    <small>{item.kind} · ยังไม่เชื่อมต่อ</small>
+                                  </span>
+                                  <span>
+                                    {target === item.name ? (
+                                      <Check size={16} />
+                                    ) : (
+                                      "เลือก"
+                                    )}
+                                  </span>
+                                </Button>
+                              ))}
+                            </div>
+                            <small
+                              id="target-help"
+                              role={targetError ? "alert" : undefined}
+                              className={
+                                targetError ? styles.formError : undefined
+                              }
+                            >
+                              {targetError ||
+                                "เลือกเพื่อดูตัวอย่างเท่านั้น · ไม่มีการเชื่อมต่อหรือ deploy จริง"}
+                            </small>
+                          </div>
                         </div>
                       )}
                       {step === 3 && (
-                        <div className={styles.safetyCallout}>
-                          <LockKeyhole size={19} />
-                          <div>
-                            <b>ไม่มีการส่ง credentials</b>
-                            <p>
-                              Build code ที่ไม่เชื่อถือต้องทำงานใน isolated
-                              environment ห่างจาก control-plane secrets,
-                              database และ GitHub credentials. Credentials
-                              จริงเก็บเฉพาะใน server-side secret store.
-                            </p>
+                        <>
+                          <div className={styles.reviewSummary}>
+                            <div>
+                              <small>PROJECT</small>
+                              <b>{name}</b>
+                            </div>
+                            <div>
+                              <small>BUILD PROFILE</small>
+                              <b>{framework}</b>
+                            </div>
+                            <div>
+                              <small>DEPLOYMENT TARGET · SAMPLE</small>
+                              <b>{target}</b>
+                            </div>
                           </div>
-                        </div>
+                          <div className={styles.safetyCallout}>
+                            <LockKeyhole size={19} />
+                            <div>
+                              <b>ไม่มีการส่ง credentials</b>
+                              <p>
+                                Build code ที่ไม่เชื่อถือต้องทำงานใน isolated
+                                environment ห่างจาก control-plane secrets,
+                                database และ GitHub credentials. Credentials
+                                จริงเก็บเฉพาะใน server-side secret store.
+                              </p>
+                            </div>
+                          </div>
+                        </>
                       )}
                     </div>
                     <div className={styles.wizardFoot}>
@@ -675,7 +793,7 @@ export default function StudioShell() {
                       {step < 3
                         ? button(
                             "ถัดไป",
-                            () => setStep(step + 1),
+                            goForward,
                             "primary",
                             <ArrowRight size={15} />
                           )

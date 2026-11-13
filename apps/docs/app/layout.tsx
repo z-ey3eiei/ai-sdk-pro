@@ -58,12 +58,12 @@ export default function RootLayout({
   return (
     <html
       lang="th"
-      className={`dark ${appSans.variable}`}
+      className={appSans.variable}
       suppressHydrationWarning
     >
       <body>
         <RootProvider
-          theme={{ attribute: "class", defaultTheme: "dark", enableSystem: false }}
+          theme={{ attribute: "class", defaultTheme: "light", enableSystem: false }}
           search={{ options: { api: "/api/search" } }}
         >
           {children}

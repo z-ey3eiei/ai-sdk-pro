@@ -187,6 +187,7 @@ export default function LLMChat({
   }, [configApi]);
 
   useEffect(() => {
+    if (!messages.length) return;
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, status]);
 
@@ -344,14 +345,24 @@ export default function LLMChat({
             <span className="chat-guide-badge">BYOK · key อยู่ใน tab นี้</span>
           </div>
           <ol className="chat-guide-steps">
-            <li><span>01</span><strong>เลือก provider และ model</strong></li>
-            <li><span>02</span><strong>ใส่ key แล้วกด Connect</strong></li>
-            <li><span>03</span><strong>ส่งคำถามหรือเลือกตัวอย่าง</strong></li>
+            <li>
+              <span>01</span>
+              <strong>เลือก provider และ model</strong>
+            </li>
+            <li>
+              <span>02</span>
+              <strong>ใส่ key แล้วกด Connect</strong>
+            </li>
+            <li>
+              <span>03</span>
+              <strong>ส่งคำถามหรือเลือกตัวอย่าง</strong>
+            </li>
           </ol>
           <p>
-            Key อยู่ใน memory ของ tab และจะถูกส่งผ่าน HTTPS เมื่อส่งคำขอไปยัง ai-sdk.pro
-            และ provider ที่เลือก ไม่บันทึกใน browser storage, database, logs หรือข้อความสนทนา
-            ปิด tab หรือกด Forget key เพื่อล้างจากหน่วยความจำของหน้านี้
+            Key อยู่ใน memory ของ tab และจะถูกส่งผ่าน HTTPS เมื่อส่งคำขอไปยัง
+            ai-sdk.pro และ provider ที่เลือก ไม่บันทึกใน browser storage,
+            database, logs หรือข้อความสนทนา ปิด tab หรือกด Forget key
+            เพื่อล้างจากหน่วยความจำของหน้านี้
           </p>
         </section>
         <div className="chat-content">
@@ -461,7 +472,9 @@ export default function LLMChat({
                             ) : (
                               <Copy size={11} />
                             )}
-                            {copied === message.id ? "คัดลอกแล้ว" : "คัดลอกคำตอบ"}
+                            {copied === message.id
+                              ? "คัดลอกแล้ว"
+                              : "คัดลอกคำตอบ"}
                           </button>
                         )}
                       </div>
@@ -485,8 +498,8 @@ export default function LLMChat({
           {error && (
             <div className="chat-error" role="alert">
               <p>
-                Provider ไม่สามารถทำคำขอนี้ให้เสร็จได้ ตรวจ provider, model และ key
-                แล้วลองอีกครั้ง
+                Provider ไม่สามารถทำคำขอนี้ให้เสร็จได้ ตรวจ provider, model และ
+                key แล้วลองอีกครั้ง
               </p>
               <button
                 type="button"
@@ -503,9 +516,7 @@ export default function LLMChat({
           )}
           {!configState.byokEnabled && (
             <div className="chat-error" role="alert">
-              <p>
-                Deployment นี้ยังไม่เปิด BYOK จึงยังส่งข้อความไม่ได้
-              </p>
+              <p>Deployment นี้ยังไม่เปิด BYOK จึงยังส่งข้อความไม่ได้</p>
             </div>
           )}
           <div ref={endRef} />
@@ -560,7 +571,8 @@ export default function LLMChat({
             </div>
           </form>
           <p id="composer-note" className="composer-note">
-            AI อาจตอบผิด ตรวจสอบข้อมูลสำคัญก่อนนำไปใช้ · บทสนทนาไม่ถูกเก็บบนเซิร์ฟเวอร์
+            AI อาจตอบผิด ตรวจสอบข้อมูลสำคัญก่อนนำไปใช้ ·
+            บทสนทนาไม่ถูกเก็บบนเซิร์ฟเวอร์
           </p>
         </div>
       </main>
