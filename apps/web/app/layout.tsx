@@ -41,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="th"
-      className={appSans.variable}
+      className={`dark ${appSans.variable}`}
       suppressHydrationWarning
     >
       <body>

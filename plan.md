@@ -104,13 +104,13 @@ Completion means a route-by-route pass over the entire agreed frontend scope, in
 
 ### Design direction
 
-ใช้หน้า Vercel ที่ผู้ใช้ส่งมา (`https://vercel.com/`) เป็น visual mood reference เท่านั้น: canvas สีขาว/off-white, typography สีดำชัดและมีขนาดที่สร้างลำดับ, negative space มาก, navigation เรียบ, เส้นแบ่ง neutral บาง และ controls สี monochrome ที่ไม่ตกแต่งเกินจำเป็น ลด gradient/glow และจำนวนการ์ดที่ไม่มีหน้าที่ โดยจัดการ์ดเฉพาะจุดที่ช่วยอธิบายลำดับงานและสถานะจริง Default เป็น light theme; ให้ theme toggle เดิมใช้ dark mode ได้อย่างสอดคล้องเมื่อผู้ใช้เลือก
+ยึดสีและบุคลิกของ ai-sdk.pro ที่มีอยู่แล้วเป็นหลัก ห้ามเปลี่ยนเป็น light rebrand ทั่วทั้งระบบ ตัวอย่าง MDXpress ที่ผู้ใช้ส่งมาใช้เป็นแนวทางเฉพาะเรื่องพื้นที่อ่าน ปุ่มที่วางชัด และการเน้นข้อความสำคัญ ไม่ใช่ให้คัดลอกสี โลโก้ หรือ branding
 
-ใช้ IBM Plex Sans Thai ที่ self-host ผ่าน `next/font` สำหรับ UI/ข้อความไทย-อังกฤษ และ monospace สำหรับ terminal/command/log; ปรับ type scale, line-height และ weight ให้หัวข้อ, metadata, helper text และ code แยกชั้นกันชัดเจน จัดลำดับ hero ให้มีหัวข้อเด่น พื้นที่หายใจ และ workflow illustration ของ ai-sdk.pro ที่ไม่ยืมโลโก้ Vercel; desktop ใช้ sidebar/work area ที่โปร่ง, tablet ยุบ navigation, mobile เปลี่ยน sidebar เป็น Drawer และเรียง panel ตามลำดับงาน
+คง default theme, palette, typography และองค์ประกอบเดิมของเว็บไว้ ปรับขนาดตัวอักษร/ระยะบรรทัดเฉพาะเมื่อช่วยให้อ่านง่ายขึ้น โดย code, command และ log ใช้ monospace ที่อ่านได้ชัด และปุ่มต้องมี hit target, focus state และ feedback ที่เข้าถึงได้
 
-Interaction philosophy คือทุก control ตอบสนองด้วย state ที่คาดเดาได้, keyboard accessible และไม่ทำให้ demo ดูเป็น production: wizard เปลี่ยน step ได้, filter/search ทำงานกับ sample fixtures, tab/menu/dialog มี focus management, copy command แสดง toast, และปุ่ม deploy ใน prototype ต้องไม่รันงานจริงหรือแสดงความสำเร็จปลอม เคารพ `prefers-reduced-motion`
+สำหรับ `/docs/self-hosting` ให้คงถ้อยคำและลักษณะหน้าเดิม เพิ่มการใช้พื้นที่ content ที่มีให้เต็มขึ้นโดยคุมความยาวบรรทัดข้อความให้อ่านง่าย และขยาย code blocks ได้เต็มความกว้างที่เหลือ เพิ่มปุ่มคัดลอก Markdown ทั้งหน้าและ Agent Prompt ใกล้หัวเรื่อง โดยเป็นการคัดลอกข้อความเท่านั้น ไม่รัน terminal หรือ deploy จริง คงปุ่ม Copy ของแต่ละ code block และเพิ่มแถบพื้นหลังแบบไม่รบกวนสายตาให้ข้อความสำคัญเดิม
 
-Brand essence: “เครื่องมือเตรียมเว็บให้พร้อม build/deploy จาก server ที่คุณควบคุมได้ โดยไม่ซ่อนว่าแต่ละ integration ทำได้ถึงขั้นไหน” รักษา wordmark ai-sdk.pro และใช้แดงเดิมเป็น accent เล็กน้อยบนฐาน monochrome; ห้ามใช้ triangle/logo/assets/copy/customer logos ของ Vercel หรือทำให้เข้าใจว่ามี affiliation ใช้เฉพาะข้อมูลจริงและตัวอย่างที่ติดป้ายชัดเจน ไม่มี business metrics หรือ deployment success สมมติ การอ้างอิง mood ใหม่นี้เป็นคำสั่งล่าสุดของผู้ใช้และ supersedes ข้อจำกัด “do not change existing design” เดิมสำหรับ frontend prototype branch นี้เท่านั้น; ไม่ใช่การอนุญาตให้ merge/deploy production
+ทุก interaction ต้องตอบสนองด้วย state ที่คาดเดาได้ ใช้ keyboard ได้ และไม่ทำให้ prototype ดูเป็น production; wizard/filter/search ทำงานกับ sample fixtures, menu/dialog มี focus management, copy action แสดงผลสำเร็จ/ผิดพลาด และปุ่ม deploy ใน prototype ต้องไม่รันงานจริงหรือแสดงความสำเร็จปลอม เคารพ `prefers-reduced-motion`
 
 ### Delivery boundary
 

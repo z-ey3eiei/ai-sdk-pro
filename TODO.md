@@ -1,7 +1,7 @@
+## Owner visual direction update — preserve established design and improve self-hosting actions — 2026-11-13
 
-
-## Owner visual direction refinement: Vercel-inspired light rebrand — 2026-11-13
-
-- [ ] ใช้หน้า Vercel ที่ผู้ใช้ส่งมาเป็น mood reference เท่านั้น: พื้นขาว/off-white, typography ดำชัด, negative space มาก, navigation เรียบ, เส้นแบ่ง neutral บาง, ปุ่ม monochrome และจัด card ให้มีหน้าที่ ไม่แน่นหรือดูเป็นชุด widget; ตั้ง light theme เป็นค่าเริ่มต้น
-- [ ] นำ visual system ใหม่นี้ไปใช้ให้สม่ำเสมอในทุก route ที่ระบุใน `plan.md` (homepage, Studio, chat, login, workspace/repository, templates, docs และ not-found) โดยคง font IBM Plex Sans Thai, responsive layouts, contrast, keyboard/focus states และ dark theme toggle ที่มีอยู่
-- [ ] คงเอกลักษณ์ ai-sdk.pro เอง ใช้แดงเป็น accent เล็กน้อยได้ แต่ห้ามคัดลอก Vercel triangle/logo/assets/copy/customer logos หรือทำให้เข้าใจว่ามี affiliation; การเปลี่ยนดีไซน์นี้ supersedes ข้อความ “do not change existing design” สำหรับ prototype branch นี้เท่านั้น ไม่อนุญาตให้ merge/deploy production
+- [ ] Preserve the existing ai-sdk.pro palette and visual character; do not apply a site-wide light rebrand. Use the supplied MDXpress page only as a reference for page width, button placement, and quiet reading affordances—not for its brand or colors.
+- [ ] On `/docs/self-hosting`, preserve the existing wording and readable style. Use the available Docs content area more fully while keeping prose line length comfortable and allowing code blocks to use the available width.
+- [ ] Add page-level buttons near the title to copy the full Markdown and a safe Agent Prompt for deploying the documented VPS setup. Show accessible success/error feedback; the buttons only copy text and must not execute terminal commands or deployments.
+- [ ] Keep the existing per-code-block Copy controls and make them easier to reach and tap. Give the existing `.env` safety and streaming-verification notes a restrained background band without rewriting their text.
+- [ ] Keep all changes scoped so other Docs routes retain their existing content and appearance; preserve responsive behavior and keyboard-visible focus states.

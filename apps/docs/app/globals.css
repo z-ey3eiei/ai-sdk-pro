@@ -3,18 +3,6 @@
 @import "fumadocs-ui/css/preset.css";
 
 :root {
-  --docs-bg: #ffffff;
-  --docs-panel: #ffffff;
-  --docs-panel-raised: #f7f7f7;
-  --docs-fg: #171717;
-  --docs-muted: #525252;
-  --docs-subtle: #6b6b6b;
-  --docs-border: #e5e5e5;
-  --docs-accent: #b42318;
-  color-scheme: light;
-}
-
-:root.dark {
   --docs-bg: #090909;
   --docs-panel: #111111;
   --docs-panel-raised: #151515;
@@ -26,15 +14,10 @@
   color-scheme: dark;
 }
 
-html,
-html body {
-  background: var(--docs-bg);
-  color: var(--docs-fg);
-  color-scheme: light;
-}
-
 html.dark,
 html.dark body {
+  background: var(--docs-bg);
+  color: var(--docs-fg);
   color-scheme: dark;
 }
 
@@ -54,18 +37,13 @@ body {
 }
 
 .docs-wordmark em {
-  border: 1px solid #e7c9c6;
+  border: 1px solid #713333;
   border-radius: 0.25rem;
-  color: #9f2118;
+  color: #ff7777;
   font-size: 0.55em;
   font-style: normal;
   letter-spacing: 0.08em;
   padding: 0.18rem 0.32rem;
-}
-
-html.dark .docs-wordmark em {
-  border-color: #713333;
-  color: #ff7777;
 }
 
 #nd-docs-layout {
@@ -81,14 +59,8 @@ html.dark .docs-wordmark em {
 
 #nd-docs-layout
   :where(a, button, input, select, textarea, [tabindex]):focus-visible {
-  outline: 2px solid #a3271d;
+  outline: 2px solid #ff7474;
   outline-offset: 3px;
-}
-
-html.dark
-  #nd-docs-layout
-  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
-  outline-color: #ff7474;
 }
 
 #nd-docs-layout :where(a) {
@@ -98,29 +70,19 @@ html.dark
 .docs-context-note {
   max-width: 76ch;
   margin: 0 auto 1.5rem;
-  border: 1px solid #e5e5e5;
+  border: 1px solid #422828;
   border-inline-start: 3px solid var(--docs-accent);
   border-radius: 0.55rem;
-  background: #f8f8f8;
-  color: #525252;
+  background: linear-gradient(110deg, #171010, #101010 70%);
+  color: #c9bebe;
   font-size: 0.875rem;
   line-height: 1.7;
   padding: 0.8rem 1rem;
 }
 
-html.dark .docs-context-note {
-  border-color: #422828;
-  background: linear-gradient(110deg, #171010, #101010 70%);
-  color: #c9bebe;
-}
-
 .docs-context-note strong {
-  color: #171717;
-  font-weight: 600;
-}
-
-html.dark .docs-context-note strong {
   color: #f4dada;
+  font-weight: 600;
 }
 
 .docs-markdown {
@@ -171,9 +133,9 @@ html.dark .docs-context-note strong {
 }
 
 .docs-markdown a {
-  color: #a3271d;
+  color: #ff7777;
   text-decoration: underline;
-  text-decoration-color: #b46b64;
+  text-decoration-color: #8f4545;
   text-underline-offset: 0.2em;
   transition:
     color 140ms ease,
@@ -181,17 +143,8 @@ html.dark .docs-context-note strong {
 }
 
 .docs-markdown a:hover {
-  color: #7f1d16;
-  text-decoration-color: currentColor;
-}
-
-html.dark .docs-markdown a {
-  color: #ff9999;
-  text-decoration-color: #8f4545;
-}
-
-html.dark .docs-markdown a:hover {
   color: #ffaaaa;
+  text-decoration-color: currentColor;
 }
 
 .docs-markdown ul,
@@ -204,29 +157,19 @@ html.dark .docs-markdown a:hover {
 }
 
 .docs-markdown blockquote {
-  border-inline-start: 2px solid #d4d4d4;
-  color: #525252;
+  border-inline-start: 2px solid #704040;
+  color: #c5baba;
   padding-inline-start: 1rem;
 }
 
-html.dark .docs-markdown blockquote {
-  border-color: #704040;
-  color: #c5baba;
-}
-
 .docs-markdown :not(pre) > code {
-  background: #f4f4f4;
+  background: #191919;
   border: 1px solid var(--docs-border);
   border-radius: 0.3rem;
-  color: #333333;
+  color: #f0d0d0;
   font-size: 0.86em;
   padding: 0.12rem 0.34rem;
   overflow-wrap: anywhere;
-}
-
-html.dark .docs-markdown :not(pre) > code {
-  background: #191919;
-  color: #f0d0d0;
 }
 
 .docs-markdown .code-block {
@@ -239,12 +182,8 @@ html.dark .docs-markdown :not(pre) > code {
   min-height: 0;
   max-width: 100%;
   overflow: auto;
-  border: 1px solid #e5e5e5;
+  border: 1px solid #292929;
   border-radius: 0.65rem;
-}
-
-html.dark .docs-markdown .code-block pre {
-  border-color: #292929;
 }
 
 .docs-page-title {
@@ -290,4 +229,189 @@ html.dark .docs-markdown .code-block pre {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Self-hosting page: preserve the existing dark palette while using the docs canvas better. */
+.docs-page-self-hosting {
+  max-width: none !important;
+  width: 100%;
+  min-width: 0;
+}
+
+.docs-page-self-hosting .docs-markdown {
+  width: 100%;
+  max-width: none;
+}
+
+.docs-page-self-hosting .docs-markdown > .space-y-4 {
+  width: 100%;
+  max-width: 84ch;
+}
+
+.docs-page-self-hosting .docs-markdown > .code-block {
+  width: 100%;
+  max-width: none;
+}
+
+.docs-page-self-hosting .docs-action-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  width: 100%;
+  margin: 0 0 1.25rem;
+  flex-wrap: wrap;
+}
+
+.docs-page-self-hosting .docs-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.docs-page-self-hosting .docs-action-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border: 1px solid var(--docs-border);
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--docs-panel);
+  color: var(--docs-fg);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    transform 140ms ease;
+}
+
+.docs-page-self-hosting .docs-action-button:hover:not(:disabled) {
+  border-color: var(--docs-accent);
+  background: var(--docs-panel-raised);
+}
+
+.docs-page-self-hosting .docs-action-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.docs-page-self-hosting .docs-action-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.docs-page-self-hosting .docs-action-primary {
+  border-color: var(--docs-accent);
+  background: var(--docs-accent);
+  color: #fff;
+}
+
+.docs-page-self-hosting .docs-action-primary:hover:not(:disabled) {
+  background: var(--docs-accent);
+  filter: brightness(1.08);
+}
+
+.docs-page-self-hosting .docs-action-button svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.docs-page-self-hosting .docs-action-status,
+.docs-page-self-hosting .docs-action-error {
+  color: var(--docs-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.docs-page-self-hosting .docs-action-status:empty {
+  display: none;
+}
+
+.docs-page-self-hosting .docs-action-error {
+  flex-basis: 100%;
+  color: var(--docs-accent);
+  text-align: end;
+}
+
+.docs-page-self-hosting .docs-markdown blockquote {
+  margin: 1rem 0 1.25rem;
+  border-inline-start: 3px solid var(--docs-accent);
+  border-radius: 0.5rem;
+  background: var(--docs-panel-raised);
+  color: var(--docs-fg);
+  padding: 0.85rem 1rem;
+}
+
+.docs-page-self-hosting .docs-markdown blockquote p {
+  margin: 0;
+}
+
+.docs-page-self-hosting .docs-markdown .code-top button {
+  display: inline-flex;
+  min-width: 72px;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid var(--docs-border);
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.65rem;
+  background: var(--docs-panel);
+  color: var(--docs-fg);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.docs-page-self-hosting .docs-markdown .code-top button:hover {
+  border-color: var(--docs-accent);
+  background: var(--docs-panel-raised);
+}
+
+.docs-page-self-hosting .docs-markdown .code-top button:focus-visible,
+.docs-page-self-hosting .docs-action-button:focus-visible {
+  outline: 2px solid var(--docs-accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .docs-page-self-hosting .docs-markdown > .space-y-4 {
+    max-width: 100%;
+  }
+
+  .docs-page-self-hosting .docs-action-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .docs-page-self-hosting .docs-action-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .docs-page-self-hosting .docs-action-button {
+    min-width: 0;
+    padding-inline: 0.5rem;
+    font-size: 0.8125rem;
+  }
+
+  .docs-page-self-hosting .docs-action-error {
+    text-align: start;
+  }
+}
+
+/* Keep the shared docs disclaimer in the article column on the self-hosting route. */
+#nd-docs-layout:has(.docs-page-self-hosting) > .docs-context-note {
+  display: none;
+}
+
+.docs-page-self-hosting .docs-context-note {
+  width: 100%;
 }
