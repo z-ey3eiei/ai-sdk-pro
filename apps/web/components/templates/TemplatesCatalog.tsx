@@ -8,6 +8,12 @@ import StarterCard from "./StarterCard";
 type Filter = "All" | StarterCategory;
 
 const filters: Filter[] = ["All", "Chat", "Agents", "Web"];
+const filterLabels: Record<Filter, string> = {
+  All: "ทั้งหมด",
+  Chat: "แชต",
+  Agents: "เอเจนต์",
+  Web: "เว็บ",
+};
 
 export default function TemplatesCatalog({
   templates,
@@ -63,12 +69,12 @@ export default function TemplatesCatalog({
       <div className="templates-page-container">
         <div className="starter-catalog-heading">
           <div>
-            <span className="starter-catalog-kicker">THE STARTER CATALOG</span>
-            <h2 id="starter-catalog-title">Pick a useful first step.</h2>
+            <span className="starter-catalog-kicker">เลือกตามงานที่ต้องการ</span>
+            <h2 id="starter-catalog-title">เริ่มจาก use case ที่ใช่</h2>
           </div>
           <p>
-            ทุกตัวมี source archive จริง setup ที่คัดลอกได้
-            และทางเลือกให้คุณตรวจสอบ ก่อนเปิด DevStack
+            ค้นหาตามหมวดหรือ framework การ์ดแต่ละใบสรุปจุดประสงค์และไฟล์
+            พร้อมลิงก์ไปดูรายละเอียด ดาวน์โหลด source หรืออ่านวิธีเริ่มต้น
           </p>
         </div>
 
@@ -92,7 +98,7 @@ export default function TemplatesCatalog({
           >
             <span className="starter-filter-label">
               <SlidersHorizontal size={13} aria-hidden="true" />
-              Filter
+              หมวด
             </span>
             {filters.map(filter => (
               <button
@@ -102,7 +108,7 @@ export default function TemplatesCatalog({
                 aria-pressed={activeFilter === filter}
                 onClick={() => setActiveFilter(filter)}
               >
-                {filter}
+                {filterLabels[filter]}
                 <span className="starter-filter-count">{counts[filter]}</span>
               </button>
             ))}
@@ -110,9 +116,7 @@ export default function TemplatesCatalog({
         </div>
 
         <div className="starter-results-row" aria-live="polite">
-          <span>
-            แสดง {filteredTemplates.length} จาก {templates.length} starters
-          </span>
+          <span>แสดง {filteredTemplates.length} จาก {templates.length} starters</span>
           {(activeFilter !== "All" || query) && (
             <button type="button" onClick={resetFilters}>
               ล้างตัวกรอง

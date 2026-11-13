@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AlertCircle, ArrowLeft, Github, LoaderCircle, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Brand } from "@aisdkpro/ui";
+import styles from "./AuthLogin.module.css";
 import { authClient } from "../lib/auth-client";
 import {
   getBrowserSessionSnapshot,
@@ -128,12 +129,12 @@ export default function AuthLogin() {
     statusState.kind === "ready" ? statusState.status.missingConfiguration : [];
 
   return (
-    <main className="auth-page">
+    <main className={`auth-page ${styles.page}`}>
       <header className="auth-topbar">
         <Brand />
         <Link href="/" className="auth-back-link">
           <ArrowLeft size={14} />
-          Back to ai-sdk.pro
+          กลับไป ai-sdk.pro
         </Link>
       </header>
 
@@ -142,25 +143,24 @@ export default function AuthLogin() {
           <div className="auth-card-mark" aria-hidden="true">
             <Github size={25} strokeWidth={1.8} />
           </div>
-          <span className="auth-eyebrow">REPOSITORY WORKSPACE</span>
-          <h1 id="login-title">Sign in to your workspace.</h1>
+          <span className="auth-eyebrow">พื้นที่จัดการ REPOSITORY</span>
+          <h1 id="login-title">เข้าสู่ระบบพื้นที่ทำงาน</h1>
           <p className="auth-intro">
-            Connect GitHub to review selected repositories and save bounded,
-            read-only snapshots. No repository code is built or deployed here.
+            เชื่อมต่อ GitHub เพื่อดู repository ที่คุณอนุญาตและบันทึก snapshot
+            แบบอ่านอย่างเดียวซึ่งมีขอบเขตจำกัด ระบบนี้ไม่ clone, build, run หรือ deploy โค้ด
           </p>
 
           {oauthReturned && (
             <div className="auth-alert" role="alert">
               <AlertCircle size={16} />
-              <span>GitHub sign-in was not completed. You can try again.</span>
+              <span>เข้าสู่ระบบ GitHub ไม่สำเร็จ คุณสามารถลองอีกครั้งได้</span>
             </div>
           )}
           {expiredNotice && (
             <div className="auth-alert" role="alert">
               <AlertCircle size={16} />
               <span>
-                Your session expired after 3 hours of inactivity. Sign in again
-                to continue.
+                เซสชันหมดอายุหลังไม่มีการใช้งาน 3 ชั่วโมง กรุณาเข้าสู่ระบบอีกครั้ง
               </span>
             </div>
           )}
@@ -182,41 +182,40 @@ export default function AuthLogin() {
             ) : (
               <Github size={17} />
             )}
-            {signingIn ? "Connecting to GitHub…" : "Continue with GitHub"}
+          {signingIn ? "กำลังเชื่อมต่อ GitHub…" : "ดำเนินการต่อด้วย GitHub"}
           </button>
 
           {statusState.kind === "loading" && (
             <p className="auth-status auth-status-loading" role="status">
               <LoaderCircle className="auth-spin" size={13} />
-              Checking sign-in availability…
+              กำลังตรวจสอบความพร้อมสำหรับเข้าสู่ระบบ…
             </p>
           )}
           {statusState.kind === "error" && (
             <p className="auth-status auth-status-error" role="status">
               <AlertCircle size={13} />
-              Login setup could not be verified. Try again later.
+              ตรวจสอบการตั้งค่าการเข้าสู่ระบบไม่ได้ กรุณาลองใหม่ภายหลัง
             </p>
           )}
           {sessionState === "loading" && (
             <p className="auth-status auth-status-loading" role="status">
               <LoaderCircle className="auth-spin" size={13} />
-              Checking your existing session…
+              กำลังตรวจสอบเซสชันปัจจุบัน…
             </p>
           )}
           {sessionState === "error" && (
             <p className="auth-status auth-status-error" role="status">
               <AlertCircle size={13} />
-              Your session could not be verified. Try again before signing in.
+              ตรวจสอบเซสชันไม่ได้ กรุณาลองใหม่ก่อนเข้าสู่ระบบ
             </p>
           )}
           {statusState.kind === "ready" && !statusState.status.configured && (
             <div className="auth-setup-note" role="status">
               <AlertCircle size={15} />
               <div>
-                <strong>GitHub login setup is pending.</strong>
+                <strong>การตั้งค่าเข้าสู่ระบบ GitHub ยังไม่เสร็จ</strong>
                 <p>
-                  The app owner must finish the GitHub and Neon configuration
-                  before sign-in can be enabled.
+                  เจ้าของแอปต้องตั้งค่า GitHub และ Neon ให้เสร็จก่อนเปิดใช้การเข้าสู่ระบบ
                 </p>
                 {missingConfiguration.length > 0 && (
                   <ul>
@@ -232,14 +231,12 @@ export default function AuthLogin() {
           <div className="auth-trust-row">
             <ShieldCheck size={15} />
             <span>
-              Authentication uses GitHub OAuth. We do not show access tokens or
-              database connection values in the browser.
+              ยืนยันตัวตนผ่าน GitHub OAuth โดยไม่แสดง access token หรือค่าการเชื่อมต่อฐานข้อมูลในเบราว์เซอร์
             </span>
           </div>
           <p className="auth-privacy">
-            Workspace access is read-only and scoped to repositories you select
-            through the GitHub App. Imported snapshots have explicit file and
-            byte limits and remain separate from the BYOK chat.
+            พื้นที่ทำงานเป็นแบบอ่านอย่างเดียวและจำกัดเฉพาะ repository ที่เลือกผ่าน GitHub App
+            snapshot มีขีดจำกัดจำนวนไฟล์และขนาดข้อมูล และแยกจาก BYOK chat
           </p>
         </section>
       </div>

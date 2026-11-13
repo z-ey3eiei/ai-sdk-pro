@@ -65,3 +65,53 @@ Project structure: `starters/<slug>/` contains safe self-contained source; `scri
 Owner restriction 17:42: do not change the existing design. Preserve homepage composition, hero, sections, colors, fonts, spacing and existing component styles. Add new Templates/detail/tutorial pages in the same design language, without redesigning or adding sections/CTA rows to the homepage. Reuse the existing Learn navigation position for the Templates entry rather than widening the header; add catalog/tutorial quick links to the existing search UI. Only correct stale functionality descriptions where needed, without altering layout. The owner's current DevStack source is https://github.com/developer-devstack/devstack.bid and public package https://www.npmjs.com/package/devstack-bid; prefer those over the earlier discovered repository metadata.
 
 Owner-confirmed 17:51: ai-sdk.pro contact email is sdkbank@1origin.dev. Show real data and label code previews/starter placeholders as editable examples, not actual hosted results. No fictional business details/metrics/deployment URLs or unconfigured email/hosting claims. The owner already obtains real site URLs using DevStack, so reuse that external handoff and do not duplicate its deployment platform.
+
+
+## Frontend phase: server-side web build & deploy workbench — 2026-11-13, owner approved
+
+### Goal and boundary
+
+ปรับ frontend ของ repo `z-ey3eiei/ai-sdk-pro` ให้ ai-sdk.pro นำเสนอแนวคิดเครื่องมือสร้างเว็บไซต์และจัดการ build/deploy ผ่าน server-side execution targets เช่น Vercel, Cloudflare และ SSH-compatible VPS ได้อย่างน่าเชื่อถือ ผู้ใช้ต้องเห็นทั้งหน้า product และหน้าจอ app ที่โต้ตอบได้บน desktop/tablet/mobile โดยใช้ `ui-sdk.dev` (`@ui-sdk/react` และ `@ui-sdk/core`) เป็น interactive UI component library เพียงชุดเดียว ส่วน visual style ใช้ CSS ของโปรเจกต์เอง
+
+ระยะนี้เป็น **frontend prototype เท่านั้น** ห้ามอ้างว่ามี terminal, build worker, deployment, credential vault หรือ server connection ที่ทำงานจริง ห้ามเพิ่ม API route, database migration, worker/VM, shell execution, provider credentials หรือ GitHub/SSH write permission ที่ไม่ได้อนุมัติ ทุกข้อมูลตัวอย่างต้องมีข้อความระบุว่าเป็น demo/sample และไม่มี action ใดรันคำสั่งหรือ deploy จริง ฟอร์ม secret ใน prototype ไม่บันทึก ไม่ส่ง และไม่รับค่าจริง
+
+รักษาความสามารถจริงที่มีอยู่แล้ว: GitHub OAuth/Neon read-only repository workspace, BYOK chat, template downloads/tutorials, documentation, existing VPS runbooks และความปลอดภัยของ secret/data ห้ามทำให้ข้อความ UI สื่อว่า snapshot import คือ build/deploy จริง
+
+### Routes and information architecture
+
+- `/` — ปรับ product story ให้เสนอ workflow จาก source → isolated server-side build → deploy target → logs/rollback โดยแยกชัดว่าอะไรใช้งานได้แล้วและอะไรเป็น planned/prototype; คงลิงก์ไป chat, templates, docs และ workspace ที่มีจริง
+- `/studio` — landing ของ authenticated-style workbench แบบตัวอย่าง พร้อม banner “UI prototype · ยังไม่เชื่อม server”; ไม่อ้าง project/deployment ที่ไม่มีอยู่จริง
+- `/studio/projects` และ `/studio/projects/new` — project list จาก fixture ที่ระบุว่าเป็น sample และ wizard เลือก source/framework/target พร้อม review state ใน browser เท่านั้น
+- `/studio/terminals` — แสดงรูปแบบ target ที่วางแผนรองรับและ safety boundary ของ execution; ทุก connection เริ่มเป็น “ยังไม่ได้เชื่อม” ไม่มีการกรอก/ส่ง SSH key หรือ token
+- `/studio/deployments` และ `/studio/deployments/[id]` — timeline/status/log viewer ที่สาธิตโครงสร้างข้อมูลด้วย sample ที่ติดป้ายชัดเจน; ไม่มี fake live build, URL หรือ rollback claim
+- `/studio/settings` — UI ตัวอย่างสำหรับ integrations และ environment variable names; ไม่มีช่องเก็บ/ส่ง secret จริง และอธิบายว่า credential ที่เปิดใช้จริงต้องอยู่ server-side secret store
+- ปรับ shared navigation, typography, contrast, card spacing และ responsive states ให้สอดคล้องกันใน route เดิม `/chat`, `/login`, `/workspace`, `/workspace/repositories/[id]`, `/templates`, `/templates/[slug]` และ `/docs/[...slug]` โดยคง behavior/API จริงและ URL เดิม
+- route ใหม่เป็น `noindex` และไม่ใส่ใน sitemap จนกว่าจะมี backend จริง; update route manifest และ metadata ให้ตรงกับหน้าที่สร้างจริง
+
+### Detailed card layout, context and guidance — owner refinement, 2026-11-13
+
+Every page must feel deliberately composed, not like a loose collection of widgets. Place cards in the order of the task they support; give each card a clear title, purpose, supporting context, readable metadata, state, and an obvious next action where relevant. Use consistent spacing, readable line length, contrast, and responsive hierarchy so card boundaries and relationships remain clear on desktop, tablet and mobile.
+
+Guide people through the product with concise page introductions, section-level explanations, helper text, safe next steps, and honest empty/loading/error/disabled/demo states where the route needs them. Explain how source, server-side isolation, target, credentials and deployment status relate to one another without implying that prototype cards or sample logs represent live infrastructure. Keep the tone factual and professional, with no invented metrics, successful deploy URLs or unsupported capability claims.
+
+Completion means a route-by-route pass over the entire agreed frontend scope, including every new `/studio` page and each preserved existing app page listed above. Do not report the task as complete until the implementation, responsive layouts, interactions and validation cover all of them.
+
+### Implementation and structure
+
+คง Next.js App Router/Turborepo ของ repo เดิม ใช้ `apps/web/components/studio/` สำหรับ `StudioShell`, sidebar/mobile drawer, prototype notice, project wizard, target cards, deployment timeline, terminal/log panel และ settings preview; แยก fixture data ใน `apps/web/lib/studio-demo.ts` พร้อม type ที่บอกว่าเป็น demo ชัดเจน
+
+เพิ่ม `@ui-sdk/react` และ `@ui-sdk/core` แบบ pin version หลังตรวจเอกสารที่ติดมากับ package (`node_modules/@ui-sdk/react/docs/llms.txt` และ component guides) ใช้ UI SDK สำหรับ Tabs, Dialog/Drawer, Select, Field/Input, Switch, Menu, Toast, Tooltip และ accessible keyboard/focus behavior ตามความเหมาะสม ไม่เพิ่ม MUI, shadcn/ui, Radix หรือ component kit อื่น ใช้ CSS ของโปรเจกต์สำหรับ layout, visual design, responsive rules และ state styling
+
+### Design direction
+
+ยึด identity black/red ที่มีอยู่ แต่ปรับโครงสร้างให้เป็น technical workbench ที่อ่านง่าย: พื้นหลังดำ/ถ่านเป็น canvas, surface/card หลายระดับที่แยกขอบชัด, accent แดงจำกัดไว้ที่ action/สถานะสำคัญ และใช้สีสถานะที่มี contrast เพียงพอ หลีกเลี่ยงตัวอักษรเทาอ่อนเกินไปบนดำ เพิ่ม focus ring ที่มองเห็นได้ และรักษา layout ไม่ให้การ์ดหรือ code ยุบ/ล้นบนจอเล็ก
+
+ใช้ IBM Plex Sans Thai ที่ self-host ผ่าน `next/font` สำหรับ UI/ข้อความไทย-อังกฤษ และ monospace สำหรับ terminal/command/log; ปรับ type scale, line-height และ weight ให้หัวข้อ, metadata, helper text และ code แยกชั้นกันชัดเจน จัดระยะ card/panel ตาม density ของข้อมูล: desktop ใช้ sidebar และ work area, tablet ยุบ navigation, mobile เปลี่ยน sidebar เป็น Drawer และเรียง panel ตามลำดับงาน
+
+Interaction philosophy คือทุก control ตอบสนองด้วย state ที่คาดเดาได้, keyboard accessible และไม่ทำให้ demo ดูเป็น production: wizard เปลี่ยน step ได้, filter/search ทำงานกับ sample fixtures, tab/menu/dialog มี focus management, copy command แสดง toast, และปุ่ม deploy ใน prototype ต้องไม่รันงานจริงหรือแสดงความสำเร็จปลอม เคารพ `prefers-reduced-motion`
+
+Brand essence: “เครื่องมือเตรียมเว็บให้พร้อม build/deploy จาก server ที่คุณควบคุมได้ โดยไม่ซ่อนว่าแต่ละ integration ทำได้ถึงขั้นไหน” น้ำเสียงตรง ชัด และบอก boundary ก่อน CTA ตัวอย่าง microcopy: “ดูเส้นทางจาก repo ถึง deployment” และ “หน้าจอนี้เป็น prototype — ยังไม่เชื่อม terminal หรือ deploy จริง” ใช้ mark/wordmark ai-sdk.pro ปัจจุบันและ accent #ff0000; ไม่สร้างโลโก้หรือ business metric สมมติ
+
+### Delivery boundary
+
+ทำงานใน branch `feat/terminal-builder-frontend-20261113` ที่แยกจาก `main`; หลังอนุมัติแผนให้ update `TODO.md` พร้อม criteria เต็มจากคำขอ ก่อนแก้ implementation และเปิด PR ให้ Vercel ทำ Preview การ merge เข้า `main` จะเป็น Production deployment เมื่อ Git integration ใช้ `main` เป็น production branch ตามที่ผู้ใช้เลือกไว้ และตามบันทึก repo การ push `main` ยังอาจ trigger Manus Webdev auto-publish แยกจาก Vercel; ห้าม merge/push `main` แทนผู้ใช้

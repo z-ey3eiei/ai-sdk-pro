@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 
 export const SITE_ORIGIN = "https://ai-sdk.pro";
 export const SOCIAL_IMAGE = `${SITE_ORIGIN}/opengraph-image`;
-export const HOME_PAGE_TITLE = "Build AI agents with real tools";
+export const HOME_PAGE_TITLE = "Server-side web build & deploy workbench preview";
 export const SITE_DESCRIPTION =
-  "Build tool-enabled AI agents, stream responses, and self-host on your VPS. Explore the BYOK playground, TypeScript SDK, Thai guides, and downloadable starters.";
+  "ต้นแบบ frontend สำหรับวาง workflow จาก repository ผ่าน server-side build runner ไปยัง deployment target; ยังไม่เชื่อม terminal หรือ deploy pipeline. ai-sdk.pro มี read-only workspace, starter และ BYOK playground.";
 
 type SeoPageType = "website" | "article";
 type SeoLocale = "en_US" | "th_TH";

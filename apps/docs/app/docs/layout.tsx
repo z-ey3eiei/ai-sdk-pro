@@ -18,6 +18,10 @@ export default function DocumentationLayout({ children }: Readonly<{ children: R
         { type: 'main', text: 'Playground', url: 'https://ai-sdk.pro/chat', external: true },
       ]}
     >
+      <div className="docs-context-note" role="note">
+        <strong>เกี่ยวกับเอกสารนี้</strong>{' '}
+        เนื้อหาอธิบาย AI SDK และแนวทางสำหรับโปรเจกต์ของคุณ ตัวอย่างและการตั้งค่าที่กล่าวถึงไม่ได้หมายความว่ามี server, terminal หรือ deploy เชื่อมต่อจากหน้านี้
+      </div>
       {children}
     </DocsLayout>
   );

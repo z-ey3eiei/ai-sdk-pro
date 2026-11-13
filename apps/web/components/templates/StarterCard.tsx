@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, FileText, Globe2, MessageSquare } from "lucide-react";
+import { ArrowRight, ArrowUpRight, FileText, Globe2, MessageSquare } from "lucide-react";
 import type { StarterTemplate } from "@/lib/starter-catalog";
 import { formatArchiveSize } from "./template-utils";
 
@@ -45,6 +45,9 @@ export default function StarterCard({
             {template.fileCount} files · {formatArchiveSize(template.bytes)}
           </span>
         </div>
+        <span className="starter-card-action">
+          ดูรายละเอียดและวิธีเริ่มต้น <ArrowRight size={14} aria-hidden="true" />
+        </span>
       </Link>
     </article>
   );

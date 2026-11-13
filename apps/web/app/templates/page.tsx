@@ -27,12 +27,12 @@ export default function TemplatesPage() {
         <section className="templates-page-intro">
           <div className="templates-page-container">
             <span className="templates-page-kicker">
-              LEARN · START WITH SOURCE
+              TEMPLATE CATALOG · เริ่มจาก source ที่ตรวจสอบได้
             </span>
-            <h1>Start with something that works.</h1>
+            <h1>เริ่มต้นโปรเจกต์ AI จากตัวอย่างที่พร้อมต่อยอด</h1>
             <p>
-              เลือก starter ที่พร้อมให้ดาวน์โหลด แก้ต่อในเครื่อง
-              และเรียนรู้เส้นทางจาก first prompt ไปสู่โปรเจกต์ของคุณเอง
+              เลือก starter ตามงานที่ต้องการ ดู framework และไฟล์ประกอบ
+              จากนั้นดาวน์โหลด source ไปตรวจสอบและพัฒนาต่อในเครื่องของคุณ
             </p>
           </div>
         </section>

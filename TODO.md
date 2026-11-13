@@ -98,3 +98,21 @@ Current Showcase evidence: canonical source checkpoint `f3ecac14fcae77f331f6eb98
 
 
 **Production evidence — 2026-11-12:** checkpoint `bc5aac7287952bb92f8514d906196b221934bf31` is running as healthy image `ai-sdk-pro-web:bc5aac7`; rollback image `f3ecac1` remains available. `pnpm test` passed 79/79, `pnpm typecheck` passed all 4 workspaces, and `pnpm build` passed. Live crawler GETs confirmed IBM Plex Sans Thai on seven routes, no Google Fonts URLs in HTML/CSS, all 16 unique homepage WOFF2 files return HTTP 200, and public health/readiness remain healthy with BYOK required. No inference, database write, DNS/Cloudflare change or DevStack operation was performed.
+
+
+## Frontend prototype: server-side web build/deploy workbench — owner approved 2026-11-13
+
+- [ ] ปรับโครงสร้าง frontend, ฟอนต์, UI และความคมชัดของทุกหน้าตามแผน โดยเพิ่ม UI แบบโต้ตอบที่พอดีกับพื้นที่แสดงผล และจัดระยะห่างระหว่างการ์ดกับข้อความอย่างละเอียดบน desktop, tablet และ mobile; รักษา URLs และทำให้หน้าเดิมใช้ design system เดียวกัน
+- [ ] ใช้ไลบรารีจาก https://ui-sdk.dev/ (`@ui-sdk/react` และ `@ui-sdk/core`) เป็น UI component/interaction library เพียงชุดเดียวสำหรับ interactive controls; ใช้ CSS ของ repo เองกับ visual styling และไม่เพิ่ม UI kit/library อื่น
+- [ ] นำเสนอ ai-sdk.pro ในบริบทของเครื่องมือสร้างเว็บไซต์และเตรียม build/deploy ผ่าน server-side terminal หรือ execution targets อื่น โดยอธิบาย source, isolated execution, target, status/logs และ credential boundaries ให้เข้าใจง่ายและน่าเชื่อถือ
+- [ ] ทำ frontend ให้ครบก่อนเชื่อม backend/terminal หรือใช้ deployment/API keys; ทุกหน้าจอที่ยังไม่เชื่อมต้องติดป้าย prototype/sample ชัดเจน ไม่มีคำสั่งจริง, deployment จริง, URL/log/status สำเร็จปลอม และไม่มีการเก็บหรือส่ง secret จาก browser
+- [ ] คงความสามารถจริงของ GitHub OAuth/Neon read-only workspace, BYOK chat, starter downloads, docs และ self-hosting guides พร้อมรักษา data isolation, secret handling, APIs และ existing routes; ห้ามทำให้ repository import ดูเหมือน build/deploy จริง
+- [ ] แยก frontend prototype routes ออกจาก index/sitemap จนกว่าจะมี backend จริง, เพิ่ม route manifest/metadata ให้ตรงกับหน้าจริง และตรวจว่าการแสดงตัวอย่างไม่เปิดเผยข้อมูลส่วนตัว
+- [ ] ทำงานใน feature branch และเปิด PR สำหรับ Vercel Preview; ไม่ push หรือ merge เข้า `main` แทนผู้ใช้ เพราะ merge จะ trigger Production deployment และอาจ trigger Manus Webdev auto-publish แยกอีกเส้นทาง
+
+
+## Owner refinement: professional page-by-page guidance — 2026-11-13 15:08
+
+- [ ] จัดวางการ์ดทุกหน้าให้สัมพันธ์กับลำดับงานและบริบทจริง แต่ละการ์ดมีวัตถุประสงค์ หัวข้อ คำอธิบาย/บริบท metadata สถานะ และ next action ที่ชัดเจนเมื่อเกี่ยวข้อง ใช้ spacing, contrast และ responsive hierarchy ที่อ่านง่ายบน desktop, tablet และ mobile
+- [ ] ใส่ guide ที่ช่วยให้เข้าใจแต่ละหน้าและขั้นตอนถัดไปอย่างมืออาชีพ: page introduction, section explanation, helper text และ empty/loading/error/disabled/demo states ตามบริบท โดยแยกข้อมูลตัวอย่างออกจากฟีเจอร์จริงอย่างตรงไปตรงมา
+- [ ] ตรวจครบทีละ route ในขอบเขตที่อนุมัติ ทั้งหน้าใหม่ทุกหน้าใน `/studio` และหน้าเดิมทุกหน้าที่ระบุไว้ใน `plan.md`; แจ้งผู้ใช้เมื่อ implementation, responsive layout, interaction และ validation ครบทั้งหมดเท่านั้น

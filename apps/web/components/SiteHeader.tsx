@@ -24,7 +24,7 @@ export default function SiteHeader(props: SiteHeaderProps) {
     <Header
       {...props}
       accountHref={session.signedIn ? "/workspace" : "/login"}
-      accountLabel={session.signedIn ? "Dashboard" : "Log in"}
+      accountLabel={session.signedIn ? "Workspace" : "เข้าสู่ระบบ"}
     />
   );
 }

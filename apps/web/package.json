@@ -21,6 +21,8 @@
     "@aisdkpro/ui": "workspace:*",
     "@better-auth/drizzle-adapter": "1.7.19",
     "@neondatabase/serverless": "1.2.0",
+    "@ui-sdk/core": "0.1.0-beta.1",
+    "@ui-sdk/react": "0.1.0-beta.1",
     "ai": "6.0.326",
     "better-auth": "1.7.19",
     "drizzle-orm": "0.45.4",
@@ -37,7 +39,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.14",
-    "@types/react": "^19.2.1",
+    "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.1",
     "drizzle-kit": "0.31.11",
     "postcss": "^8.4.47",

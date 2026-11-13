@@ -30,7 +30,7 @@ const websiteStructuredData = {
   name: "ai-sdk.pro",
   url: SITE_ORIGIN,
   description: SITE_DESCRIPTION,
-  inLanguage: "en",
+  inLanguage: "th",
 };
 
 export default function RootLayout({
@@ -40,7 +40,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="en"
+      lang="th"
       className={`dark ${appSans.variable}`}
       suppressHydrationWarning
     >

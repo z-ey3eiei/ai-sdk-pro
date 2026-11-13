@@ -1,26 +1,21 @@
-// Adapted layout from the user's Apache-2.0 licensed reference repository.
-// Modified for ai-sdk.pro: independent branding, real agent/SDK docs, and portable VPS deployment.
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
-  Code2,
-  FolderOpen,
+  BookOpen,
+  Boxes,
+  Braces,
+  CheckCircle2,
+  CircleHelp,
+  Cloud,
   GitBranch,
-  Globe2,
-  Layers3,
+  LockKeyhole,
+  Server,
+  ShieldCheck,
   Terminal,
-  Upload,
-  Wrench,
-  Zap,
+  Workflow,
 } from "lucide-react";
-import {
-  ButtonLink,
-  CodeBlock,
-  Footer,
-  InstallCommand,
-} from "@aisdkpro/ui";
-import PlatformDemos from "../components/PlatformDemos";
+import { ButtonLink, Footer } from "@aisdkpro/ui";
 import SiteHeader from "../components/SiteHeader";
 import HomeFAQ from "../components/HomeFAQ";
 import {
@@ -34,256 +29,323 @@ export const metadata: Metadata = {
     title: HOME_PAGE_TITLE,
     description: SITE_DESCRIPTION,
     path: "/",
+    locale: "th_TH",
     keywords: [
-      "AI agent platform",
-      "AI SDK 6",
-      "streaming AI agents",
-      "self-hosted AI",
-      "tool-calling agents",
+      "server-side web build workbench",
+      "website deployment UI prototype",
+      "terminal deployment workflow",
+      "AI SDK platform",
+      "self-hosted web application",
     ],
   }),
   title: `${HOME_PAGE_TITLE} | ai-sdk.pro`,
 };
 
-const features = [
+const plannedStages = [
   {
+    number: "01",
+    icon: GitBranch,
+    title: "เลือก source",
+    detail: "Repository และ revision ที่ผู้ใช้ตรวจสอบ",
+    status: "ตัวอย่างแนวคิด",
+  },
+  {
+    number: "02",
+    icon: Boxes,
+    title: "Build ใน environment แยก",
+    detail: "แยกโค้ดที่ไม่เชื่อถือออกจาก control plane",
+    status: "ยังไม่เชื่อม runner",
+  },
+  {
+    number: "03",
     icon: Terminal,
-    title: "One endpoint to begin",
-    description:
-      "Connect your interface to /api/chat. Send a message and receive a typed AI SDK UI stream.",
-    href: "/docs/getting-started",
+    title: "ตรวจผลก่อน deploy",
+    detail: "แสดง logs, artifacts และคำเตือนก่อนอนุมัติ",
+    status: "ยังไม่รันคำสั่ง",
   },
   {
-    icon: Wrench,
-    title: "Agents that take action",
+    number: "04",
+    icon: Cloud,
+    title: "ส่งต่อไป target",
+    detail: "เช่น Vercel, Cloudflare Workers หรือ VPS",
+    status: "ยังไม่เชื่อม provider",
+  },
+];
+
+const architectureCards = [
+  {
+    icon: Workflow,
+    title: "Control plane",
     description:
-      "Give your agent real tools, a clear objective, and a bounded loop. Start with searchDocs, fetchUrl, and getCurrentTime.",
-    href: "/docs/defining-agents",
+      "หน้าเว็บจัดการ project, เลือกขั้นตอน และแสดงสถานะที่ผู้ใช้ตรวจสอบได้ ไม่ควรเป็น process ที่รัน source code จาก repository",
+    state: "UI prototype",
   },
   {
-    icon: Zap,
-    title: "Every token. In real time.",
+    icon: Server,
+    title: "Isolated build runner",
     description:
-      "Stream responses and tool activity as they happen. Stop a generation or retry when something goes wrong.",
+      "แนวทางที่วางไว้คือแยก terminal/build process ต่อ job จำกัดสิทธิ์และทรัพยากร แล้วส่งเฉพาะ artifact/log ที่จำเป็นกลับมา",
+    state: "ยังไม่มี runner",
+  },
+  {
+    icon: Cloud,
+    title: "Deployment target",
+    description:
+      "Vercel, Cloudflare Workers และ VPS เป็นตัวอย่าง target สำหรับออกแบบ adapter ภายหลัง ไม่ใช่ integration ที่เชื่อมจากหน้านี้",
+    state: "ยังไม่เชื่อมต่อ",
+  },
+  {
+    icon: LockKeyhole,
+    title: "Server-side secrets",
+    description:
+      "Credential ที่ใช้จริงควรอยู่ใน secret store ฝั่ง server และถูกส่งให้ job เฉพาะเมื่อจำเป็น ไม่ใส่ key ลงหน้าเว็บหรือ log",
+    state: "ยังไม่รับ credential",
+  },
+];
+
+const availableNow = [
+  {
+    icon: GitBranch,
+    title: "GitHub repository workspace",
+    description:
+      "ลงชื่อเข้าใช้เพื่อดู repository ที่ได้รับอนุญาตและนำเข้า bounded, read-only snapshot ได้ โค้ดใน snapshot ไม่ถูก build, execute หรือ deploy",
+    status: "ใช้งานได้ตาม config",
+    href: "/workspace",
+    action: "เปิด Workspace",
+  },
+  {
+    icon: Boxes,
+    title: "Starter catalog",
+    description:
+      "เลือกดูและดาวน์โหลด starter source พร้อม local setup guide; ลิงก์ DevStack เป็น handoff ที่ให้ผู้ใช้ตรวจเอง ไม่มีการ upload หรือ deploy อัตโนมัติ",
+    status: "ดาวน์โหลด source ได้",
+    href: "/templates",
+    action: "ดู starters",
+  },
+  {
+    icon: Braces,
+    title: "AI agent playground",
+    description:
+      "ทดสอบ streaming agent ที่มีอยู่ด้วย provider key ของคุณเอง คีย์อยู่ใน memory ของ tab และไม่ใช่ credential สำหรับ deployment",
+    status: "BYOK playground",
     href: "/chat",
+    action: "เปิด Playground",
   },
   {
-    icon: FolderOpen,
-    title: "A clear project structure",
+    icon: BookOpen,
+    title: "คู่มือ self-hosting",
     description:
-      "Web, docs, UI, and client SDK in one pnpm workspace. Share the pieces without tangling the responsibilities.",
-    href: "/docs/architecture",
-  },
-  {
-    icon: Code2,
-    title: "A small, typed client",
-    description:
-      "Use a framework-agnostic client or a lightweight React hook. Bring your own key without storing it.",
-    href: "/docs/client-sdk",
-  },
-  {
-    icon: Upload,
-    title: "Choose your infrastructure",
-    description:
-      "Run the standalone app on your VPS with Docker and Caddy. Build, deploy, and roll back from Git.",
+      "อ่านขั้นตอน deploy ตัว ai-sdk.pro เองด้วย Docker/Caddy คู่มือนี้เป็นของแอปนี้ ไม่ใช่ระบบ build/deploy repository ทั่วไปในหน้าต้นแบบ",
+    status: "เอกสารพร้อมอ่าน",
     href: "/docs/self-hosting",
+    action: "อ่านคู่มือ",
   },
 ];
-const steps = [
-  {
-    title: "Start the workspace",
-    text: "Use Node.js 22 and pnpm 10.18.0. Install the workspace dependencies and open the development server.",
-    filename: "terminal",
-    code: "pnpm install\npnpm dev",
-  },
-  {
-    title: "Configure your agent",
-    text: "Let visitors choose their provider and bring their own key. Keep agent logic and safe, validated tools on the server.",
-    filename: "assistant-agent.ts",
-    code: `const agent = new ToolLoopAgent({\n  model: provider(process.env.AI_MODEL),\n  instructions: 'Make useful things happen.',\n  tools: { searchDocs, fetchUrl, getCurrentTime },\n  stopWhen: stepCountIs(20),\n});`,
-  },
-  {
-    title: "Connect your interface",
-    text: "Keep your UI yours. Use the typed React hook to send messages, render streaming parts, and cancel a run.",
-    filename: "chat.tsx",
-    code: `import { useAISDKProChat } from '@aisdkpro/client/react';\n\nconst { messages, sendMessage, stop } =\n  useAISDKProChat({ endpoint: '/api/chat' });\n\nsendMessage({ text: 'What can we build?' });`,
-  },
-];
+
 export default function Home() {
   return (
     <>
-      <SiteHeader />
-      <main className="reference-main">
-        <section className="center-hero">
-          <div className="hero-grid" aria-hidden="true" />
-          <div className="reference-container hero-inner">
-            <Link href="/docs/defining-agents" className="intro-pill">
-              <i aria-hidden="true" /> AI agents · Your infrastructure
-            </Link>
-            <h1>
-              Ideas, meet <span>Intelligence.</span>
-            </h1>
-            <p>
-              ai-sdk.pro gives your ideas the whole stack — tool-enabled agents,
-              real-time streaming, and your own infrastructure — so the moment
-              of inspiration becomes something useful.
-            </p>
-            <div className="hero-install">
-              <InstallCommand command="pnpm --filter @aisdkpro/web dev" />
-            </div>
-            <div className="hero-terminal">
-              <CodeBlock
-                filename="~/ai-sdk.pro"
-                language="bash"
-                code={
-                  "$ pnpm agent:smoke\n✓ Tool executed          getCurrentTime\n✓ Agent loop             20-step limit"
-                }
-              />
-              <span className="terminal-example-label">
-                Example output · run in your workspace
+      <SiteHeader active="studio" />
+      <main className="product-home">
+        <section className="product-hero" aria-labelledby="product-title">
+          <div className="product-hero-grid" aria-hidden="true" />
+          <div className="product-home-container product-hero-layout">
+            <div className="product-hero-copy">
+              <span className="product-eyebrow">
+                <span className="product-eyebrow-dot" aria-hidden="true" />
+                SERVER-SIDE WEB WORKBENCH · FRONTEND PREVIEW
               </span>
+              <h1 id="product-title">
+                จาก repository
+                <br />
+                <span>สู่ deploy ที่ควบคุมได้</span>
+              </h1>
+              <p className="product-hero-lead">
+                แนวคิด workspace สำหรับสร้างเว็บและจัดการขั้นตอน build/deploy
+                ผ่าน server-side terminal โดยออกแบบให้แยก source, runner,
+                credential และ deployment target ออกจากกันอย่างตรวจสอบได้
+              </p>
+              <div className="product-hero-actions">
+                <ButtonLink href="/studio">
+                  สำรวจ UI prototype <ArrowRight size={16} />
+                </ButtonLink>
+                <ButtonLink href="/docs/architecture" secondary>
+                  ดู architecture
+                </ButtonLink>
+              </div>
+              <div className="product-honesty-note" role="note">
+                <CircleHelp size={17} aria-hidden="true" />
+                <p>
+                  <strong>สถานะปัจจุบัน:</strong> หน้านี้เป็น frontend prototype
+                  — ยังไม่เชื่อม terminal, build runner, Vercel, Cloudflare หรือ VPS
+                  สำหรับ deployment ในผลิตภัณฑ์
+                </p>
+              </div>
             </div>
+
+            <aside className="product-flow-card" aria-label="ตัวอย่าง workflow ที่วางแผนไว้">
+              <div className="product-flow-card-head">
+                <div>
+                  <span className="product-card-kicker">PROPOSED WORKFLOW</span>
+                  <h2>จาก source ไป target</h2>
+                </div>
+                <span className="product-status-pill product-status-planned">
+                  แนวคิดเท่านั้น
+                </span>
+              </div>
+              <ol className="product-stage-list">
+                {plannedStages.map(stage => {
+                  const Icon = stage.icon;
+                  return (
+                    <li key={stage.number}>
+                      <span className="product-stage-index">{stage.number}</span>
+                      <span className="product-stage-icon"><Icon size={16} /></span>
+                      <span className="product-stage-copy">
+                        <strong>{stage.title}</strong>
+                        <span>{stage.detail}</span>
+                      </span>
+                      <span className="product-stage-status">{stage.status}</span>
+                    </li>
+                  );
+                })}
+              </ol>
+              <p className="product-flow-footnote">
+                ลำดับนี้เป็น architecture sketch ไม่ใช่ deployment job หรือ log
+                จากระบบจริง
+              </p>
+            </aside>
           </div>
         </section>
-        <section className="tech-strip">
-          <p>BUILT ON TOOLS YOU KNOW.</p>
-          <div>
-            {[
-              "AI SDK",
-              "Next.js",
-              "TypeScript",
-              "React",
-              "Fumadocs",
-              "Docker",
-              "Caddy",
-              "Node.js",
-            ].map(name => (
-              <span key={name}>{name}</span>
-            ))}
-          </div>
-        </section>
-        <PlatformDemos />
-        <section className="reference-features" id="features">
-          <div className="reference-container">
-            <span className="section-eyebrow">SMALL START. ROOM TO BUILD.</span>
-            <h2>Everything in its right place.</h2>
-            <p className="section-intro">
-              A focused foundation for your agents, with a familiar workflow
-              <br className="desktop-break" /> from the first prompt to your own
-              production server.
-            </p>
-            <div className="bordered-feature-grid">
-              {features.map(({ icon: Icon, title, description, href }) => (
-                <Link key={title} href={href}>
-                  <Icon size={25} />
+
+        <section className="product-architecture" aria-labelledby="architecture-title">
+          <div className="product-home-container">
+            <header className="product-section-heading">
+              <span className="product-section-kicker">SAFETY BY DESIGN</span>
+              <h2 id="architecture-title">แต่ละส่วนมีขอบเขตของตัวเอง</h2>
+              <p>
+                Build จาก source ที่ผู้ใช้เลือกควรทำงานใน environment ที่แยกจากเว็บควบคุม
+                และไม่เข้าถึง secret หรือข้อมูลของระบบโดยปริยาย
+              </p>
+            </header>
+            <div className="product-architecture-grid">
+              {architectureCards.map(({ icon: Icon, title, description, state }) => (
+                <article className="product-info-card" key={title}>
+                  <div className="product-info-card-top">
+                    <span className="product-info-icon"><Icon size={18} /></span>
+                    <span className="product-status-pill">{state}</span>
+                  </div>
                   <h3>{title}</h3>
                   <p>{description}</p>
-                  <span className="feature-read">
-                    Explore <ArrowRight size={12} />
-                  </span>
-                </Link>
+                </article>
               ))}
+            </div>
+            <div className="product-security-callout">
+              <ShieldCheck size={19} aria-hidden="true" />
+              <p>
+                <strong>หลักการสำคัญ:</strong> ไม่รัน repository code ใน web app container
+                และไม่ส่ง GitHub, SSH, database หรือ provider secret ไปยัง browser,
+                untrusted build process หรือ log ที่ผู้ใช้ทั่วไปเข้าถึงได้
+              </p>
             </div>
           </div>
         </section>
-        <section className="reference-start" id="get-started">
-          <div className="reference-container start-layout">
-            <div className="start-copy">
-              <span className="section-eyebrow">FROM PROMPT TO PRODUCTION</span>
-              <h2>
-                Get started.
-                <br />
-                <span>Keep creating.</span>
-              </h2>
+
+        <section className="product-current" id="features" aria-labelledby="current-title">
+          <div className="product-home-container">
+            <header className="product-section-heading product-section-heading-row">
+              <div>
+                <span className="product-section-kicker">AVAILABLE IN AI-SDK.PRO TODAY</span>
+                <h2 id="current-title">สิ่งที่ใช้งานได้จริงในตอนนี้</h2>
+                <p>
+                  แยกความสามารถปัจจุบันออกจากหน้าต้นแบบ เพื่อให้รู้ว่าปุ่มแต่ละจุดพาไปไหน
+                  และอะไรยังไม่เกิดขึ้น
+                </p>
+              </div>
+              <Link className="product-text-link" href="/docs/getting-started">
+                เริ่มจากคู่มือ <ArrowRight size={15} />
+              </Link>
+            </header>
+            <div className="product-current-grid">
+              {availableNow.map(({ icon: Icon, title, description, status, href, action }) => (
+                <article className="product-current-card" key={title}>
+                  <div className="product-current-card-head">
+                    <span className="product-info-icon"><Icon size={18} /></span>
+                    <span className="product-status-pill product-status-live">
+                      <CheckCircle2 size={13} /> {status}
+                    </span>
+                  </div>
+                  <h3>{title}</h3>
+                  <p>{description}</p>
+                  <Link href={href} className="product-card-action">
+                    {action} <ArrowRight size={14} />
+                  </Link>
+                </article>
+              ))}
+            </div>
+            <p className="product-current-note">
+              สถานะจริงอาจขึ้นกับ environment และการตั้งค่า integration ของเจ้าของระบบ
+              Workspace เป็น read-only snapshot; ไม่ใช่ build/deploy pipeline
+            </p>
+          </div>
+        </section>
+
+        <section className="product-next-steps" aria-labelledby="next-steps-title">
+          <div className="product-home-container product-next-layout">
+            <div className="product-next-copy">
+              <span className="product-section-kicker">EXPLORE THE FRONTEND</span>
+              <h2 id="next-steps-title">เดินดูแต่ละขั้นตอนก่อนต่อ backend</h2>
               <p>
-                Three steps to your first working agent. Your code is the
-                workspace; your infrastructure is where it lives.
+                หน้า Studio แสดงโครงสร้าง project, terminal targets, deployments และ settings
+                ด้วยข้อมูลตัวอย่างที่ติดป้ายไว้ชัดเจน ไม่มีคำสั่งถูกส่งไปรัน
               </p>
-              <Link href="/docs/getting-started">
-                Read the setup guide <ArrowRight size={15} />
+              <Link className="product-text-link" href="/studio/projects/new">
+                เปิด project setup guide <ArrowRight size={15} />
               </Link>
             </div>
-            <ol className="start-steps">
-              {steps.map((step, index) => (
-                <li key={step.title}>
-                  <span className="step-number">{index + 1}</span>
-                  <div>
-                    <h3>{step.title}</h3>
-                    <p>{step.text}</p>
-                    <CodeBlock
-                      code={step.code}
-                      filename={step.filename}
-                      language={index === 0 ? "bash" : "typescript"}
-                    />
-                  </div>
-                </li>
-              ))}
-            </ol>
+            <div className="product-next-links">
+              <Link href="/studio/projects">
+                <span className="product-next-link-icon"><GitBranch size={17} /></span>
+                <span><strong>Projects</strong><small>Source และสถานะตัวอย่าง</small></span>
+                <ArrowRight size={15} />
+              </Link>
+              <Link href="/studio/terminals">
+                <span className="product-next-link-icon"><Terminal size={17} /></span>
+                <span><strong>Build environments</strong><small>ขอบเขตของ runner และ safety</small></span>
+                <ArrowRight size={15} />
+              </Link>
+              <Link href="/studio/deployments">
+                <span className="product-next-link-icon"><Cloud size={17} /></span>
+                <span><strong>Deployment flow</strong><small>Stages และข้อมูลประกอบการ review</small></span>
+                <ArrowRight size={15} />
+              </Link>
+            </div>
           </div>
         </section>
-        <section className="reference-deploy" id="deploy">
-          <div className="reference-container deploy-layout">
-            <div>
-              <span className="section-eyebrow">
-                BUILT HERE. HOSTED ANYWHERE.
-              </span>
-              <h2>
-                Your agents,
-                <br />
-                beyond localhost.
-              </h2>
+
+        <section className="product-faq" aria-labelledby="product-faq-title">
+          <div className="product-home-container product-faq-layout">
+            <header className="product-faq-heading">
+              <span className="product-section-kicker">CLARITY BEFORE CONNECTIONS</span>
+              <h2 id="product-faq-title">คำถามที่ควรรู้ก่อนเริ่ม</h2>
               <p>
-                Run the same app on your own VPS. Docker packages the runtime,
-                Caddy handles HTTPS and streaming, and Git gives every release a
-                traceable starting point.
+                แยก prototype, service ที่ใช้งานจริง และขั้นตอน handoff ออกจากกัน
               </p>
-              <ButtonLink href="/docs/self-hosting" secondary>
-                Deployment guide <ArrowRight size={15} />
-              </ButtonLink>
-            </div>
-            <div className="deploy-command-panel">
-              <p>Build and start your standalone application</p>
-              <CodeBlock
-                filename="terminal"
-                code={
-                  "docker compose -f infra/docker-compose.yml up -d --build"
-                }
-                language="bash"
-              />
-              <div className="deploy-panel-divider" />
-              <p>Or deploy from Git after configuring your server</p>
-              <CodeBlock
-                filename="terminal"
-                code={
-                  "git push origin main\ncurl https://ai-sdk.pro/api/health"
-                }
-                language="bash"
-              />
-              <small>
-                Configure your VPS and DNS. Visitors bring their own AI key.
-                <br />
-                Cloudflare can manage your DNS; the application runs on your
-                server.
-              </small>
-            </div>
-          </div>
-        </section>
-        <section className="reference-faq">
-          <div className="reference-container">
-            <span className="section-eyebrow">FAQ</span>
+            </header>
             <HomeFAQ />
           </div>
         </section>
-        <section className="reference-final">
-          <div className="reference-container">
-            <h2>Make something yours.</h2>
-            <div>
-              <ButtonLink href="/chat">
-                Start building <ArrowRight size={16} />
-              </ButtonLink>
-              <ButtonLink href="/docs/getting-started" secondary>
-                Read documentation
-              </ButtonLink>
+
+        <section className="product-final-cta">
+          <div className="product-home-container">
+            <span className="product-section-kicker">A FRONTEND CONCEPT, READY FOR REVIEW</span>
+            <h2>เริ่มจาก UI ที่เข้าใจง่าย<br />แล้วค่อยต่อระบบที่ปลอดภัย</h2>
+            <p>
+              ตรวจหน้าต้นแบบและ workflow ก่อนเลือกว่าจะต่อ repository, runner
+              และ deployment targets อย่างไร
+            </p>
+            <div className="product-hero-actions product-final-actions">
+              <ButtonLink href="/studio">เปิด Studio prototype <ArrowRight size={16} /></ButtonLink>
+              <ButtonLink href="/docs/architecture" secondary>อ่าน architecture</ButtonLink>
             </div>
           </div>
         </section>

@@ -3,11 +3,12 @@ import { createSeoMetadata } from "@/lib/seo-metadata";
 
 export const metadata: Metadata = {
   ...createSeoMetadata({
-    title: "AI agent playground",
+    title: "AI agent playground · BYOK",
     description:
-      "Try a streaming AI agent with real tools using your own provider key. Explore the BYOK playground, typed messages, cancellation, and self-hosting guides.",
+      "ทดลอง streaming AI agent ด้วย provider key ของคุณเอง คีย์อยู่ใน memory ของ tab และใช้กับคำขอในเซสชันนี้เท่านั้น",
     path: "/chat",
-    keywords: ["AI agent playground", "BYOK AI chat", "streaming AI chat"],
+    locale: "th_TH",
+    keywords: ["AI agent playground", "BYOK", "แชต AI streaming"],
   }),
   robots: { index: false, follow: true },
 };
