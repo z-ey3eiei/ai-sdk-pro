@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import RegistryDeployment from "./RegistryDeployment";
 import {
   ArrowLeft,
   CircleAlert,
@@ -188,6 +189,7 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
       {detail && (
         <>
           <section className="repository-viewer-header">
+            <RegistryDeployment key={repositoryId} repositoryId={repositoryId} />
             <div className="repository-viewer-heading-row">
               <div className="repository-viewer-title-block">
                 <span className="repository-viewer-eyebrow">IMPORTED SNAPSHOT</span>
