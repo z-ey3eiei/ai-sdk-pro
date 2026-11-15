@@ -123,8 +123,7 @@ function WorkspaceChrome({
         <div className="workspace-sidebar-note">
           <ShieldCheck size={15} />
           <p>
-            Read-only workspace. Imported code is never built, executed, or
-            deployed automatically.
+            Import a repository snapshot to inspect its files. Registered projects can be deployed from the workspace.
           </p>
         </div>
         <div className="workspace-sidebar-footer">
@@ -209,42 +208,51 @@ function RepositoryPrivateBadge({ isPrivate }: { isPrivate: boolean }) {
 }
 
 function ImportedRepositoryCard({ repository }: { repository: ImportedRepository }) {
+  const repositoryUrl = `/workspace/repositories/${encodeURIComponent(repository.id)}`;
+  const hasDeployment = repository.githubId === 1458143895 && !repository.private && repository.defaultBranch === "main";
   return (
-    <Link
-      href={`/workspace/repositories/${encodeURIComponent(repository.id)}`}
-      className="workspace-repo-card workspace-repo-card-imported"
-    >
-      <div className="workspace-repo-card-heading">
-        <span className="workspace-repo-mark workspace-repo-mark-imported">
-          <Library size={17} />
-        </span>
-        <span className="workspace-repo-card-title">
-          <strong>{repository.fullName}</strong>
-          <span>
-            Imported {formatDate(repository.importedAt)}
+    <div>
+      <Link
+        href={repositoryUrl}
+        className="workspace-repo-card workspace-repo-card-imported"
+      >
+        <div className="workspace-repo-card-heading">
+          <span className="workspace-repo-mark workspace-repo-mark-imported">
+            <Library size={17} />
           </span>
-        </span>
-        <ChevronRight className="workspace-card-arrow" size={17} />
-      </div>
-      <p className="workspace-repo-description">
-        {repository.description || "No repository description provided."}
-      </p>
-      <div className="workspace-repo-meta">
-        <RepositoryPrivateBadge isPrivate={repository.private} />
-        <span>
-          <GitBranch size={12} /> {repository.defaultBranch}
-        </span>
-        <span>
-          <GitBranch size={12} /> {repository.importedFiles} files
-        </span>
-        <span>{formatBytes(repository.totalBytes)}</span>
-      </div>
-      <div className="workspace-repo-commit">
-        <span>Pinned commit</span>
-        <code>{repository.commitSha.slice(0, 12) || "Unavailable"}</code>
-        {repository.snapshotTruncated && <span className="workspace-truncated">CAP REACHED</span>}
-      </div>
-    </Link>
+          <span className="workspace-repo-card-title">
+            <strong>{repository.fullName}</strong>
+            <span>
+              Imported {formatDate(repository.importedAt)}
+            </span>
+          </span>
+          <ChevronRight className="workspace-card-arrow" size={17} />
+        </div>
+        <p className="workspace-repo-description">
+          {repository.description || "No repository description provided."}
+        </p>
+        <div className="workspace-repo-meta">
+          <RepositoryPrivateBadge isPrivate={repository.private} />
+          <span>
+            <GitBranch size={12} /> {repository.defaultBranch}
+          </span>
+          <span>
+            <GitBranch size={12} /> {repository.importedFiles} files
+          </span>
+          <span>{formatBytes(repository.totalBytes)}</span>
+        </div>
+        <div className="workspace-repo-commit">
+          <span>Pinned commit</span>
+          <code>{repository.commitSha.slice(0, 12) || "Unavailable"}</code>
+          {repository.snapshotTruncated && <span className="workspace-truncated">CAP REACHED</span>}
+        </div>
+      </Link>
+      {hasDeployment && (
+        <Link href={`${repositoryUrl}#deploy`} className="workspace-button workspace-button-secondary" aria-label={`Deploy ${repository.fullName}`}>
+          Deploy <ArrowUpRight size={14} />
+        </Link>
+      )}
+    </div>
   );
 }
 
