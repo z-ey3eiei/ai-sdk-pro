@@ -11,6 +11,7 @@ import {
   Github,
   Globe2,
   GitBranch,
+  KeyRound,
   Library,
   LoaderCircle,
   LockKeyhole,
@@ -113,6 +114,10 @@ function WorkspaceChrome({
           <Link href="/workspace" className="workspace-nav-item active">
             <Library size={16} />
             <span>Repositories</span>
+          </Link>
+          <Link href="/workspace/tokens" className="workspace-nav-item">
+            <KeyRound size={16} />
+            <span>API tokens</span>
           </Link>
           <Link href="/docs/architecture" className="workspace-nav-item">
             <Database size={16} />
