@@ -41,7 +41,7 @@ export default function RegistryDeployment({ repositoryId }: { repositoryId: str
 
   if (!deployment) return message ? <span role="status">{message}</span> : null;
   return (
-    <div>
+    <div id="deploy">
       <p>Production · {deployment.branch} · {deployment.commit?.slice(0, 7) ?? "Awaiting first deployment"}</p>
       <button className="repository-viewer-button repository-viewer-button-primary" type="button" onClick={requestDeployment} disabled={pending}>
         {pending ? "Requesting…" : "Deploy"}
