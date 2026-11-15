@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          docker build --tag "$IMAGE:sha-$GITHUB_SHA" .
+          docker build --label "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" --tag "$IMAGE:sha-$GITHUB_SHA" .
           container="$(docker run -d -p 127.0.0.1::3000 "$IMAGE:sha-$GITHUB_SHA")"
           trap 'docker rm -f "$container" >/dev/null' EXIT
           port="$(docker port "$container" 3000/tcp | awk -F: 'NR==1 {print $NF}')"
