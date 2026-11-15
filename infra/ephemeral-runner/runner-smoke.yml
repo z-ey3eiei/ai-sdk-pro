@@ -1,0 +1,20 @@
+name: Verify dedicated ephemeral runner
+on:
+  workflow_dispatch:
+
+permissions: {}
+jobs:
+  smoke:
+    if: github.event.repository.private
+    runs-on: [self-hosted, aisdk-build-ephemeral]
+    timeout-minutes: 4
+    steps:
+      - name: Check runner boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(id -u)" -ne 0
+          test "$(hostname -s)" != ai-sdk-pro-prod
+          test ! -S /var/run/docker.sock
+          test ! -e /opt/ai-sdk-pro
+          printf '%s\n' 'Ephemeral runner boundary passed.'
