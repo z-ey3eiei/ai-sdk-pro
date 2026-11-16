@@ -189,7 +189,10 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
       {detail && (
         <>
           <section className="repository-viewer-header">
-            <Link href="/deploy" className="button secondary">
+            <Link
+              href={`/workspace/deploy?repo=${encodeURIComponent(detail.repository.fullName)}`}
+              className="button secondary"
+            >
               Cloudflare Deploy
             </Link>
             <RegistryDeployment key={repositoryId} repositoryId={repositoryId} />

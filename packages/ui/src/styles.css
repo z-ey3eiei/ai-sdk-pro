@@ -4031,6 +4031,57 @@ body {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 13px;
 }
+.workspace-repo-card-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.workspace-repo-secondary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 4px 4px;
+}
+.workspace-hero-compact {
+  margin-bottom: 8px;
+}
+.workspace-hero-compact h1 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+.workspace-deploy-embed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+.workspace-deploy-embed-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--subtle);
+  max-width: 52rem;
+}
+.workspace-deploy-embed-chrome {
+  padding: 0;
+  flex: 1;
+  min-height: 0;
+}
+.workspace-deploy-embed-frame {
+  min-height: min(62dvh, 760px);
+  border-color: color-mix(in srgb, #f00 22%, var(--border));
+}
+.workspace-deploy-loading,
+.workspace-deploy-fallback,
+.workspace-deploy-offline {
+  padding: 28px 0;
+  color: var(--subtle);
+  font-size: 13px;
+}
+.workspace-deploy-offline-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 8px 0 0;
+}
 .workspace-repo-card {
   min-width: 0;
   padding: 21px;

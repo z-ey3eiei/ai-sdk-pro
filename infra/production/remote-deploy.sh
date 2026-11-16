@@ -51,4 +51,4 @@ ssh -i "$KEY_FILE" "${SSH_OPTS[@]}" "$HOST" \
    grep -q '^DEPLOY_DASHBOARD_ORIGIN=' \"\$ENV_FILE\" || echo 'DEPLOY_DASHBOARD_ORIGIN=https://deploy-staging.ai-sdk.pro' >> \"\$ENV_FILE\"; \
    chmod 600 \"\$ENV_FILE\"; cd /opt/ai-sdk-pro; APP_IMAGE=ai-sdk-pro-web:$REV docker compose up -d --force-recreate app"
 
-printf '\nDeployed ai-sdk-pro-web:%s — verify https://ai-sdk.pro/api/health and https://ai-sdk.pro/deploy\n' "$REV"
+printf '\nDeployed ai-sdk-pro-web:%s — verify https://ai-sdk.pro/api/health and https://ai-sdk.pro/workspace/deploy\n' "$REV"

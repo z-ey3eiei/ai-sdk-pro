@@ -27,4 +27,4 @@ chmod 600 "$ENV_FILE"
 cd /opt/ai-sdk-pro
 APP_IMAGE="ai-sdk-pro-web:$REV" docker compose up -d --force-recreate app
 
-printf '\nDone. Check https://ai-sdk.pro/deploy and https://ai-sdk.pro/api/health\n'
+printf '\nDone. Check https://ai-sdk.pro/workspace/deploy and https://ai-sdk.pro/api/health\n'
