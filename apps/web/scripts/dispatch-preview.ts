@@ -64,7 +64,6 @@ async function main() {
       },
       body: JSON.stringify({
         ref: workflowRef,
-        return_run_details: true,
         inputs: { commit: job.commit_sha, slot, delivery: job.delivery_id },
       }),
       redirect: "error",
@@ -79,6 +78,7 @@ async function main() {
     } else if (response.status === 204) {
       state = "submitted";
     } else if ([400, 401, 403, 404, 422, 429].includes(response.status)) {
+      console.error(`GitHub rejected the preview dispatch (HTTP ${response.status}).`);
       state = "rejected";
     }
   } catch {
