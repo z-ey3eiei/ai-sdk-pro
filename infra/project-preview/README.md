@@ -1,0 +1,14 @@
+# Static preview pilot
+
+The pilot consumes one preview request at a time for an explicitly configured project and sends the pinned commit to GitHub Actions. The trial applies to a trusted repository with the existing `infra/sandbox-build.sh` interface. Public tenant workloads and production deployments need their own execution and publishing controls.
+
+## Setup
+
+1. Apply platform migrations 0007 and 0008 to the staging Neon database. Configure the staging web runtime with `NEON_DATABASE_URL` and `GITHUB_DEPLOY_WEBHOOK_SECRET`. Use the same webhook secret on a staging GitHub App subscribed to push and pull request events.
+2. Import the pilot repository in the staging workspace. Register its imported repository ID, GitHub App installation ID, and production branch in `deployment_project`. Enable automatic intake for this project only.
+3. Install `aisdk-preview.yml` as `.github/workflows/aisdk-preview.yml` on the pilot repository's trusted default branch. Install the existing sandbox build script under `infra/sandbox-build.sh` on that branch. Restrict the GitHub `aisdk-preview` environment to the trusted workflow branch.
+4. Set GitHub environment variables `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_PAGES_PROJECT=ai-sdk-pro-preview-pilot`, and secret `CLOUDFLARE_PAGES_TOKEN` scoped to Pages publishing in the staging account. Keep the Pages project's production branch set to `production`. The pilot only publishes preview aliases.
+5. On a staging worker, provide `NEON_DATABASE_URL`, `PREVIEW_PILOT_PROJECT_ID`, `PREVIEW_PILOT_REPOSITORY` (owner/name), `PREVIEW_PILOT_INSTALLATION_ID`, `PREVIEW_PILOT_WORKFLOW_REF` (the trusted default branch), and `PREVIEW_PILOT_GITHUB_TOKEN` (Actions write on the pilot only). Run `pnpm --filter @aisdkpro/web exec tsx scripts/dispatch-preview.ts` from the source checkout. Use a serialized scheduler for recurring runs.
+6. Push a non-production branch. Verify the matching intake row, GitHub Actions run and the URL in the run summary. The publish job checks both the live homepage and the pinned SHA before reporting success.
+
+A dispatch marked uncertain may already have reached GitHub. Look up the delivery UUID in workflow runs before resetting anything. Allow only trusted repositories in this pilot. Per-tenant quotas, newest-commit promotion, log ingestion, UI status, production publishing and rollback remain follow-up work.
