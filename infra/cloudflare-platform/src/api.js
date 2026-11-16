@@ -9,6 +9,12 @@ export { DeploymentWorkflow, BuildSandbox, ContainerProxy } from './pipeline.js'
 const projectColumns = 'id,name,repo_full_name,repo_id,branch,framework,build_command,output_dir,auto_deploy,active_deployment_id,created_at';
 const quotaError = (error) => /(?:project|deployment|concurrent|variable|domain)_quota/.test(error.message);
 const outputPath = /^(?=.{1,96}$)[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*$/;
+const githubReady = (env) => Boolean(
+  env.GITHUB_CLIENT_ID && !env.GITHUB_CLIENT_ID.startsWith('SET_') &&
+  env.GITHUB_APP_SLUG && !env.GITHUB_APP_SLUG.startsWith('SET_') &&
+  env.GITHUB_CLIENT_SECRET && env.GITHUB_APP_PRIVATE_KEY && env.GITHUB_WEBHOOK_SECRET &&
+  env.ENCRYPTION_KEY && env.CLOUDFLARE_DEPLOY_TOKEN && env.BETA_GITHUB_IDS?.trim()
+);
 const callback = (env) => `${env.API_ORIGIN}/auth/github/callback`;
 
 async function body(request) {
@@ -259,14 +265,19 @@ export default {
     const url = new URL(request.url);
     if (url.origin !== env.API_ORIGIN) return json({ error: 'Unknown platform host.' }, 404);
     try {
-      if (url.pathname === '/health' && request.method === 'GET') {
+      if (request.method === 'GET' && (url.pathname === '/live' || url.pathname === '/health')) {
         await first(env, 'SELECT 1');
+        if (url.pathname === '/health' && !githubReady(env))
+          return json({ status: 'setup_required', component: 'github_app' }, 503);
         return json({ status: 'ok' });
       }
       if (url.pathname === '/api/github/webhook' && request.method === 'POST') return await webhook(request, env);
       if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method) && request.headers.get('origin') !== url.origin)
         throw new HttpError(403, 'Invalid request origin.');
-      if (request.method === 'GET' && url.pathname.startsWith('/auth/')) return await auth(request, env, url);
+      if (request.method === 'GET' && url.pathname.startsWith('/auth/')) {
+        if (!githubReady(env)) throw new HttpError(503, 'GitHub App setup is pending.');
+        return await auth(request, env, url);
+      }
       if (url.pathname.startsWith('/api/')) return await api(request, env, url);
       return env.DASHBOARD.fetch(request);
     } catch (error) {

@@ -72,7 +72,7 @@ export async function deployAssets(env, name, artifacts, bindings) {
   }
   const form = new FormData();
   form.set('metadata', new Blob([JSON.stringify({
-    main_module: 'index.js', compatibility_date: '2026-11-17',
+    main_module: 'index.js', compatibility_date: '2026-11-16',
     assets: { jwt: completion, config: { html_handling: 'auto-trailing-slash' } },
     bindings: [{ name: 'ASSETS', type: 'assets' }, ...bindings],
   })], { type: 'application/json' }), 'metadata.json');

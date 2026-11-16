@@ -157,5 +157,11 @@ try {
   get('logout').hidden = false;
   await perform(null, () => Promise.all([loadProjects(), loadRepos()]));
 } catch {
-  get('login').hidden = false;
+  try {
+    const health = await fetch('/health', { cache: 'no-store' });
+    if (health.ok) get('login').hidden = false;
+    else notice.textContent = 'Dashboard เปิดแล้ว กำลังรอเชื่อม GitHub App เพื่อเปิดการล็อกอินและ Deploy';
+  } catch {
+    notice.textContent = 'เชื่อมต่อ Deploy Dashboard ไม่ได้';
+  }
 }
