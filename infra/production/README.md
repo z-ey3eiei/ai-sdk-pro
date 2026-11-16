@@ -12,8 +12,9 @@ You already use SSH to the VPS; **no Cursor “secrets” needed**.
 git clone https://github.com/z-ey3eiei/ai-sdk-pro.git
 cd ai-sdk-pro
 git checkout cursor/embed-deploy-on-site-0650   # or main after merge
-export SSH_KEY="$HOME/path/to/your-server-key.pem"
+export SSH_KEY="$HOME/.ssh/ai-sdk-pro-server-key.pem"
 export HOST="deploy@167.172.73.127"
+# same as: ssh -o IdentitiesOnly=yes -i "$SSH_KEY" "$HOST"
 bash infra/production/remote-deploy.sh
 ```
 

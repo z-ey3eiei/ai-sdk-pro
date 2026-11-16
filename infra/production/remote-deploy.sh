@@ -9,6 +9,8 @@ cd "$REPO_ROOT"
 
 HOST="${VPS_SSH_HOST:-${HOST:-deploy@167.172.73.127}}"
 REV="$(git rev-parse --short=7 HEAD)"
+SSH_OPTS=(-o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new)
+SCP_OPTS=("${SSH_OPTS[@]}")
 
 CLEANUP_KEY=
 if [ -n "${SSH_KEY:-}" ] && [ -f "$SSH_KEY" ]; then
@@ -25,24 +27,24 @@ fi
 
 trap 'test -n "$CLEANUP_KEY" && rm -f "$KEY_FILE"; rm -f /tmp/ai-sdk-pro-source.tar.gz' EXIT
 
-ssh -i "$KEY_FILE" -o StrictHostKeyChecking=accept-new -o BatchMode=yes "$HOST" 'echo VPS_OK'
+ssh -i "$KEY_FILE" "${SSH_OPTS[@]}" -o BatchMode=yes "$HOST" 'echo VPS_OK'
 git archive --format=tar.gz --output=/tmp/ai-sdk-pro-source.tar.gz HEAD
-scp -i "$KEY_FILE" -o StrictHostKeyChecking=accept-new \
+scp -i "$KEY_FILE" "${SCP_OPTS[@]}" \
   /tmp/ai-sdk-pro-source.tar.gz \
   "$HOST:/tmp/ai-sdk-pro-source.tar.gz"
-scp -i "$KEY_FILE" -o StrictHostKeyChecking=accept-new \
+scp -i "$KEY_FILE" "${SCP_OPTS[@]}" \
   infra/production/Caddyfile \
   "$HOST:/tmp/ai-sdk-pro-Caddyfile"
-scp -i "$KEY_FILE" -o StrictHostKeyChecking=accept-new \
+scp -i "$KEY_FILE" "${SCP_OPTS[@]}" \
   infra/production/docker-compose.yml \
   "$HOST:/tmp/ai-sdk-pro-compose.yml"
-scp -i "$KEY_FILE" -o StrictHostKeyChecking=accept-new \
+scp -i "$KEY_FILE" "${SCP_OPTS[@]}" \
   infra/production/install-app.sh \
   "$HOST:/tmp/ai-sdk-pro-install.sh"
 
-ssh -i "$KEY_FILE" -o StrictHostKeyChecking=accept-new "$HOST" "bash /tmp/ai-sdk-pro-install.sh $REV"
+ssh -i "$KEY_FILE" "${SSH_OPTS[@]}" "$HOST" "bash /tmp/ai-sdk-pro-install.sh $REV"
 
-ssh -i "$KEY_FILE" -o StrictHostKeyChecking=accept-new "$HOST" \
+ssh -i "$KEY_FILE" "${SSH_OPTS[@]}" "$HOST" \
   "set -euo pipefail; ENV_FILE=/opt/ai-sdk-pro/config/app.env; \
    grep -q '^DEPLOY_DASHBOARD_ORIGIN=' \"\$ENV_FILE\" || echo 'DEPLOY_DASHBOARD_ORIGIN=https://deploy-staging.ai-sdk.pro' >> \"\$ENV_FILE\"; \
    chmod 600 \"\$ENV_FILE\"; cd /opt/ai-sdk-pro; APP_IMAGE=ai-sdk-pro-web:$REV docker compose up -d --force-recreate app"
