@@ -53,6 +53,14 @@ Webdev project ที่ผูกกับ repo คือ `wdp_dc48b360c1e3edf42
 
 คู่มือ operator เดิมอยู่นอก repo ที่ `/home/ubuntu/ai-sdk-pro-vps-handoff.md`; ไฟล์นี้เป็นเอกสารเดิมและข้อมูล repo access อาจล้าสมัยกว่า memory นี้
 
+### Cloudflare deploy staging (Workers for Platforms) — คนละระบบกับ Neon workspace
+
+- **Dashboard:** `https://deploy-staging.ai-sdk.pro` — โค้ดใน [`infra/cloudflare-platform/`](infra/cloudflare-platform/) (API Worker + dispatch + D1/KV/R2/Queue)
+- **ไม่ใช่** Better Auth บน `ai-sdk.pro` หรือ OAuth app **“AI SDK Pro Staging”** ของ `staging.ai-sdk.pro`; ใช้ GitHub App **`ai-sdk-pro`** กับ callback `…/auth/github/callback` และฐานข้อมูล **D1** (ไม่ใช่ Neon `aisdk_pro`)
+- หน้า `/deploy` บนเว็บหลัก ([`apps/web/app/deploy/page.tsx`](apps/web/app/deploy/page.tsx)) probe `/health` แล้วลิงก์ไป origin นี้เท่านั้น
+- สถานะทรัพยากรและ pilot routing: [`infra/cloudflare-platform/ASSEMBLY-STATE.md`](infra/cloudflare-platform/ASSEMBLY-STATE.md), [`scripts/verify-assembly.sh`](infra/cloudflare-platform/scripts/verify-assembly.sh)
+- ข้อผิดพลาดทั่วไป `Platform request failed.` = catch-all **500** ใน `infra/cloudflare-platform/src/api.js` (ดู `PLATFORM_DEBUG_ERRORS` บน staging สำหรับฟิลด์ `detail` ชั่วคราว); ข้อความคล้ายกันที่ `apps/web/lib/platform-policy.ts` หมายถึง **Neon platform API** คนละเส้นทาง
+
 ## 3. สิ่งที่มีอยู่ใน source ปัจจุบัน
 
 - Public chat ใช้ **BYOK**: ผู้ใช้เลือก Anthropic/OpenAI/Google และให้ provider key ของตนเอง คีย์ไม่ใช่ owner key และต้องไม่ persist ใน browser storage, DB, logs, URL หรือ message parts

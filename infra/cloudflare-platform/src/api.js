@@ -265,9 +265,15 @@ async function api(request, env, url) {
     if (method === 'PUT') {
       const { value } = await body(request);
       if (typeof value !== 'string' || utf8.encode(value).length > 4096 || item === 'ASSETS') throw new HttpError(400, 'Invalid variable.');
+      let valueEncrypted;
+      try {
+        valueEncrypted = await seal(env, value, `${project.id}:${item}`);
+      } catch {
+        throw new HttpError(503, 'Session encryption is misconfigured.');
+      }
       await run(env, `INSERT INTO env_vars(project_id,key,value_encrypted) VALUES(?,?,?)
         ON CONFLICT(project_id,key) DO UPDATE SET value_encrypted=excluded.value_encrypted`,
-        project.id, item, await seal(env, value, `${project.id}:${item}`));
+        project.id, item, valueEncrypted);
       return json({ saved: true });
     }
   }
