@@ -18,11 +18,11 @@ import {
   ButtonLink,
   CodeBlock,
   Footer,
-  InstallCommand,
 } from "@aisdkpro/ui";
 import PlatformDemos from "../components/PlatformDemos";
 import SiteHeader from "../components/SiteHeader";
 import HomeFAQ from "../components/HomeFAQ";
+import HomeHeroInteractive from "../components/HomeHeroInteractive";
 import {
   createSeoMetadata,
   HOME_PAGE_TITLE,
@@ -128,9 +128,7 @@ export default function Home() {
               real-time streaming, and your own infrastructure — so the moment
               of inspiration becomes something useful.
             </p>
-            <div className="hero-install">
-              <InstallCommand command="pnpm --filter @aisdkpro/web dev" />
-            </div>
+            <HomeHeroInteractive />
             <div className="hero-terminal">
               <CodeBlock
                 filename="~/ai-sdk.pro"
@@ -154,6 +152,7 @@ export default function Home() {
               "TypeScript",
               "React",
               "Fumadocs",
+              "Liveblocks",
               "Docker",
               "Caddy",
               "Node.js",
