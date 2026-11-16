@@ -4,20 +4,24 @@ The current owner VPS has a live deployment; see `../DEPLOYMENT-STATE.md` for th
 
 Docker Buildx is required for this BuildKit Dockerfile. It is installed on the current VPS. For a fresh Ubuntu host, check `docker buildx version` and install the distribution package `docker-buildx` if missing before running the build.
 
-### Deploy from a Cloud Agent (SSH secrets)
+### Deploy from your computer (Termius / SSH key file) — recommended
 
-Add **Cursor environment secrets** (not in git):
-
-- `VPS_SSH_PRIVATE_KEY` — PEM for `deploy` or `root` on the production droplet
-- `VPS_SSH_HOST` — optional, default `deploy@167.172.73.127`
-
-From the repo checkout on the branch you want live:
+You already use SSH to the VPS; **no Cursor “secrets” needed**.
 
 ```bash
+git clone https://github.com/z-ey3eiei/ai-sdk-pro.git
+cd ai-sdk-pro
+git checkout cursor/embed-deploy-on-site-0650   # or main after merge
+export SSH_KEY="$HOME/path/to/your-server-key.pem"
+export HOST="deploy@167.172.73.127"
 bash infra/production/remote-deploy.sh
 ```
 
-The script archives `HEAD`, runs `install-app.sh` on the VPS, appends deploy-dashboard env defaults to `/opt/ai-sdk-pro/config/app.env`, and recreates the app container.
+`SSH_KEY` = path to the same private key you use in Termius. Takes a few minutes (build image on the VPS).
+
+### Deploy from Cloud Agent (optional)
+
+Only if you want the **agent VM** to SSH out: add `VPS_SSH_PRIVATE_KEY` in Cursor Dashboard → Cloud Agents → Secrets, then start a **new** agent message.
 
 From the intended clean source checkpoint, provide your separately stored private key:
 

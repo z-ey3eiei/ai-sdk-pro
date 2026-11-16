@@ -1,24 +1,29 @@
 #!/usr/bin/env bash
 # Deploy a checked-out branch to the production VPS over SSH.
-# Requires: VPS_SSH_PRIVATE_KEY (PEM contents) and optionally VPS_SSH_HOST (default deploy@167.172.73.127).
+# Use either SSH_KEY=/path/to/key.pem (Termius / local) or VPS_SSH_PRIVATE_KEY= (Cursor agent secret).
 set -euo pipefail
 umask 077
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$REPO_ROOT"
 
-HOST="${VPS_SSH_HOST:-deploy@167.172.73.127}"
+HOST="${VPS_SSH_HOST:-${HOST:-deploy@167.172.73.127}}"
 REV="$(git rev-parse --short=7 HEAD)"
 
-if [ -z "${VPS_SSH_PRIVATE_KEY:-}" ]; then
-  echo "Set VPS_SSH_PRIVATE_KEY to the server private key PEM contents (Cursor env secret)." >&2
+CLEANUP_KEY=
+if [ -n "${SSH_KEY:-}" ] && [ -f "$SSH_KEY" ]; then
+  KEY_FILE="$SSH_KEY"
+elif [ -n "${VPS_SSH_PRIVATE_KEY:-}" ]; then
+  KEY_FILE="$(mktemp)"
+  CLEANUP_KEY=1
+  printf '%s\n' "$VPS_SSH_PRIVATE_KEY" > "$KEY_FILE"
+  chmod 600 "$KEY_FILE"
+else
+  echo "Set SSH_KEY to your key file (e.g. from Termius), or VPS_SSH_PRIVATE_KEY for Cloud Agent." >&2
   exit 1
 fi
 
-KEY_FILE="$(mktemp)"
-trap 'rm -f "$KEY_FILE" /tmp/ai-sdk-pro-source.tar.gz' EXIT
-printf '%s\n' "$VPS_SSH_PRIVATE_KEY" > "$KEY_FILE"
-chmod 600 "$KEY_FILE"
+trap 'test -n "$CLEANUP_KEY" && rm -f "$KEY_FILE"; rm -f /tmp/ai-sdk-pro-source.tar.gz' EXIT
 
 ssh -i "$KEY_FILE" -o StrictHostKeyChecking=accept-new -o BatchMode=yes "$HOST" 'echo VPS_OK'
 git archive --format=tar.gz --output=/tmp/ai-sdk-pro-source.tar.gz HEAD
