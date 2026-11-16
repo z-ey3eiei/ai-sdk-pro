@@ -28,6 +28,12 @@ describe("preview pilot workflow identity", () => {
     await expect(readPilotDeploymentIdentity(identity())).resolves.toMatchObject({ repositoryId: 1458143895, commit: sha });
   });
 
+  it("accepts the immutable GitHub subject for the same owner and repository IDs", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ keys: [{ ...publicKey.export({ format: "jwk" }), kid: "test" }] })));
+    await expect(readPilotDeploymentIdentity(identity({ sub: `repo:z-ey3eiei@312459747/urban-couscous@1458143895:ref:${ref}` }))).resolves.toMatchObject({ commit: sha });
+    await expect(readPilotDeploymentIdentity(identity({ sub: `repo:z-ey3eiei@1/urban-couscous@1458143895:ref:${ref}` }))).resolves.toBeNull();
+  });
+
   it("rejects foreign workflows, other audiences and production branches", async () => {
     const fetcher = vi.fn();
     vi.stubGlobal("fetch", fetcher);
