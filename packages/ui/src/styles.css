@@ -2163,6 +2163,68 @@ body {
   margin-top: 24px;
   height: 44px;
 }
+.deploy-page-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 64px);
+  background: var(--bg);
+}
+.deploy-embed-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0;
+  padding-bottom: 32px;
+}
+.deploy-page-intro {
+  padding-top: 40px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+}
+.deploy-page-title {
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  margin: 12px 0 0;
+}
+.deploy-page-intro .section-intro {
+  max-width: 42rem;
+  margin-top: 14px;
+  font-size: 15px;
+}
+.deploy-page-intro .section-intro strong {
+  font-weight: 600;
+  color: var(--fg);
+}
+.deploy-page-link {
+  color: var(--fg);
+  text-decoration-color: #f00;
+  text-underline-offset: 3px;
+}
+.deploy-page-link:hover {
+  color: #f00;
+}
+.deploy-embed-chrome {
+  flex: 1;
+  padding-top: 24px;
+  min-height: 0;
+}
+.deploy-embed-frame {
+  display: block;
+  width: 100%;
+  min-height: min(70dvh, 880px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #000;
+  box-shadow: 0 0 0 1px color-mix(in srgb, #f00 12%, transparent),
+    0 24px 80px color-mix(in srgb, #000 35%, transparent);
+}
+.deploy-embed-offline {
+  padding: 24px 0 48px;
+  color: var(--muted);
+  text-align: left;
+}
 .deploy-command-panel {
   min-width: 0;
   border: 1px solid var(--border);
@@ -3968,6 +4030,57 @@ body {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 13px;
+}
+.workspace-repo-card-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.workspace-repo-secondary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 4px 4px;
+}
+.workspace-hero-compact {
+  margin-bottom: 8px;
+}
+.workspace-hero-compact h1 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+.workspace-deploy-embed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+.workspace-deploy-embed-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--subtle);
+  max-width: 52rem;
+}
+.workspace-deploy-embed-chrome {
+  padding: 0;
+  flex: 1;
+  min-height: 0;
+}
+.workspace-deploy-embed-frame {
+  min-height: min(62dvh, 760px);
+  border-color: color-mix(in srgb, #f00 22%, var(--border));
+}
+.workspace-deploy-loading,
+.workspace-deploy-fallback,
+.workspace-deploy-offline {
+  padding: 28px 0;
+  color: var(--subtle);
+  font-size: 13px;
+}
+.workspace-deploy-offline-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 8px 0 0;
 }
 .workspace-repo-card {
   min-width: 0;

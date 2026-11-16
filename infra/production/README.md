@@ -4,6 +4,26 @@ The current owner VPS has a live deployment; see `../DEPLOYMENT-STATE.md` for th
 
 Docker Buildx is required for this BuildKit Dockerfile. It is installed on the current VPS. For a fresh Ubuntu host, check `docker buildx version` and install the distribution package `docker-buildx` if missing before running the build.
 
+### Deploy from your computer (Termius / SSH key file) — recommended
+
+You already use SSH to the VPS; **no Cursor “secrets” needed**.
+
+```bash
+git clone https://github.com/z-ey3eiei/ai-sdk-pro.git
+cd ai-sdk-pro
+git checkout cursor/embed-deploy-on-site-0650   # or main after merge
+export SSH_KEY="$HOME/.ssh/ai-sdk-pro-server-key.pem"
+export HOST="deploy@167.172.73.127"
+# same as: ssh -o IdentitiesOnly=yes -i "$SSH_KEY" "$HOST"
+bash infra/production/remote-deploy.sh
+```
+
+`SSH_KEY` = path to the same private key you use in Termius. Takes a few minutes (build image on the VPS).
+
+### Deploy from Cloud Agent (optional)
+
+Only if you want the **agent VM** to SSH out: add `VPS_SSH_PRIVATE_KEY` in Cursor Dashboard → Cloud Agents → Secrets, then start a **new** agent message.
+
 From the intended clean source checkpoint, provide your separately stored private key:
 
 ```bash

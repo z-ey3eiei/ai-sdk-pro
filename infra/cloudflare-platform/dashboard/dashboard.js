@@ -40,6 +40,21 @@ function row(label, ...actions) {
   item.append(title, ...actions);
   return item;
 }
+function applyRepoHint() {
+  const hint = new URLSearchParams(location.search).get('repo');
+  if (!hint) return false;
+  for (const option of repository.options) {
+    if (option.value === hint) {
+      repository.value = hint;
+      const nameField = get('import').elements.name;
+      if (nameField && !nameField.value) {
+        nameField.value = hint.includes('/') ? hint.split('/').pop() : hint;
+      }
+      return true;
+    }
+  }
+  return false;
+}
 async function repoOptions() {
   repository.replaceChildren();
   if (!installation.value) return;
@@ -51,6 +66,7 @@ async function repoOptions() {
       for (const repo of more.items) repository.add(new Option(repo.full_name, repo.full_name));
     }
   }
+  applyRepoHint();
 }
 async function loadRepos() {
   const {items} = await api('repos');

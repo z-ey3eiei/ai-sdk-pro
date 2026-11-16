@@ -1,27 +1,68 @@
-:root{color-scheme:dark;font:16px/1.55 Inter,system-ui,sans-serif;background:#0d0d10;color:#f4f0f1}
+:root {
+  color-scheme: dark;
+  --bg: #000;
+  --panel: #0a0a0a;
+  --soft: #141414;
+  --border: #2e2e2e;
+  --muted: #b3b3b3;
+  --fg: #f5f5f5;
+  --red: #ff0000;
+  --red-soft: #e60000;
+  font: 15px/1.6 system-ui, "IBM Plex Sans Thai", sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
 *{box-sizing:border-box}
-body{margin:0}
-header{display:flex;align-items:center;gap:1rem;min-height:4.25rem;padding:0 max(1rem,calc((100vw - 58rem)/2));border-bottom:1px solid #302629}
-header a{font-weight:750;color:#fff;text-decoration:none;white-space:nowrap}
-header span{margin-inline-start:auto}
-main{max-width:60rem;margin:0 auto;padding:clamp(1rem,5vw,3rem)}
-h1{font-size:clamp(1.9rem,5vw,3.4rem);margin:0 0 1rem;line-height:1.1}
-h2,h3{margin:0 0 .85rem}
-h3{margin-top:1.5rem}
-section{margin-bottom:1rem;padding:1.2rem;border:1px solid #352a30;border-radius:.8rem;background:#151215}
-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));align-items:end;gap:.75rem;margin:.9rem 0}
-label{display:grid;gap:.3rem;font-size:.9rem}
-label.inline{display:flex;align-items:center}
-input,select,button,.primary{font:inherit;color:inherit;background:#211b20;border:1px solid #544048;border-radius:.45rem;padding:.5rem .75rem}
+body{margin:0;background:var(--bg)}
+header{
+  display:flex;align-items:center;gap:1rem;min-height:3.5rem;
+  padding:0 clamp(1rem,4vw,1.5rem);
+  border-bottom:1px solid var(--border);
+  background:color-mix(in srgb,var(--bg) 92%,transparent)
+}
+header a{font-weight:700;color:var(--fg);text-decoration:none;letter-spacing:-.02em}
+header a::before{content:"";display:inline-block;width:.55rem;height:.55rem;border-radius:50%;background:var(--red);margin-right:.45rem;vertical-align:middle}
+header span{margin-inline-start:auto;font-size:13px;color:var(--muted)}
+main{max-width:60rem;margin:0 auto;padding:clamp(1rem,4vw,2rem)}
+h1{font-size:clamp(1.75rem,4vw,2.5rem);margin:0 0 .75rem;line-height:1.12;font-weight:600;letter-spacing:-.03em}
+h2,h3{margin:0 0 .75rem;font-weight:600;letter-spacing:-.02em}
+h3{margin-top:1.25rem;font-size:1.05rem}
+section{
+  margin-bottom:.85rem;padding:1.1rem 1.15rem;
+  border:1px solid var(--border);border-radius:10px;background:var(--panel)
+}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));align-items:end;gap:.75rem;margin:.75rem 0}
+label{display:grid;gap:.35rem;font-size:13px;color:var(--muted)}
+label.inline{display:flex;align-items:center;gap:.4rem;color:var(--fg)}
+input,select,button,.primary{
+  font:inherit;color:var(--fg);background:var(--soft);
+  border:1px solid var(--border);border-radius:6px;padding:.5rem .7rem
+}
+input:focus,select:focus{outline:2px solid color-mix(in srgb,var(--red) 35%,transparent);border-color:color-mix(in srgb,var(--red) 40%,var(--border))}
 input,select{width:100%}
-input[type=checkbox]{width:auto}
-button,.primary{cursor:pointer}
-button:disabled{opacity:.55;cursor:wait}
-.primary{display:inline-block;text-decoration:none;background:#ae263a;border-color:#d75868;color:white}
-a{color:#ffa2af}
+input[type=checkbox]{width:auto;accent-color:var(--red)}
+button,.primary{cursor:pointer;font-weight:600;font-size:14px}
+button:disabled{opacity:.5;cursor:wait}
+.primary,.button.primary{
+  display:inline-block;text-decoration:none;background:var(--red);
+  border-color:var(--red);color:#fff
+}
+.primary:hover{background:var(--red-soft);border-color:var(--red-soft)}
+a{color:var(--fg);text-decoration-color:var(--red)}
 .actions,.item{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
-.item{border-bottom:1px solid #352a30;padding:.6rem 0}
-.item span{margin-inline-end:auto;overflow-wrap:anywhere}
-pre{white-space:pre-wrap;overflow:auto;background:#0b090b;padding:.9rem;max-height:22rem;overflow-wrap:anywhere}
-#notice{color:#ffb4bd;min-height:1.35rem}
+.item{border-bottom:1px solid var(--border);padding:.55rem 0}
+.item span{margin-inline-end:auto;overflow-wrap:anywhere;font-size:14px}
+pre{
+  white-space:pre-wrap;overflow:auto;background:#050505;border:1px solid var(--border);
+  border-radius:8px;padding:.85rem;max-height:22rem;font-size:12px;line-height:1.55
+}
+#notice{color:#ff6b6b;min-height:1.35rem;font-size:14px}
 [hidden]{display:none!important}
+/* Embedded in ai-sdk.pro/deploy — hide duplicate chrome */
+html.embed header,
+html.embed h1{display:none}
+html.embed main{padding-top:.5rem}
+html.embed body{background:var(--bg)}
+#logout{
+  background:transparent;border-color:var(--border);color:var(--muted);font-size:13px;padding:.35rem .65rem
+}

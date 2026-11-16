@@ -3,11 +3,12 @@ set -euo pipefail
 umask 077
 ROOT=/opt/ai-sdk-pro
 RELEASE="${1:?Provide the checked checkpoint short SHA}"
+STAGE="${AI_SDK_DEPLOY_STAGE:-/tmp}"
 printf '\n--- source extraction ---\n'
 mkdir -p "$ROOT/releases/$RELEASE" "$ROOT/config"
-tar -xzf /tmp/ai-sdk-pro-source.tar.gz -C "$ROOT/releases/$RELEASE"
-install -m 600 /tmp/ai-sdk-pro-Caddyfile "$ROOT/config/Caddyfile"
-install -m 644 /tmp/ai-sdk-pro-compose.yml "$ROOT/docker-compose.yml"
+tar -xzf "$STAGE/ai-sdk-pro-source.tar.gz" -C "$ROOT/releases/$RELEASE"
+install -m 600 "$STAGE/ai-sdk-pro-Caddyfile" "$ROOT/config/Caddyfile"
+install -m 644 "$STAGE/ai-sdk-pro-compose.yml" "$ROOT/docker-compose.yml"
 if [ ! -f "$ROOT/config/app.env" ]; then
   printf '%s\n' 'BYOK_ONLY=true' 'AI_PROVIDER=anthropic' 'AI_MODEL=claude-sonnet-4-6' 'APP_ORIGINS=https://ai-sdk.pro,https://www.ai-sdk.pro' > "$ROOT/config/app.env"
 fi
@@ -26,13 +27,13 @@ done
 curl -fsS http://127.0.0.1:3000/api/health
 printf '\n--- SSR page checks ---\n'
 for path in / /chat /docs/getting-started /docs/architecture /manus-routes.json; do
-  code=$(curl -sS --max-time 15 -o /tmp/aisdk-page-check -w '%{http_code}' "http://127.0.0.1:3000$path")
+  code=$(curl -sS --max-time 15 -o "$STAGE/aisdk-page-check" -w '%{http_code}' "http://127.0.0.1:3000$path")
   printf '%s %s\n' "$code" "$path"
   test "$code" = 200
 done
 printf '\n--- unconfigured provider must stay explicit ---\n'
-code=$(curl -sS -o /tmp/aisdk-ready -w '%{http_code}' http://127.0.0.1:3000/api/ready)
-cat /tmp/aisdk-ready; printf '\nreadiness HTTP=%s (200 expected in BYOK-only mode; visitor key is required for each chat)\n' "$code"
+code=$(curl -sS -o "$STAGE/aisdk-ready" -w '%{http_code}' http://127.0.0.1:3000/api/ready)
+cat "$STAGE/aisdk-ready"; printf '\nreadiness HTTP=%s (200 expected in BYOK-only mode; visitor key is required for each chat)\n' "$code"
 test "$code" = 200
 docker rm -f ai-sdk-pro-smoke
 printf '\n--- production app, private Docker network ---\n'

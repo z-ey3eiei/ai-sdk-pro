@@ -1,28 +1,28 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowUpRight,
   ChevronRight,
   CircleAlert,
-  Database,
   Download,
   ExternalLink,
   Github,
   Globe2,
   GitBranch,
-  KeyRound,
   Library,
   LoaderCircle,
   LockKeyhole,
-  LogOut,
   RefreshCw,
+  Rocket,
   Search,
   ShieldCheck,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Brand } from "@aisdkpro/ui";
 import { authClient } from "../lib/auth-client";
+import WorkspaceChrome from "./WorkspaceChrome";
+import WorkspaceDeployPanel from "./WorkspaceDeployPanel";
 import type {
   GitHubRepository,
   GitHubRepositoryList,
@@ -36,7 +36,7 @@ import {
 } from "../lib/repository-request-error";
 
 type Phase = "loading" | "ready" | "signed-out" | "setup" | "error";
-type Tab = "imported" | "github";
+type Tab = "imported" | "github" | "deploy";
 
 async function requestJson<T>(
   path: string,
@@ -62,20 +62,6 @@ async function requestJson<T>(
   return (await response.json()) as T;
 }
 
-function displayName(user: PlatformSession["user"]): string {
-  return user?.name?.trim() || user?.email?.trim() || "Signed-in account";
-}
-
-function initials(user: PlatformSession["user"]): string {
-  const value = displayName(user);
-  return value
-    .split(/\s+/)
-    .map(part => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
-
 function formatDate(value: string): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "Date unavailable";
@@ -90,96 +76,6 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KiB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MiB`;
-}
-
-function WorkspaceChrome({
-  children,
-  user,
-  onLogout,
-  logoutPending,
-}: {
-  children: React.ReactNode;
-  user: PlatformSession["user"];
-  onLogout: () => void;
-  logoutPending: boolean;
-}) {
-  return (
-    <main className="workspace-shell">
-      <aside className="workspace-sidebar">
-        <div className="workspace-sidebar-top">
-          <Brand />
-          <span className="workspace-product-label">WORKSPACE</span>
-        </div>
-        <nav className="workspace-nav" aria-label="Workspace navigation">
-          <Link href="/workspace" className="workspace-nav-item active">
-            <Library size={16} />
-            <span>Repositories</span>
-          </Link>
-          <Link href="/workspace/tokens" className="workspace-nav-item">
-            <KeyRound size={16} />
-            <span>API tokens</span>
-          </Link>
-          <Link href="/docs/architecture" className="workspace-nav-item">
-            <Database size={16} />
-            <span>How snapshots work</span>
-            <ArrowUpRight className="workspace-nav-external" size={12} />
-          </Link>
-        </nav>
-        <div className="workspace-sidebar-note">
-          <ShieldCheck size={15} />
-          <p>
-            Import a repository snapshot to inspect its files. Registered projects can be deployed from the workspace.
-          </p>
-        </div>
-        <div className="workspace-sidebar-footer">
-          <span className="workspace-sidebar-kicker">AI-SDK.PRO</span>
-          <span>Repository import preview</span>
-        </div>
-      </aside>
-
-      <section className="workspace-main">
-        <header className="workspace-topbar">
-          <div className="workspace-breadcrumb">
-            <Link href="/workspace">Workspace</Link>
-            <ChevronRight size={14} />
-            <span>Repositories</span>
-          </div>
-          <div className="workspace-account">
-            {user ? (
-              <>
-                <span className="workspace-account-copy">
-                  <strong>{displayName(user)}</strong>
-                  <span>GitHub account</span>
-                </span>
-                <span className="workspace-avatar" aria-hidden="true">
-                  {initials(user)}
-                </span>
-                <button
-                  type="button"
-                  className="workspace-icon-button"
-                  onClick={onLogout}
-                  disabled={logoutPending}
-                  aria-label="Sign out"
-                  title="Sign out"
-                >
-                  {logoutPending ? (
-                    <LoaderCircle className="workspace-spin" size={15} />
-                  ) : (
-                    <LogOut size={15} />
-                  )}
-                </button>
-              </>
-            ) : (
-              <Link href="/login" className="workspace-sign-in-link">
-                Sign in
-              </Link>
-            )}
-          </div>
-        </header>
-        <div className="workspace-content">{children}</div>
-      </section>
-    </main>
-  );
 }
 
 function StatePanel({
@@ -212,11 +108,16 @@ function RepositoryPrivateBadge({ isPrivate }: { isPrivate: boolean }) {
   );
 }
 
-function ImportedRepositoryCard({ repository }: { repository: ImportedRepository }) {
+function ImportedRepositoryCard({
+  repository,
+  onPublish,
+}: {
+  repository: ImportedRepository;
+  onPublish: () => void;
+}) {
   const repositoryUrl = `/workspace/repositories/${encodeURIComponent(repository.id)}`;
-  const hasDeployment = repository.githubId === 1458143895 && !repository.private && repository.defaultBranch === "main";
   return (
-    <div>
+    <article className="workspace-repo-card-stack">
       <Link
         href={repositoryUrl}
         className="workspace-repo-card workspace-repo-card-imported"
@@ -252,12 +153,19 @@ function ImportedRepositoryCard({ repository }: { repository: ImportedRepository
           {repository.snapshotTruncated && <span className="workspace-truncated">CAP REACHED</span>}
         </div>
       </Link>
-      {hasDeployment && (
-        <Link href={`${repositoryUrl}#deploy`} className="workspace-button workspace-button-secondary" aria-label={`Deploy ${repository.fullName}`}>
-          Deploy <ArrowUpRight size={14} />
+      <div className="workspace-repo-secondary-actions">
+        <button
+          type="button"
+          className="workspace-button workspace-button-primary"
+          onClick={onPublish}
+        >
+          <Rocket size={14} /> เผยแพร่ (Deploy)
+        </button>
+        <Link href={repositoryUrl} className="workspace-button workspace-button-secondary">
+          ดู snapshot <ChevronRight size={14} />
         </Link>
-      )}
-    </div>
+      </div>
+    </article>
   );
 }
 
@@ -266,11 +174,13 @@ function GitHubRepositoryCard({
   imported,
   importing,
   onImport,
+  onPublish,
 }: {
   repository: GitHubRepository;
   imported: boolean;
   importing: boolean;
   onImport: () => void;
+  onPublish: () => void;
 }) {
   return (
     <article className="workspace-repo-card workspace-repo-card-github">
@@ -306,30 +216,40 @@ function GitHubRepositoryCard({
       </div>
       <div className="workspace-repo-action-row">
         <span className="workspace-read-only-label">
-          <ShieldCheck size={12} /> Read-only import
+          <ShieldCheck size={12} /> นำเข้าแล้วไป Deploy
         </span>
-        <button
-          type="button"
-          className="workspace-button workspace-button-primary workspace-import-button"
-          disabled={imported || importing}
-          onClick={onImport}
-        >
-          {importing ? (
-            <LoaderCircle className="workspace-spin" size={14} />
-          ) : imported ? (
-            "Imported"
-          ) : (
-            <>
-              <Download size={14} /> Import snapshot
-            </>
-          )}
-        </button>
+        {imported ? (
+          <button
+            type="button"
+            className="workspace-button workspace-button-primary workspace-import-button"
+            onClick={onPublish}
+          >
+            <Rocket size={14} /> ไป Deploy
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="workspace-button workspace-button-primary workspace-import-button"
+            disabled={importing}
+            onClick={onImport}
+          >
+            {importing ? (
+              <LoaderCircle className="workspace-spin" size={14} />
+            ) : (
+              <>
+                <Download size={14} /> นำเข้าแล้วไป Deploy
+              </>
+            )}
+          </button>
+        )}
       </div>
     </article>
   );
 }
 
 export default function RepositoryWorkspace() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [phase, setPhase] = useState<Phase>("loading");
   const [status, setStatus] = useState<PlatformStatus | null>(null);
   const [session, setSession] = useState<PlatformSession>({ user: null });
@@ -341,6 +261,29 @@ export default function RepositoryWorkspace() {
   const [importingKey, setImportingKey] = useState<string | null>(null);
   const [logoutPending, setLogoutPending] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  const deployRepoHint = searchParams.get("repo");
+
+  useEffect(() => {
+    if (searchParams.get("view") === "deploy") {
+      setTab("deploy");
+    }
+  }, [searchParams]);
+
+  function goToDeploy(fullName: string) {
+    setTab("deploy");
+    router.replace(
+      `/workspace?view=deploy&repo=${encodeURIComponent(fullName)}`
+    );
+  }
+
+  function openDeployTab() {
+    setTab("deploy");
+    const next = deployRepoHint
+      ? `/workspace?view=deploy&repo=${encodeURIComponent(deployRepoHint)}`
+      : "/workspace?view=deploy";
+    router.replace(next);
+  }
 
   useEffect(() => {
     const controller = new AbortController();
@@ -450,7 +393,7 @@ export default function RepositoryWorkspace() {
         result.repository,
         ...current.filter(item => item.id !== result.repository.id),
       ]);
-      setTab("imported");
+      goToDeploy(repository.fullName);
     } catch (error) {
       const issue = presentRepositoryRequestError(error);
       setRequestError(issue.message);
@@ -553,11 +496,11 @@ export default function RepositoryWorkspace() {
         <>
           <section className="workspace-hero">
             <div>
-              <span className="workspace-eyebrow">REPOSITORY CONTROL PLANE</span>
-              <h1>Review your codebase, without running it.</h1>
+              <span className="workspace-eyebrow">IMPORT + PUBLISH</span>
+              <h1>นำเข้า snapshot และเผยแพร่ใน Workspace เดียว</h1>
               <p>
-                Import a bounded snapshot from an authorized GitHub repository,
-                pin it to the returned commit, and inspect the source in one place.
+                เลือก repo จาก GitHub → นำเข้า snapshot แบบ read-only เพื่อตรวจโค้ด →
+                ระบบพาไปแท็บ Deploy เพื่อเผยแพร่จาก Git ชุดเดียวกัน
               </p>
             </div>
             <div className="workspace-limit-card">
@@ -605,6 +548,15 @@ export default function RepositoryWorkspace() {
                 <Github size={14} /> GitHub available
                 <span>{githubRepositories.repositories.length}</span>
               </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={tab === "deploy"}
+                className={tab === "deploy" ? "active" : ""}
+                onClick={openDeployTab}
+              >
+                <Rocket size={14} /> เผยแพร่ (Deploy)
+              </button>
             </div>
             <label className="workspace-search">
               <Search size={15} />
@@ -627,7 +579,20 @@ export default function RepositoryWorkspace() {
             </button>
           </section>
 
-          {tab === "imported" ? (
+          {tab === "deploy" ? (
+            <section className="workspace-section" aria-labelledby="deploy-title">
+              <div className="workspace-section-heading">
+                <div>
+                  <span className="workspace-eyebrow">CLOUDFLARE PILOT</span>
+                  <h2 id="deploy-title">Deploy projects</h2>
+                </div>
+                {deployRepoHint ? (
+                  <span className="workspace-section-count">{deployRepoHint}</span>
+                ) : null}
+              </div>
+              <WorkspaceDeployPanel repoHint={deployRepoHint} />
+            </section>
+          ) : tab === "imported" ? (
             <section className="workspace-section" aria-labelledby="imported-title">
               <div className="workspace-section-heading">
                 <div>
@@ -639,7 +604,11 @@ export default function RepositoryWorkspace() {
               {filteredImported.length > 0 ? (
                 <div className="workspace-repo-grid">
                   {filteredImported.map(repository => (
-                    <ImportedRepositoryCard key={repository.id} repository={repository} />
+                    <ImportedRepositoryCard
+                      key={repository.id}
+                      repository={repository}
+                      onPublish={() => goToDeploy(repository.fullName)}
+                    />
                   ))}
                 </div>
               ) : (
@@ -677,9 +646,8 @@ export default function RepositoryWorkspace() {
               <div className="workspace-provider-note">
                 <Github size={16} />
                 <p>
-                  These are the repositories returned for your current GitHub App
-                  installations. Import stores only a bounded source snapshot;
-                  it does not clone, execute, build, or deploy repository code.
+                  รายการจาก GitHub App ของบัญชีคุณ — กดนำเข้าเพื่อ snapshot read-only
+                  แล้วเปิดแท็บ Deploy เพื่อเผยแพร่จาก repository เดียวกัน (ไม่รันโค้ดบนเซิร์ฟเวอร์ Workspace)
                 </p>
                 {githubInstallUrl && (
                   <a
@@ -707,6 +675,7 @@ export default function RepositoryWorkspace() {
                       imported={importedRepositories.some(item => item.fullName === repository.fullName)}
                       importing={importingKey === repository.fullName}
                       onImport={() => void handleImport(repository)}
+                      onPublish={() => goToDeploy(repository.fullName)}
                     />
                   ))}
                 </div>

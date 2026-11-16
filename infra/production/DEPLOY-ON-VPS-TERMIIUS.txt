@@ -1,0 +1,26 @@
+# Termius: คุณอยู่บน VPS แล้ว (deploy@ai-sdk-pro-prod) — วางทีละบล็อก
+
+# 1) กลับโฟลเดอร์หลัก ลบโฟลเดอร์ซ้อนถ้ามี
+cd ~
+ls ai-sdk-pro
+
+# ถ้าเคย cd เข้า ai-sdk-pro ซ้ำ ให้กลับแค่ชั้นเดียว:
+cd ~/ai-sdk-pro
+pwd
+# ต้องเป็น /home/deploy/ai-sdk-pro ไม่ใช่ .../ai-sdk-pro/ai-sdk-pro
+
+# 2) แก้ remote (ถ้า git remote -v ชี้ cloudflare artifacts → 403)
+bash infra/production/vps-fix-git-origin.sh
+# ต้องมีสิทธิ์อ่าน repo private ก่อน fetch (PAT หรือ SSH key บน VPS)
+
+# 3) ดึง branch — ชื่อถูก: ...-0650 ไม่ใช่ ...-0630
+git fetch origin
+git checkout cursor/embed-deploy-on-site-0650
+git pull origin cursor/embed-deploy-on-site-0650
+
+# 3) build + เปิดแอป (รันบน VPS โดยตรง)
+bash infra/production/deploy-on-vps.sh
+
+# --- สิ่งที่ไม่ต้องทำบน VPS ---
+# export ssh ...  (นั่นคือคำสั่ง SSH จากเครื่องคุณ ไม่ใช่ export)
+# remote-deploy.sh (ใช้จาก Mac/PC เท่านั้น)
