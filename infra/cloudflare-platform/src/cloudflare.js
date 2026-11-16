@@ -3,7 +3,7 @@ import { HttpError } from './shared.js';
 export async function cloudflare(path, token, method = 'GET', body) {
   const form = body instanceof FormData;
   const response = await fetch(`https://api.cloudflare.com/client/v4${path}`, {
-    method, redirect: 'error',
+    method, redirect: 'manual',
     headers: { Authorization: `Bearer ${token}`, ...(body && !form ? { 'Content-Type': 'application/json' } : {}) },
     body: body ? form ? body : JSON.stringify(body) : undefined,
   });

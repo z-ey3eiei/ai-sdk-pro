@@ -125,7 +125,7 @@ installation.addEventListener('change', () => perform(null, repoOptions));
 get('refresh-repos').addEventListener('click', (event) => perform(event.currentTarget, loadRepos));
 get('logout').addEventListener('click', (event) => perform(event.currentTarget, async () => { await api('logout','POST'); location.reload(); }));
 revise(get('import'), async (data) => {
-  const project = await api('projects', 'POST', {name:data.get('name'), repository:data.get('repository'), installation_id:Number(data.get('installation'))});
+  const project = await api('projects', 'POST', {name:data.get('name'), repository:data.get('repository'), installation_id:Number(data.get('installation')), branch:data.get('branch')?.trim() || undefined, output_dir:data.get('output_dir')?.trim() || undefined});
   const projects = await loadProjects();
   await openProject(projects.find((item) => item.id === project.id));
   await api(route('deployments'), 'POST');

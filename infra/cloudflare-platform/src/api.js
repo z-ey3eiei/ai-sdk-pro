@@ -40,7 +40,10 @@ async function auth(request, env, url) {
   if (saved?.length !== 128 || saved.slice(0, 64) !== url.searchParams.get('state') || !code)
     throw new HttpError(400, 'Invalid OAuth state.');
   const token = await githubExchange(env, code, saved.slice(64), callback(env));
-  const profile = await github('/user', token);
+  const profile = await github('/user', token).catch((error) => {
+    if (error instanceof HttpError) throw error;
+    throw new HttpError(502, 'GitHub profile could not be loaded.');
+  });
   if (!Number.isSafeInteger(profile.id) || typeof profile.login !== 'string') throw new HttpError(502, 'Invalid GitHub profile.');
   const allowlist = (env.BETA_GITHUB_IDS ?? '').split(',').map((id) => id.trim());
   if (!allowlist.includes(String(profile.id))) throw new HttpError(403, 'This deployment dashboard is invite-only.');
@@ -187,6 +190,8 @@ async function api(request, env, url) {
   if (!id && method === 'POST') {
     const input = await body(request);
     const { name, installation_id, repository } = input;
+    if (input.branch !== undefined && (typeof input.branch !== 'string' || !input.branch.trim() || input.branch.length > 180))
+      throw new HttpError(400, 'Invalid branch.');
     if (!slugPattern.test(name ?? '') || ['www', 'api', 'deploy', 'deploy-staging', 'preview', 'origin', 'staging', 'docs', 'mcp', 'sub', 'os', 'turbo', 'mail', 'urban-couscous'].includes(name) ||
         !Number.isSafeInteger(installation_id) || installation_id < 1 || !/^[\w.-]+\/[\w.-]+$/.test(repository ?? ''))
       throw new HttpError(400, 'Invalid project name, installation, or repository.');
@@ -197,7 +202,7 @@ async function api(request, env, url) {
     await github(`/repos/${repo.full_name}`, installed);
     const project = { id: uuid(), user_id: user.id };
     await run(env, `INSERT INTO projects(id,user_id,name,repo_full_name,repo_id,installation_id,branch,framework,build_command,output_dir)
-      VALUES(?,?,?,?,?,?,?,?,?,?)`, project.id, user.id, name, repo.full_name, repo.id, installation_id, repo.default_branch, ...settings(input));
+      VALUES(?,?,?,?,?,?,?,?,?,?)`, project.id, user.id, name, repo.full_name, repo.id, installation_id, input.branch ?? repo.default_branch, ...settings(input));
     return json({ id: project.id, hostname: projectHost(name, env) }, 201);
   }
   const project = await first(env, 'SELECT * FROM projects WHERE id=? AND user_id=? AND deleted_at IS NULL', id ?? '', user.id);

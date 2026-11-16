@@ -2,7 +2,7 @@ import { b64url, decode, HttpError, readLimited, unb64, utf8 } from './shared.js
 
 export async function github(path, token, init = {}) {
   const response = await fetch(`https://api.github.com${path}`, {
-    ...init, redirect: 'error', headers: {
+    ...init, redirect: 'manual', headers: {
       Authorization: `Bearer ${token}`,
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2026-03-10',
@@ -39,7 +39,7 @@ export async function getArchive(repo, token, sha) {
   const url = new URL(response.headers.get('location') ?? 'https://invalid.invalid');
   if (response.status !== 302 || url.origin !== 'https://codeload.github.com' || url.username || url.password)
     throw new Error('GitHub did not return a trusted archive URL.');
-  const archive = await fetch(url, { redirect: 'error' });
+  const archive = await fetch(url, { redirect: 'manual' });
   if (!archive.ok) throw new Error(`GitHub source download failed (HTTP ${archive.status}).`);
   return readLimited(archive, 12_000_000);
 }
@@ -53,12 +53,15 @@ export async function verifySignature(bytes, signature, secret) {
 
 export async function githubExchange(env, code, verifier, callback) {
   const response = await fetch('https://github.com/login/oauth/access_token', {
-    method: 'POST', redirect: 'error',
-    headers: { Accept: 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
+    method: 'POST', redirect: 'manual',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'ai-sdk-pro-platform' },
     body: new URLSearchParams({ client_id: env.GITHUB_CLIENT_ID, client_secret: env.GITHUB_CLIENT_SECRET, code,
-      code_verifier: verifier, redirect_uri: callback }),
-  });
-  const grant = JSON.parse(decode.decode(await readLimited(response, 65536)));
+      code_verifier: verifier, redirect_uri: callback }).toString(),
+  }).catch(() => { throw new HttpError(502, 'GitHub OAuth token endpoint could not be reached.'); });
+  if (response.status >= 300 && response.status < 400) throw new HttpError(502, 'GitHub OAuth returned an unexpected redirect.');
+  let grant;
+  try { grant = JSON.parse(decode.decode(await readLimited(response, 65536))); }
+  catch { throw new HttpError(502, 'GitHub OAuth token endpoint returned an invalid response.'); }
   if (!response.ok || !grant.access_token) throw new HttpError(401, 'GitHub authorization failed.');
   return grant.access_token;
 }
