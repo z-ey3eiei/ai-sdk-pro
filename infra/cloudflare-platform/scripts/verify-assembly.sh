@@ -12,6 +12,8 @@ npm run check
 npm run dry-run
 
 echo "== deploy-staging =="
+curl -sS https://deploy-staging.ai-sdk.pro/health
+echo
 curl -fsS -o /dev/null -w "dashboard HTTP %{http_code}\n" https://deploy-staging.ai-sdk.pro/
 curl -sS https://deploy-staging.ai-sdk.pro/api/me | head -c 120; echo
 

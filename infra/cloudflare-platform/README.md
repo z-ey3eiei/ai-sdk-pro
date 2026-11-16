@@ -50,7 +50,7 @@ npm run dry-run
    npx wrangler d1 migrations apply DB --config wrangler.jsonc --remote
    ```
 
-3. ลงทะเบียน GitHub App สำหรับ staging ตั้ง Callback URL เป็น `https://deploy-staging.ai-sdk.pro/auth/github/callback` และ Webhook URL เป็น `https://deploy-staging.ai-sdk.pro/api/github/webhook` เปิด repository permissions `Contents: Read-only` กับ `Metadata: Read-only` แล้ว subscribe `Push` ติดตั้งกับรีโปทดสอบที่ต้องการ ให้ `GITHUB_CLIENT_ID` และ `GITHUB_APP_SLUG` ตรงกับ App นี้ โค้ดรองรับ GitHub App authorization ด้วย PKCE ค่า private key ต้องเป็น PKCS#8
+3. ลงทะเบียน GitHub App สำหรับ staging ตั้ง Callback URL เป็น `https://deploy-staging.ai-sdk.pro/auth/github/callback` และ Webhook URL เป็น `https://deploy-staging.ai-sdk.pro/api/github/webhook` เปิด repository permissions `Contents: Read-only` กับ `Metadata: Read-only` แล้ว subscribe `Push` ติดตั้งกับรีโปทดสอบที่ต้องการ ให้ `GITHUB_CLIENT_ID`, `GITHUB_APP_ID` (ตัวเลขจาก App settings) และ `GITHUB_APP_SLUG` ตรงกับ App นี้ โค้ดรองรับ GitHub App authorization ด้วย PKCE ค่า private key ต้องเป็น PKCS#8
 
    ```bash
    openssl pkcs8 -topk8 -nocrypt -in github-app.private-key.pem -out github-app.pkcs8.pem

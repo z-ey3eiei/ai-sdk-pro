@@ -27,6 +27,7 @@
     "CLOUDFLARE_ACCOUNT_ID": "2d92bd5b25768fa9093d6adc0a8887fc",
     "DISPATCH_NAMESPACE": "aisdkpro-platform-staging",
     "GITHUB_APP_SLUG": "ai-sdk-pro",
+    "GITHUB_APP_ID": "5692422",
     "GITHUB_CLIENT_ID": "Iv23liL0Mb8HQeuqbTgE",
     "FRAMEWORK_BUILDS": "disabled",
     "BETA_GITHUB_IDS": "312459747",

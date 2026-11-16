@@ -19,8 +19,10 @@ export async function installationToken(env, installation, repository) {
   const pem = env.GITHUB_APP_PRIVATE_KEY.trim().replaceAll('\\n', '\n');
   const body = pem.replace(/-----[^-]+-----|\s/g, '');
   const key = await crypto.subtle.importKey('pkcs8', unb64(body), { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['sign']);
+  const appId = env.GITHUB_APP_ID?.trim();
+  if (!/^\d{4,12}$/.test(appId ?? '')) throw new HttpError(503, 'GitHub App ID is not configured.');
   const payload = [JSON.stringify({ alg: 'RS256', typ: 'JWT' }), JSON.stringify({
-    iat: now - 30, exp: now + 300, iss: env.GITHUB_CLIENT_ID,
+    iat: now - 30, exp: now + 300, iss: appId,
   })].map((value) => b64url(utf8.encode(value))).join('.');
   const signature = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key, utf8.encode(payload));
   const jwt = `${payload}.${b64url(new Uint8Array(signature))}`;
@@ -58,7 +60,16 @@ export async function githubExchange(env, code, verifier, callback) {
     body: new URLSearchParams({ client_id: env.GITHUB_CLIENT_ID, client_secret: env.GITHUB_CLIENT_SECRET, code,
       code_verifier: verifier, redirect_uri: callback }),
   });
-  const grant = JSON.parse(decode.decode(await readLimited(response, 65536)));
-  if (!response.ok || !grant.access_token) throw new HttpError(401, 'GitHub authorization failed.');
+  let grant;
+  try {
+    grant = JSON.parse(decode.decode(await readLimited(response, 65536)));
+  } catch {
+    throw new HttpError(502, 'GitHub authorization response was invalid.');
+  }
+  if (!response.ok || !grant.access_token) {
+    const reason = typeof grant.error_description === 'string' ? grant.error_description
+      : typeof grant.error === 'string' ? grant.error : 'GitHub authorization failed.';
+    throw new HttpError(401, reason);
+  }
   return grant.access_token;
 }

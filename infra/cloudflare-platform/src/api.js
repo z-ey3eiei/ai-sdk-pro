@@ -35,15 +35,23 @@ async function auth(request, env, url) {
     throw new HttpError(400, 'Invalid OAuth state.');
   const token = await githubExchange(env, code, saved.slice(64), callback(env));
   const profile = await github('/user', token);
-  if (!Number.isSafeInteger(profile.id) || typeof profile.login !== 'string') throw new HttpError(502, 'Invalid GitHub profile.');
+  const githubId = typeof profile.id === 'number' ? profile.id : Number(profile.id);
+  if (!Number.isSafeInteger(githubId) || typeof profile.login !== 'string') throw new HttpError(502, 'Invalid GitHub profile.');
   const allowlist = (env.BETA_GITHUB_IDS ?? '').split(',').map((id) => id.trim());
-  if (!allowlist.includes(String(profile.id))) throw new HttpError(403, 'This deployment dashboard is invite-only.');
+  if (!allowlist.includes(String(githubId))) throw new HttpError(403, 'This deployment dashboard is invite-only.');
   const user = await first(env, `INSERT INTO users(id,github_id,username,email) VALUES(?,?,?,?)
     ON CONFLICT(github_id) DO UPDATE SET username=excluded.username,email=excluded.email RETURNING id`,
-    uuid(), profile.id, profile.login, profile.email ?? null);
+    uuid(), githubId, profile.login, typeof profile.email === 'string' ? profile.email : null);
+  if (!user?.id) throw new HttpError(500, 'Could not persist user profile.');
   const secret = random();
   const tokenHash = await hash(secret);
-  await run(env, 'INSERT INTO sessions VALUES(?,?,unixepoch()+28800,?)', tokenHash, user.id, await seal(env, token, tokenHash));
+  let encrypted;
+  try {
+    encrypted = await seal(env, token, tokenHash);
+  } catch {
+    throw new HttpError(503, 'Session encryption is misconfigured.');
+  }
+  await run(env, 'INSERT INTO sessions VALUES(?,?,unixepoch()+28800,?)', tokenHash, user.id, encrypted);
   const headers = new Headers({ Location: '/', 'Cache-Control': 'no-store' });
   headers.append('Set-Cookie', cookie('oauth', '', 0));
   headers.append('Set-Cookie', cookie('session', secret, 28800));
@@ -58,6 +66,14 @@ async function session(request, env) {
       WHERE s.token_hash=? AND s.expires_at>unixepoch()`, tokenHash);
   if (!user) throw new HttpError(401, 'Session expired.');
   return { ...user, tokenHash };
+}
+
+async function githubUserToken(env, user) {
+  try {
+    return await unseal(env, user.github_token_encrypted, user.tokenHash);
+  } catch {
+    throw new HttpError(401, 'Session expired. Sign in with GitHub again.');
+  }
 }
 
 async function enqueue(env, project, sha, delivery = null) {
@@ -165,16 +181,18 @@ async function api(request, env, url) {
     return new Response(null, { status: 204, headers: { 'Set-Cookie': cookie('session', '', 0) } });
   }
   if (area === 'repos' && method === 'GET') {
-    const token = await unseal(env, user.github_token_encrypted, user.tokenHash);
+    const token = await githubUserToken(env, user);
     const installation = url.searchParams.get('installation');
     const page = Math.min(Math.max(parseInt(url.searchParams.get('page') ?? '1', 10) || 1, 1), 100);
     if (installation) {
       if (!/^[1-9][0-9]{0,14}$/.test(installation)) throw new HttpError(400, 'Invalid installation.');
       const result = await github(`/user/installations/${installation}/repositories?per_page=30&page=${page}`, token);
-      return json({ items: result.repositories.map((r) => ({ id:r.id, full_name:r.full_name, default_branch:r.default_branch, private:r.private })), total: result.total_count });
+      const repositories = Array.isArray(result.repositories) ? result.repositories : [];
+      return json({ items: repositories.map((r) => ({ id:r.id, full_name:r.full_name, default_branch:r.default_branch, private:r.private })), total: result.total_count ?? repositories.length });
     }
     const result = await github(`/user/installations?per_page=30&page=${page}`, token);
-    return json({ items: result.installations.map((i) => ({ id:i.id, name:i.account.login })), total: result.total_count });
+    const installations = Array.isArray(result.installations) ? result.installations : [];
+    return json({ items: installations.map((i) => ({ id:i.id, name:i.account.login })), total: result.total_count ?? installations.length });
   }
   if (area !== 'projects') throw new HttpError(404, 'Not found.');
   if (!id && method === 'GET') return json(await all(env, `SELECT ${projectColumns} FROM projects WHERE user_id=? AND deleted_at IS NULL ORDER BY created_at DESC`, user.id));
@@ -184,7 +202,7 @@ async function api(request, env, url) {
     if (!slugPattern.test(name ?? '') || ['www', 'api', 'deploy', 'deploy-staging', 'preview', 'origin', 'staging', 'docs', 'mcp', 'sub', 'os', 'turbo', 'mail', 'urban-couscous'].includes(name) ||
         !Number.isSafeInteger(installation_id) || installation_id < 1 || !/^[\w.-]+\/[\w.-]+$/.test(repository ?? ''))
       throw new HttpError(400, 'Invalid project name, installation, or repository.');
-    const token = await unseal(env, user.github_token_encrypted, user.tokenHash);
+    const token = await githubUserToken(env, user);
     const repo = await github(`/repos/${repository}`, token);
     if (!repo.permissions?.push && !repo.permissions?.admin) throw new HttpError(403, 'Repository write access required.');
     const installed = await installationToken(env, installation_id, repo.id);
@@ -217,7 +235,7 @@ async function api(request, env, url) {
   }
   if (action === 'deployments' && !item && method === 'POST') {
     if (project.suspended_at) throw new HttpError(403, 'Project suspended.');
-    const userToken = await unseal(env, user.github_token_encrypted, user.tokenHash);
+    const userToken = await githubUserToken(env, user);
     const repo = await github(`/repos/${project.repo_full_name}`, userToken);
     if (repo.id !== project.repo_id || (!repo.permissions?.push && !repo.permissions?.admin))
       throw new HttpError(403, 'Repository write access required.');
@@ -261,7 +279,15 @@ export default {
     try {
       if (url.pathname === '/health' && request.method === 'GET') {
         await first(env, 'SELECT 1');
-        return json({ status: 'ok' });
+        const diagnostics = { status: 'ok', d1: true, crypto: false, github_app_id: /^\d{4,12}$/.test(env.GITHUB_APP_ID ?? '') };
+        try {
+          const probe = random();
+          await seal(env, probe, probe);
+          diagnostics.crypto = true;
+        } catch {
+          diagnostics.status = 'degraded';
+        }
+        return json(diagnostics, diagnostics.status === 'ok' ? 200 : 503);
       }
       if (url.pathname === '/api/github/webhook' && request.method === 'POST') return await webhook(request, env);
       if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method) && request.headers.get('origin') !== url.origin)
