@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <title>Deploy · ai-sdk.pro</title>
+  <link rel="stylesheet" href="/dashboard.css">
+  <script src="/dashboard.js" type="module"></script>
+</head>
+<body>
+  <header><a href="/">ai-sdk.pro</a><span id="account"></span><button id="logout" hidden>ออกจากระบบ</button></header>
+  <main>
+    <h1>Deploy โปรเจกต์</h1>
+    <p id="notice" role="status" aria-live="polite"></p>
+    <section id="login" hidden><a class="primary" href="/auth/github">เข้าสู่ระบบด้วย GitHub</a></section>
+    <div id="workspace" hidden>
+      <section>
+        <h2>นำเข้า GitHub repository</h2>
+        <a id="install" target="_blank" rel="noreferrer">ติดตั้ง GitHub App</a>
+        <button id="refresh-repos" type="button">รีเฟรช GitHub</button>
+        <form id="import">
+          <label>บัญชี GitHub <select name="installation" required></select></label>
+          <label>Repository <select name="repository" required></select></label>
+          <label>ชื่อโปรเจกต์ <input name="name" maxlength="48" required placeholder="my-project"></label>
+          <button class="primary">นำเข้าและ Deploy</button>
+        </form>
+      </section>
+      <section><h2>โปรเจกต์ของฉัน</h2><div id="projects"></div></section>
+      <section id="details" hidden>
+        <h2 id="project-name"></h2>
+        <form id="settings">
+          <label>Branch <input name="branch" required></label>
+          <label>Framework <select name="framework"><option value="auto">ตรวจอัตโนมัติ</option><option value="static">Static HTML</option><option value="astro">Astro static</option><option value="nextjs">Next.js static export</option></select></label>
+          <label>Build command <select name="build_command"><option value="">ค่าเริ่มต้น</option><option>npm run build</option></select></label>
+          <label>Output directory <input name="output_dir" placeholder="dist"></label>
+          <label class="inline"><input name="auto_deploy" type="checkbox"> Deploy เมื่อ push</label>
+          <button>บันทึก</button>
+        </form>
+        <div class="actions"><button class="primary" id="deploy">Deploy</button><button id="remove">ลบโปรเจกต์</button></div>
+        <h3>Deployments</h3>
+        <button id="history-refresh">รีเฟรช</button>
+        <div id="history"></div>
+        <pre id="logs" hidden></pre>
+        <h3>Environment variables</h3>
+        <form id="variable">
+          <label>ชื่อ <input name="key" maxlength="64" required></label>
+          <label>ค่า <input name="value" type="password" required></label>
+          <button>บันทึกตัวแปร</button>
+        </form>
+        <div id="variables"></div>
+        <h3>Custom domains</h3>
+        <form id="domain"><label>Hostname <input name="domain" placeholder="www.example.com" required></label><button>เพิ่มโดเมน</button></form>
+        <div id="domains"></div>
+        <pre id="verification" hidden></pre>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
