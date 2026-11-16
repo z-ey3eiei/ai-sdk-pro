@@ -10,6 +10,10 @@ The relay uses the existing staging-only pilot binding. To use it, stage the app
 
 The GitHub App webhook remains the route for other authorized projects. The relay is restricted to this pilot branch while the App's webhook settings are being verified. Keep Pages publishing and the wildcard project host disabled until a queue-driven end-to-end test passes.
 
+## Verified staging result
+
+On 2026-11-16, [Coolify rollout #9](https://github.com/z-ey3eiei/ai-sdk-pro/actions/runs/43869880568) deployed the immutable-subject OIDC verifier. [Pilot push #5](https://github.com/z-ey3eiei/urban-couscous/actions/runs/43869924654) built successfully and recorded commit `94df574e4386d3805a626ffdf349fa3eecddb95c` in staging Neon as target `preview` with dispatch status `pending`. The push build ran in parallel with intake. Queue dispatch, Pages publishing, and the production wildcard host have not passed end-to-end verification.
+
 ## Setup
 
 1. Apply platform migrations 0007 and 0008 to the staging Neon database. Configure the staging web runtime with `NEON_DATABASE_URL` and `GITHUB_DEPLOY_WEBHOOK_SECRET`. Use the same webhook secret on a staging GitHub App subscribed to push and pull request events.
