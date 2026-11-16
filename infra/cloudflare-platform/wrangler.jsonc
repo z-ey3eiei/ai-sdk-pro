@@ -31,6 +31,7 @@
     "GITHUB_CLIENT_ID": "Iv23liL0Mb8HQeuqbTgE",
     "FRAMEWORK_BUILDS": "disabled",
     "BETA_GITHUB_IDS": "312459747",
+    "PLATFORM_DEBUG_ERRORS": "true",
     "SAAS_ZONE_ID": "",
     "SAAS_CNAME_TARGET": ""
   }

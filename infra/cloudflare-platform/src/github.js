@@ -1,15 +1,20 @@
 import { b64url, decode, HttpError, readLimited, unb64, utf8 } from './shared.js';
 
 export async function github(path, token, init = {}) {
-  const response = await fetch(`https://api.github.com${path}`, {
-    ...init, redirect: 'error', headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2026-03-10',
-      'User-Agent': 'ai-sdk-pro-platform',
-      ...(init.body ? { 'Content-Type': 'application/json' } : {}),
-    },
-  });
+  let response;
+  try {
+    response = await fetch(`https://api.github.com${path}`, {
+      ...init, redirect: 'error', headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2026-03-10',
+        'User-Agent': 'ai-sdk-pro-platform',
+        ...(init.body ? { 'Content-Type': 'application/json' } : {}),
+      },
+    });
+  } catch (error) {
+    throw new HttpError(502, error instanceof Error ? error.message : 'GitHub API unreachable.');
+  }
   if (!response.ok) throw new HttpError(response.status === 404 ? 404 : 502, `GitHub request failed (HTTP ${response.status}).`);
   return response.json();
 }
@@ -54,12 +59,17 @@ export async function verifySignature(bytes, signature, secret) {
 }
 
 export async function githubExchange(env, code, verifier, callback) {
-  const response = await fetch('https://github.com/login/oauth/access_token', {
-    method: 'POST', redirect: 'error',
-    headers: { Accept: 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ client_id: env.GITHUB_CLIENT_ID, client_secret: env.GITHUB_CLIENT_SECRET, code,
-      code_verifier: verifier, redirect_uri: callback }),
-  });
+  let response;
+  try {
+    response = await fetch('https://github.com/login/oauth/access_token', {
+      method: 'POST', redirect: 'error',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ client_id: env.GITHUB_CLIENT_ID, client_secret: env.GITHUB_CLIENT_SECRET, code,
+        code_verifier: verifier, redirect_uri: callback }),
+    });
+  } catch (error) {
+    throw new HttpError(502, error instanceof Error ? error.message : 'GitHub token exchange failed.');
+  }
   let grant;
   try {
     grant = JSON.parse(decode.decode(await readLimited(response, 65536)));

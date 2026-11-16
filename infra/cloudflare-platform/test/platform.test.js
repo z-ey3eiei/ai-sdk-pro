@@ -5,7 +5,17 @@ import { DatabaseSync } from 'node:sqlite';
 import { zipSync } from 'fflate';
 import { normalizeAssets, sourceFiles } from '../src/assets.js';
 import dispatch from '../src/dispatch.js';
-import { b64, seal, unseal, utf8 } from '../src/shared.js';
+import { b64, readCookie, seal, unseal, utf8 } from '../src/shared.js';
+
+test('readCookie parses __Host cookies regardless of spacing', () => {
+  const oauth = 'a'.repeat(128);
+  const request = new Request('https://deploy-staging.ai-sdk.pro/auth/github/callback', {
+    headers: { Cookie: `other=1; __Host-oauth=${oauth}; __Host-session=${'b'.repeat(64)}` },
+  });
+  assert.equal(readCookie(request, 'oauth'), oauth);
+  assert.equal(readCookie(request, 'session'), 'b'.repeat(64));
+  assert.equal(readCookie(new Request('https://x'), 'oauth'), undefined);
+});
 
 test('archive selection omits hidden files and paths that escape the project', () => {
   const zip = zipSync({

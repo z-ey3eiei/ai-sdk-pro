@@ -28,7 +28,16 @@ export const run = (env, statement, ...args) => env.DB.prepare(statement).bind(.
 export const projectHost = (name, env) => `${name}.${env.PROJECT_DOMAIN}`;
 export const scriptName = (id) => `site-${id.replaceAll('-', '')}`;
 export const cookie = (name, value, age) => `__Host-${name}=${value}; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=${age}`;
-export const readCookie = (request, name) => request.headers.get('cookie')?.match(new RegExp(`(?:^|;[ ]*)__Host-${name}=([a-z0-9]+)(?:;|$)`))?.[1];
+export const readCookie = (request, name) => {
+  const header = request.headers.get('cookie');
+  if (!header) return undefined;
+  const prefix = `__Host-${name}=`;
+  for (const part of header.split(';')) {
+    const trimmed = part.trim();
+    if (trimmed.startsWith(prefix)) return trimmed.slice(prefix.length);
+  }
+  return undefined;
+};
 
 export async function readLimited(response, max) {
   const reader = response.body?.getReader();

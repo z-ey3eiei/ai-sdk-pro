@@ -39,9 +39,11 @@ async function auth(request, env, url) {
   if (!Number.isSafeInteger(githubId) || typeof profile.login !== 'string') throw new HttpError(502, 'Invalid GitHub profile.');
   const allowlist = (env.BETA_GITHUB_IDS ?? '').split(',').map((id) => id.trim());
   if (!allowlist.includes(String(githubId))) throw new HttpError(403, 'This deployment dashboard is invite-only.');
-  const user = await first(env, `INSERT INTO users(id,github_id,username,email) VALUES(?,?,?,?)
-    ON CONFLICT(github_id) DO UPDATE SET username=excluded.username,email=excluded.email RETURNING id`,
-    uuid(), githubId, profile.login, typeof profile.email === 'string' ? profile.email : null);
+  const email = typeof profile.email === 'string' ? profile.email : null;
+  await run(env, `INSERT INTO users(id,github_id,username,email) VALUES(?,?,?,?)
+    ON CONFLICT(github_id) DO UPDATE SET username=excluded.username,email=excluded.email`,
+    uuid(), githubId, profile.login, email);
+  const user = await first(env, 'SELECT id FROM users WHERE github_id=?', githubId);
   if (!user?.id) throw new HttpError(500, 'Could not persist user profile.');
   const secret = random();
   const tokenHash = await hash(secret);
@@ -299,8 +301,9 @@ export default {
       if (error instanceof HttpError) return json({ error: error.message }, error.status);
       if (quotaError(error)) return json({ error: 'Plan limit reached. Review your project or deployment quota.' }, 429);
       if (/UNIQUE constraint failed/.test(error.message)) return json({ error: 'Name or hostname is already reserved.' }, 409);
-      console.error('api_error', { name: error.name });
-      return json({ error: 'Platform request failed.' }, 500);
+      console.error('api_error', { name: error.name, message: error.message, path: url.pathname });
+      const debug = env.PLATFORM_DEBUG_ERRORS === 'true' || env.PLATFORM_DEBUG_ERRORS === '1';
+      return json({ error: 'Platform request failed.', ...(debug && error?.message ? { detail: error.message } : {}) }, 500);
     }
   },
   async queue(batch, env) {
