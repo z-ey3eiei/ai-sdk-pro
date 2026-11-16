@@ -1,10 +1,20 @@
 import { getNeonSql } from "@/lib/db/client";
 import { classifyDeploymentEvent, readWebhookPayload, verifyDeploymentSignature, WebhookPayloadTooLarge } from "@/lib/deployment-events";
+import { randomUUID } from "node:crypto";
+import { readPilotDeploymentIdentity } from "@/lib/pilot-deployment-oidc";
 import { jsonError, noStoreHeaders } from "@/lib/platform-policy";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  // The preview relay is confined to the trusted pilot branch on staging.
+  const authorization = request.headers.get("authorization");
+  if (authorization && process.env.BETTER_AUTH_URL?.trim() === "https://staging.ai-sdk.pro") {
+    const pilot = await readPilotDeploymentIdentity(authorization);
+    if (!pilot) return jsonError("Invalid pilot workflow identity.", 401);
+    return enqueue(randomUUID(), pilot);
+  }
+
   const secret = process.env.GITHUB_DEPLOY_WEBHOOK_SECRET?.trim();
   if (!secret) return jsonError("Deployment webhook is unavailable.", 503);
   const delivery = request.headers.get("x-github-delivery");
@@ -30,6 +40,10 @@ export async function POST(request: Request) {
 
   const event = classifyDeploymentEvent(request.headers.get("x-github-event"), body);
   if (!event) return Response.json({ accepted: true, received: false }, { status: 202, headers: noStoreHeaders() });
+  return enqueue(delivery, event);
+}
+
+async function enqueue(delivery: string, event: NonNullable<ReturnType<typeof classifyDeploymentEvent>>) {
   const sql = getNeonSql();
   if (!sql) return jsonError("Deployment storage is unavailable.", 503);
   try {
