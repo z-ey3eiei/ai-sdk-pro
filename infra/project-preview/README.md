@@ -2,6 +2,14 @@
 
 The pilot consumes one preview request at a time for an explicitly configured project and sends the pinned commit to GitHub Actions. The trial applies to a trusted repository with the existing `infra/sandbox-build.sh` interface. Public tenant workloads and production deployments need their own execution and publishing controls.
 
+## Staging relay
+
+The `urban-couscous` branch `aisdk/preview-pilot` has an Actions intake job for real pushes, alongside the isolated static build job. Its GitHub Actions OIDC token names the staging webhook as audience. The staging receiver verifies the issuer signature, subject, repository identity, workflow, branch, event and commit before using the same Neon intake table as the GitHub App.
+
+The relay uses the existing staging-only pilot binding. To use it, stage the application from `main` with `BETTER_AUTH_URL=https://staging.ai-sdk.pro` and the staging Neon connection. A successful Actions `intake` job confirms that the push was recorded. The build artifact alone does not establish that the queue consumer dispatched the build or that Pages published a URL.
+
+The GitHub App webhook remains the route for other authorized projects. The relay is restricted to this pilot branch while the App's webhook settings are being verified. Keep Pages publishing and the wildcard project host disabled until a queue-driven end-to-end test passes.
+
 ## Setup
 
 1. Apply platform migrations 0007 and 0008 to the staging Neon database. Configure the staging web runtime with `NEON_DATABASE_URL` and `GITHUB_DEPLOY_WEBHOOK_SECRET`. Use the same webhook secret on a staging GitHub App subscribed to push and pull request events.
