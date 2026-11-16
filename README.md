@@ -6,6 +6,19 @@
 
 > สำหรับการทำงานต่อจากเครื่องหรือเซสชันอื่น ให้อ่าน [PROJECT-MEMORY.md](PROJECT-MEMORY.md) ก่อน เพื่อดูสถานะล่าสุด จุดที่เก็บ source/runtime และข้อจำกัดที่ต้องรักษา
 
+## สถานะล่าสุด · 16 พฤศจิกายน 2026
+
+| งาน | สถานะ |
+| --- | --- |
+| Deploy แอปไป Coolify staging | [GitHub Actions รอบ #5](https://github.com/z-ey3eiei/ai-sdk-pro/actions/runs/43824138105) สร้าง image, push ไป GHCR และส่งงานให้ Coolify สำเร็จ Coolify ยืนยัน rolling update และ [`/api/health`](https://staging.ai-sdk.pro/api/health) ตอบ `ok` ใช้การกด Run workflow จาก `main` การ Deploy เมื่อ `git push` ยังไม่ได้เปิด |
+| GitHub OAuth สำหรับ staging | ลงทะเบียน `AI SDK Pro Staging` และตั้ง callback ที่ `https://staging.ai-sdk.pro/api/auth/callback/github` แล้ว ค่า GitHub OAuth และ Better Auth ถูกบันทึกใน Coolify staging |
+| Neon สำหรับ staging | สร้างโปรเจกต์ `ai-sdk-pro-staging` ใน `Neondu` แยกจาก production และรัน migration `0001_platform.sql` กับ `0006_platform_tokens.sql` แล้ว ตรวจพบตาราง session และ platform token |
+| คีย์แพลตฟอร์ม `ais_…` | โค้ดจาก [PR #6](https://github.com/z-ey3eiei/ai-sdk-pro/pull/6) อยู่บน `main` และ deploy ไป staging แล้ว เมนู **Workspace → API tokens** รองรับสร้างและเพิกถอนคีย์ คีย์ใช้สิทธิ์ `repo:read` สำหรับรายการรีโปของเจ้าของผ่าน `GET /api/v1/repositories` และหมดอายุใน 90 วัน ทดสอบแล้วว่า API ปฏิเสธคำขอที่ไม่มีคีย์ ส่วนการทดสอบด้วยบัญชีจริงยังค้าง |
+
+งานถัดไปคือใส่ `NEON_DATABASE_URL` ของโปรเจกต์ staging ใน Coolify เป็นค่า runtime แล้ว Redeploy จากนั้นทดสอบ GitHub login, สร้างคีย์, อ่านรายการรีโปด้วย Bearer token, เพิกถอนคีย์ และยืนยันว่าคีย์เดิมถูกปฏิเสธ ค่าที่ใช้เชื่อมต่อฐานข้อมูลต้องอยู่ใน Coolify โดยตรง
+
+การเปิดคีย์ `ais_…` บน production และสิทธิ์สั่ง Push หรือ Deploy ด้วยคีย์ยังรอการพัฒนาและทดสอบ
+
 ## เลือก Starter และใช้เครื่องมือจริง
 
 เปิด https://ai-sdk.pro/templates เพื่อเลือก Streaming Chat, Docs Assistant หรือ Agent Launchpad พร้อม source download, code previews และคำสั่งรันในเครื่อง ดูคู่มือที่ https://ai-sdk.pro/docs/using-templates และใช้ Playground/Workspace ที่มีอยู่จริง ปุ่ม Deploy เปิด recipe ของ DevStack ให้ผู้ใช้เลือก source/อนุญาตสิทธิ์/ตรวจขั้น deploy เอง ไม่ส่ง code, API key หรือยืนยัน deployment อัตโนมัติ
@@ -38,7 +51,7 @@ Production ใช้ `BYOK_ONLY=true` (เป็นค่าเริ่มต�
 
 ## ขอบเขตของ foundation ชุดนี้
 
-โค้ดที่มีอยู่จริงคือ public BYOK chat, GitHub login/Neon-backed personal workspace กับ read-only repository snapshot import, เอกสาร, starter source downloads, `@aisdkpro/client` สำหรับ UI Message Stream และ self-hosting ของแพลตฟอร์มเอง ระบบ in-app visitor build/runtime, deployment API, platform keys/CLI และ npm publication ยังไม่เปิดใช้งาน ไม่จำลองสถานะว่า deploy repo แล้ว และยังไม่สร้าง Worker ใหม่เพื่อทำซ้ำกับ DevStack
+โค้ดที่มีอยู่จริงคือ public BYOK chat, GitHub login/Neon-backed personal workspace กับ read-only repository snapshot import, เอกสาร, starter source downloads, `@aisdkpro/client` สำหรับ UI Message Stream และ self-hosting ของแพลตฟอร์มเอง สถานะ Deploy ไป Coolify และ platform keys ระบุไว้ในหัวข้อสถานะล่าสุด ระบบ build/runtime สำหรับโปรเจกต์ของผู้ใช้ทั่วไป, deployment API สำหรับผู้ใช้, platform CLI และ npm publication ของ Client SDK ยังไม่อยู่ในขอบเขตนี้ ไม่จำลองสถานะว่า deploy repo แล้ว และยังไม่สร้าง Worker ใหม่เพื่อทำซ้ำกับ DevStack
 
 ดังนั้น SDK ปัจจุบันรองรับการเรียก chat endpoint จริงเท่านั้น ไม่ได้สร้าง deploy/project API จำลอง ไฟล์ Docker/Caddy/GitHub Actions เป็น deployment foundation ส่วนงาน deployment จริงต้องตรวจ source revision, HTTP, DNS และ TLS บนเซิร์ฟเวอร์เป้าหมายก่อนรายงานสำเร็จ ไม่ควรสรุปจากไฟล์ configuration เพียงอย่างเดียว
 
@@ -119,7 +132,7 @@ curl --fail https://$DOMAIN/api/health
 
 ห้าม commit `.env`, API keys หรือใส่ provider values จริงใน README/CI คีย์ของเจ้าของสำหรับ private mode ต้องอยู่ใน runtime secret store ส่วนคีย์ BYOK ของผู้ใช้ต้องอยู่ใน page/request memory เท่านั้น ห้ามคงไว้ใน `.env` หรือฐานข้อมูล ก่อนใช้ npm workflow ผู้ดูแลต้องลงทะเบียน Trusted Publisher บน npmjs.com ด้วย repository และ workflow ที่ถูกต้องเอง; workflow ใน repo ทำหน้าที่ขอ OIDC token และ publish เท่านั้น
 
-Automation เป็น opt-in: ตั้ง repository variable `DEPLOY_ENABLED=true` หลัง VPS/secrets พร้อม หรือ `NPM_PUBLISH_ENABLED=true` หลัง npm Trusted Publisher พร้อมเท่านั้น การพุช source และ tag `v0.1.0` ครั้งแรกไม่เปิด deploy/publish ให้เอง
+สำหรับ workflow SSH deploy และ npm publish ใน `infra/workflows` การเปิดใช้เป็นแบบ opt-in: ตั้ง repository variable `DEPLOY_ENABLED=true` หลัง VPS/secrets พร้อม หรือ `NPM_PUBLISH_ENABLED=true` หลัง npm Trusted Publisher พร้อมเท่านั้น การพุช source และ tag `v0.1.0` ครั้งแรกไม่เปิด deploy/publish ให้เอง
 
 การ deploy ครั้งนี้ใช้ source archive ผ่าน SSH ไปยัง VPS ใหม่ของเจ้าของ จึงไม่ต้องพึ่ง GitHub login บนเซิร์ฟเวอร์ รายละเอียด server access และ credential ส่งแยกแบบส่วนตัว ไม่ใส่ใน source repo ไม่มีการ publish npm package หรือเปิด CI deployment อัตโนมัติ
 
