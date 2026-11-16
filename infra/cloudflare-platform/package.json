@@ -1,0 +1,18 @@
+{
+  "name": "@aisdkpro/cloudflare-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/api.js && node --check src/pipeline.js && node --check src/dispatch.js && node --check dashboard/dashboard.js",
+    "dry-run": "wrangler deploy --dry-run --config wrangler.jsonc && wrangler deploy --dry-run --config wrangler.dispatch.jsonc"
+  },
+  "dependencies": {
+    "@cloudflare/sandbox": "0.12.14",
+    "fflate": "0.8.2"
+  },
+  "devDependencies": {
+    "wrangler": "4.163.0"
+  }
+}

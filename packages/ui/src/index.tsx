@@ -196,10 +196,12 @@ const searchItems = [
 ];
 export function Header({
   active,
+  deployHref,
   accountHref = "/login",
   accountLabel = "Log in",
 }: {
   active?: string;
+  deployHref?: string;
   accountHref?: string;
   accountLabel?: string;
 }) {
@@ -271,6 +273,16 @@ export function Header({
             <Link href="/docs/client-sdk" onClick={() => setMenu(false)}>
               SDK
             </Link>
+            {deployHref && (
+              <Link
+                href={deployHref}
+                className={active === "deploy" ? "active" : ""}
+                aria-current={active === "deploy" ? "page" : undefined}
+                onClick={() => setMenu(false)}
+              >
+                Deploy
+              </Link>
+            )}
             <Link href="/workspace" onClick={() => setMenu(false)}>
               Workspace
             </Link>

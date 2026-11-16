@@ -1,0 +1,36 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "aisdkpro-platform-api-staging",
+  "main": "src/api.js",
+  "compatibility_date": "2026-11-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": {"enabled": true, "traces": {"enabled": true, "head_sampling_rate": 0.1}},
+  "routes": [{"pattern": "deploy-staging.ai-sdk.pro", "custom_domain": true}],
+  "assets": {"directory": "./dashboard", "binding": "DASHBOARD", "run_worker_first": true},
+  "d1_databases": [{"binding": "DB", "database_name": "aisdkpro-platform-staging", "database_id": "00000000-0000-0000-0000-000000000000", "migrations_dir": "./migrations"}],
+  "kv_namespaces": [{"binding": "ROUTES", "id": "00000000000000000000000000000000"}],
+  "r2_buckets": [{"binding": "BUILD_DATA", "bucket_name": "aisdkpro-platform-staging-builds"}],
+  "queues": {
+    "producers": [{"binding": "DEPLOY_QUEUE", "queue": "aisdkpro-platform-staging-deploy"}],
+    "consumers": [{"queue": "aisdkpro-platform-staging-deploy", "max_batch_size": 5, "max_retries": 5, "dead_letter_queue": "aisdkpro-platform-staging-dead"}]
+  },
+  "workflows": [{"binding": "DEPLOYMENT", "name": "aisdkpro-platform-staging-deployment", "class_name": "DeploymentWorkflow"}],
+  "triggers": {"crons": ["*/5 * * * *"]},
+  "containers": [{"class_name": "BuildSandbox", "image": "docker.io/cloudflare/sandbox:0.12.14", "instance_type": "standard-1", "max_instances": 2}],
+  "durable_objects": {"bindings": [{"name": "BUILD_SANDBOX", "class_name": "BuildSandbox"}]},
+  "migrations": [{"tag": "v1", "new_sqlite_classes": ["BuildSandbox"]}],
+  "vars": {
+    "API_ORIGIN": "https://deploy-staging.ai-sdk.pro",
+    "PROJECT_DOMAIN": "ai-sdk.pro",
+    "CLOUDFLARE_ACCOUNT_ID": "SET_ACCOUNT_ID",
+    "DISPATCH_NAMESPACE": "aisdkpro-platform-staging",
+    "GITHUB_APP_SLUG": "SET_GITHUB_APP_SLUG",
+    "GITHUB_CLIENT_ID": "SET_GITHUB_CLIENT_ID",
+    "FRAMEWORK_BUILDS": "disabled",
+    "BETA_GITHUB_IDS": "",
+    "SAAS_ZONE_ID": "",
+    "SAAS_CNAME_TARGET": ""
+  }
+}

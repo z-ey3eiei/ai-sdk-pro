@@ -1,0 +1,27 @@
+:root{color-scheme:dark;font:16px/1.55 Inter,system-ui,sans-serif;background:#0d0d10;color:#f4f0f1}
+*{box-sizing:border-box}
+body{margin:0}
+header{display:flex;align-items:center;gap:1rem;min-height:4.25rem;padding:0 max(1rem,calc((100vw - 58rem)/2));border-bottom:1px solid #302629}
+header a{font-weight:750;color:#fff;text-decoration:none;white-space:nowrap}
+header span{margin-inline-start:auto}
+main{max-width:60rem;margin:0 auto;padding:clamp(1rem,5vw,3rem)}
+h1{font-size:clamp(1.9rem,5vw,3.4rem);margin:0 0 1rem;line-height:1.1}
+h2,h3{margin:0 0 .85rem}
+h3{margin-top:1.5rem}
+section{margin-bottom:1rem;padding:1.2rem;border:1px solid #352a30;border-radius:.8rem;background:#151215}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));align-items:end;gap:.75rem;margin:.9rem 0}
+label{display:grid;gap:.3rem;font-size:.9rem}
+label.inline{display:flex;align-items:center}
+input,select,button,.primary{font:inherit;color:inherit;background:#211b20;border:1px solid #544048;border-radius:.45rem;padding:.5rem .75rem}
+input,select{width:100%}
+input[type=checkbox]{width:auto}
+button,.primary{cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}
+.primary{display:inline-block;text-decoration:none;background:#ae263a;border-color:#d75868;color:white}
+a{color:#ffa2af}
+.actions,.item{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.item{border-bottom:1px solid #352a30;padding:.6rem 0}
+.item span{margin-inline-end:auto;overflow-wrap:anywhere}
+pre{white-space:pre-wrap;overflow:auto;background:#0b090b;padding:.9rem;max-height:22rem;overflow-wrap:anywhere}
+#notice{color:#ffb4bd;min-height:1.35rem}
+[hidden]{display:none!important}
