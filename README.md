@@ -6,6 +6,13 @@
 
 > สำหรับการทำงานต่อจากเครื่องหรือเซสชันอื่น ให้อ่าน [PROJECT-MEMORY.md](PROJECT-MEMORY.md) ก่อน เพื่อดูสถานะล่าสุด จุดที่เก็บ source/runtime และข้อจำกัดที่ต้องรักษา
 
+## สถานะ Deploy โปรเจกต์ผู้ใช้ · Staging
+
+- ใช้ `z-ey3eiei/urban-couscous` เป็นรีโปทดสอบ แยกจากการ deploy เว็บแพลตฟอร์ม ยืนยันแล้วว่า push ทดสอบ `94df574` เข้าคิว Neon staging ได้
+- workflow `aisdk-preview.yml` อยู่บน default branch ของรีโปทดสอบแล้ว ตัวอ่านคิวใน `infra/project-preview` แยกจากเว็บ staging โดย [GitHub Actions รอบ #10](https://github.com/z-ey3eiei/ai-sdk-pro/actions/runs/43880132842) สร้าง image สำหรับ Coolify
+- เว็บ staging ใช้ Neon staging แล้ว ตัวอ่านคิวต้องใช้ฐาน staging เดียวกันและ credential ที่มี Actions Write เฉพาะรีโปทดสอบ ส่วน GitHub environment `aisdk-preview` ใช้ secret สำหรับเผยแพร่ไปยัง Cloudflare Pages project `ai-sdk-pro-preview-pilot`
+- เกณฑ์ทดสอบก่อนเปิด production คือ push ไป branch ทดสอบแล้วเห็นคิวถูกหยิบ, GitHub Actions สร้างจาก SHA เดียวกัน และ Preview URL เปิดได้พร้อมแสดงผลของ commit นั้น
+
 ## สถานะล่าสุด · 16 พฤศจิกายน 2026
 
 | งาน | สถานะ |
@@ -15,7 +22,7 @@
 | Neon สำหรับ staging | สร้างโปรเจกต์ `ai-sdk-pro-staging` ใน `Neondu` แยกจาก production และรัน migration `0001_platform.sql` กับ `0006_platform_tokens.sql` แล้ว ตรวจพบตาราง session และ platform token |
 | คีย์แพลตฟอร์ม `ais_…` | โค้ดจาก [PR #6](https://github.com/z-ey3eiei/ai-sdk-pro/pull/6) อยู่บน `main` และ deploy ไป staging แล้ว เมนู **Workspace → API tokens** รองรับสร้างและเพิกถอนคีย์ คีย์ใช้สิทธิ์ `repo:read` สำหรับรายการรีโปของเจ้าของผ่าน `GET /api/v1/repositories` และหมดอายุใน 90 วัน ทดสอบแล้วว่า API ปฏิเสธคำขอที่ไม่มีคีย์ ส่วนการทดสอบด้วยบัญชีจริงยังค้าง |
 
-งานถัดไปคือใส่ `NEON_DATABASE_URL` ของโปรเจกต์ staging ใน Coolify เป็นค่า runtime แล้ว Redeploy จากนั้นทดสอบ GitHub login, สร้างคีย์, อ่านรายการรีโปด้วย Bearer token, เพิกถอนคีย์ และยืนยันว่าคีย์เดิมถูกปฏิเสธ ค่าที่ใช้เชื่อมต่อฐานข้อมูลต้องอยู่ใน Coolify โดยตรง
+รอบทดสอบคีย์แบบครบวงจรยังต้องทดสอบ GitHub login, สร้างคีย์, อ่านรายการรีโปด้วย Bearer token, เพิกถอนคีย์ และยืนยันว่าคีย์เดิมถูกปฏิเสธ ค่าที่ใช้เชื่อมต่อฐานข้อมูลต้องอยู่ใน Coolify โดยตรง
 
 การเปิดคีย์ `ais_…` บน production และสิทธิ์สั่ง Push หรือ Deploy ด้วยคีย์ยังรอการพัฒนาและทดสอบ
 
