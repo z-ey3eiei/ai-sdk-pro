@@ -7,6 +7,10 @@ on:
         description: After publishing, trigger the configured Coolify staging deployment
         type: boolean
         default: false
+      publish_preview_dispatcher:
+        description: Build and publish the isolated staging Preview queue worker
+        type: boolean
+        default: false
 
 permissions: {}
 concurrency:
@@ -46,6 +50,17 @@ jobs:
           docker push "$IMAGE:sha-$GITHUB_SHA"
           docker tag "$IMAGE:sha-$GITHUB_SHA" "$IMAGE:coolify-staging"
           docker push "$IMAGE:coolify-staging"
+
+      - name: Build and publish the preview dispatcher
+        if: inputs.publish_preview_dispatcher
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="$IMAGE:preview-dispatcher-$GITHUB_SHA"
+          docker build --target preview-dispatcher --tag "$tag" .
+          docker run --rm --entrypoint bash "$tag" -n infra/project-preview/run-dispatcher.sh
+          docker run --rm --entrypoint node "$tag" --experimental-strip-types --check apps/web/scripts/dispatch-preview.ts
+          docker push "$tag"
 
   deploy:
     if: inputs.deploy
