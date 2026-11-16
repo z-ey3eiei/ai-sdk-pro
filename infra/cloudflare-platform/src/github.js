@@ -1,10 +1,14 @@
 import { b64url, decode, HttpError, readLimited, unb64, utf8 } from './shared.js';
 
+const rejectRedirect = (response) => {
+  if (response.status >= 300 && response.status < 400) throw new HttpError(502, 'Unexpected redirect from GitHub.');
+};
+
 export async function github(path, token, init = {}) {
   let response;
   try {
     response = await fetch(`https://api.github.com${path}`, {
-      ...init, redirect: 'error', headers: {
+      ...init, redirect: 'manual', headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2026-03-10',
@@ -15,6 +19,7 @@ export async function github(path, token, init = {}) {
   } catch (error) {
     throw new HttpError(502, error instanceof Error ? error.message : 'GitHub API unreachable.');
   }
+  rejectRedirect(response);
   if (!response.ok) throw new HttpError(response.status === 404 ? 404 : 502, `GitHub request failed (HTTP ${response.status}).`);
   return response.json();
 }
@@ -46,7 +51,8 @@ export async function getArchive(repo, token, sha) {
   const url = new URL(response.headers.get('location') ?? 'https://invalid.invalid');
   if (response.status !== 302 || url.origin !== 'https://codeload.github.com' || url.username || url.password)
     throw new Error('GitHub did not return a trusted archive URL.');
-  const archive = await fetch(url, { redirect: 'error' });
+  const archive = await fetch(url, { redirect: 'manual' });
+  rejectRedirect(archive);
   if (!archive.ok) throw new Error(`GitHub source download failed (HTTP ${archive.status}).`);
   return readLimited(archive, 12_000_000);
 }
@@ -62,7 +68,7 @@ export async function githubExchange(env, code, verifier, callback) {
   let response;
   try {
     response = await fetch('https://github.com/login/oauth/access_token', {
-      method: 'POST', redirect: 'error',
+      method: 'POST', redirect: 'manual',
       headers: { Accept: 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ client_id: env.GITHUB_CLIENT_ID, client_secret: env.GITHUB_CLIENT_SECRET, code,
         code_verifier: verifier, redirect_uri: callback }),
@@ -70,6 +76,7 @@ export async function githubExchange(env, code, verifier, callback) {
   } catch (error) {
     throw new HttpError(502, error instanceof Error ? error.message : 'GitHub token exchange failed.');
   }
+  rejectRedirect(response);
   let grant;
   try {
     grant = JSON.parse(decode.decode(await readLimited(response, 65536)));
