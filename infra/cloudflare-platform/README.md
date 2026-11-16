@@ -21,6 +21,12 @@ Worker ของลูกค้าหนึ่งตัวต่อ deployment �
 - Free มี 3 โปรเจกต์, 10 deploy ต่อ 24 ชั่วโมง และ 1 งานที่ค้างหรือกำลังทำ Pro มี 25 โปรเจกต์, 100 deploy และ 5 งานตามลำดับ เปลี่ยน plan ผ่าน operator ใน D1 ได้ ระบบชำระเงินยังไม่รวม เมื่อ webhook ชน quota จะตอบจำนวนงานที่จำกัดและไม่เริ่ม build เพิ่ม
 - Dashboard เป็น invite-only ด้วย GitHub numeric IDs ตั้งค่า lifecycle ของ R2 แยกที่ `logs/` และ `artifacts/` รวมทั้งกำหนดขั้นตอน cleanup ของ User Worker รุ่นเก่า สัญญาณการละเมิด และ WAF rate limit ก่อนเปิดรับสาธารณะ การลบโปรเจกต์หยุด routing และลบค่าตัวแปรทันที ส่วน deployment log, artifacts และ Worker รุ่นเก่ายังเก็บไว้ให้ operator จัดการตาม retention policy
 
+## สถานะ assembly
+
+ทรัพยากร staging บัญชี `2d92bd5b25768fa9093d6adc0a8887fc` ผูกใน `wrangler.jsonc` / `wrangler.dispatch.jsonc` แล้ว — รายละเอียดและขั้นตอนตรวจดูได้ที่ [`ASSEMBLY-STATE.md`](./ASSEMBLY-STATE.md) และ `./scripts/verify-assembly.sh` (ต้องมี `CLOUDFLARE_API_TOKEN`)
+
+Dashboard สด: **https://deploy-staging.ai-sdk.pro** (ล็อกอิน GitHub invite-only สำหรับ `BETA_GITHUB_IDS`)
+
 ## ตั้งค่า Cloudflare staging
 
 ใช้ Node 24 และบัญชี Cloudflare ที่เปิด Workers for Platforms กับ Containers แล้ว จากโฟลเดอร์นี้รัน
