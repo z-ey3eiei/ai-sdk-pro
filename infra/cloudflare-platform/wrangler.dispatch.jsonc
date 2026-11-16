@@ -2,12 +2,12 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "aisdkpro-platform-dispatch-staging",
   "main": "src/dispatch.js",
-  "compatibility_date": "2026-11-17",
+  "compatibility_date": "2026-11-16",
   "workers_dev": false,
   "preview_urls": false,
   "observability": {"enabled": true, "traces": {"enabled": true, "head_sampling_rate": 0.1}},
   "dispatch_namespaces": [{"binding": "TENANTS", "namespace": "aisdkpro-platform-staging"}],
-  "d1_databases": [{"binding": "DB", "database_name": "aisdkpro-platform-staging", "database_id": "00000000-0000-0000-0000-000000000000"}],
-  "kv_namespaces": [{"binding": "ROUTES", "id": "00000000000000000000000000000000"}],
+  "d1_databases": [{"binding": "DB", "database_name": "aisdkpro-platform-staging", "database_id": "69978225-4049-47f6-b761-b402b73cdda3"}],
+  "kv_namespaces": [{"binding": "ROUTES", "id": "758c9c8189e14c96978c9ea8d9b9bf94"}],
   "vars": {"PROJECT_DOMAIN": "ai-sdk.pro"}
 }
