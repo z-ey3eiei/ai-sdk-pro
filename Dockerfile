@@ -8,6 +8,12 @@ FROM base AS deps
 COPY . .
 RUN pnpm install --frozen-lockfile
 
+# Build this named target separately for the staging preview queue.
+FROM deps AS preview-dispatcher
+ENV NODE_ENV=production
+USER node
+CMD ["bash", "infra/project-preview/run-dispatcher.sh"]
+
 FROM deps AS builder
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm --filter @aisdkpro/web build
