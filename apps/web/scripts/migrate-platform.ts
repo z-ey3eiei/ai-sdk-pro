@@ -12,7 +12,7 @@ async function main(): Promise<void> {
   }
 
   const sql = neon(databaseUrl);
-  for (const name of ["0001_platform.sql", "0006_platform_tokens.sql", "0007_deployment_intake.sql"]) {
+  for (const name of ["0001_platform.sql", "0006_platform_tokens.sql", "0007_deployment_intake.sql", "0008_preview_dispatch.sql"]) {
     const migrationPath = resolve(__dirname, "..", "migrations", name);
     const migration = await readFile(migrationPath, "utf8");
     const statements = migration
