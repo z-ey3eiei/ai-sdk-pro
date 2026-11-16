@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   publish:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/cloudflare/workers-for-platforms'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
@@ -48,8 +48,10 @@ jobs:
           set -euo pipefail
           printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
           docker push "$IMAGE:sha-$GITHUB_SHA"
-          docker tag "$IMAGE:sha-$GITHUB_SHA" "$IMAGE:coolify-staging"
-          docker push "$IMAGE:coolify-staging"
+          if [[ "$GITHUB_REF" == refs/heads/main ]]; then
+            docker tag "$IMAGE:sha-$GITHUB_SHA" "$IMAGE:coolify-staging"
+            docker push "$IMAGE:coolify-staging"
+          fi
 
       - name: Build and publish the preview dispatcher
         if: inputs.publish_preview_dispatcher
@@ -63,7 +65,7 @@ jobs:
           docker push "$tag"
 
   deploy:
-    if: inputs.deploy
+    if: inputs.deploy && github.ref == 'refs/heads/main'
     needs: publish
     runs-on: ubuntu-latest
     timeout-minutes: 5
