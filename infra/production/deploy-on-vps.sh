@@ -18,7 +18,7 @@ install -m 644 infra/production/Caddyfile "$STAGE/ai-sdk-pro-Caddyfile"
 install -m 644 infra/production/docker-compose.yml "$STAGE/ai-sdk-pro-compose.yml"
 install -m 755 infra/production/install-app.sh "$STAGE/ai-sdk-pro-install.sh"
 
-bash "$STAGE/ai-sdk-pro-install.sh" "$REV"
+sudo env AI_SDK_DEPLOY_STAGE="$STAGE" bash "$STAGE/ai-sdk-pro-install.sh" "$REV"
 
 ENV_FILE=/opt/ai-sdk-pro/config/app.env
 grep -q '^DEPLOY_DASHBOARD_ORIGIN=' "$ENV_FILE" 2>/dev/null || \

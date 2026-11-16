@@ -44,7 +44,7 @@ scp -i "$KEY_FILE" "${SCP_OPTS[@]}" \
   infra/production/install-app.sh \
   "$HOST:${REMOTE}/ai-sdk-pro-install.sh"
 
-ssh -i "$KEY_FILE" "${SSH_OPTS[@]}" "$HOST" "AI_SDK_DEPLOY_STAGE=\$HOME/${REMOTE_STAGE} bash \$HOME/${REMOTE_STAGE}/ai-sdk-pro-install.sh $REV"
+ssh -i "$KEY_FILE" "${SSH_OPTS[@]}" "$HOST" "sudo env AI_SDK_DEPLOY_STAGE=\$HOME/${REMOTE_STAGE} bash \$HOME/${REMOTE_STAGE}/ai-sdk-pro-install.sh $REV"
 
 ssh -i "$KEY_FILE" "${SSH_OPTS[@]}" "$HOST" \
   "set -euo pipefail; ENV_FILE=/opt/ai-sdk-pro/config/app.env; \
