@@ -12,14 +12,16 @@ async function main(): Promise<void> {
   }
 
   const sql = neon(databaseUrl);
-  const migrationPath = resolve(__dirname, "../migrations/0001_platform.sql");
-  const migration = await readFile(migrationPath, "utf8");
-  const statements = migration
-    .split(";")
-    .map(statement => statement.trim())
-    .filter(Boolean);
-  await sql.transaction(statements.map(statement => sql.query(statement, [])));
-  console.log("Applied platform migration 0001_platform.sql.");
+  for (const name of ["0001_platform.sql", "0006_platform_tokens.sql"]) {
+    const migrationPath = resolve(__dirname, "..", "migrations", name);
+    const migration = await readFile(migrationPath, "utf8");
+    const statements = migration
+      .split(";")
+      .map(statement => statement.trim())
+      .filter(Boolean);
+    await sql.transaction(statements.map(statement => sql.query(statement, [])));
+    console.log(`Applied platform migration ${name}.`);
+  }
 }
 
 void main().catch(() => {
