@@ -74,3 +74,7 @@ npm run dry-run
 - [User Worker static assets upload](https://developers.cloudflare.com/cloudflare-for-platforms/workers-for-platforms/configuration/static-assets/)
 - [Cloudflare Sandbox security](https://developers.cloudflare.com/sandbox/concepts/security/)
 - [Cloudflare for SaaS Worker fallback origin](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/start/advanced-settings/worker-as-origin/)
+
+## Staging resources provisioned
+
+The dedicated staging D1, KV, R2, Queues and dispatch namespace have been created. D1 migration 0001 was applied through the Cloudflare API on `aisdkpro-platform-staging`. Skip the initial remote migration command for that specific database because the schema already exists. GitHub App credentials, deploy secrets and the hosted login-to-deployment test are pending.
