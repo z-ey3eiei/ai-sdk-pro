@@ -15,7 +15,9 @@ USER node
 CMD ["bash", "infra/project-preview/run-dispatcher.sh"]
 
 FROM deps AS builder
-ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_DEPLOY_DASHBOARD_ORIGIN=https://deploy-staging.ai-sdk.pro
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    NEXT_PUBLIC_DEPLOY_DASHBOARD_ORIGIN=${NEXT_PUBLIC_DEPLOY_DASHBOARD_ORIGIN}
 RUN pnpm --filter @aisdkpro/web build
 
 FROM node:22-bookworm-slim AS runner
