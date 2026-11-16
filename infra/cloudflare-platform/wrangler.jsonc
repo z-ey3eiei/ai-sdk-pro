@@ -23,7 +23,7 @@
   "migrations": [{"tag": "v1", "new_sqlite_classes": ["BuildSandbox"]}],
   "vars": {
     "API_ORIGIN": "https://deploy-staging.ai-sdk.pro",
-    "PROJECT_DOMAIN": "o-sdk.quest",
+    "PROJECT_DOMAIN": "ai-sdk.pro",
     "CLOUDFLARE_ACCOUNT_ID": "SET_ACCOUNT_ID",
     "DISPATCH_NAMESPACE": "aisdkpro-platform-staging",
     "GITHUB_APP_SLUG": "SET_GITHUB_APP_SLUG",

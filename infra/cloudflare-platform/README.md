@@ -1,6 +1,6 @@
 # ai-sdk.pro · Cloudflare deployment platform
 
-โมดูลนี้เป็น staging แบบแยกจากระบบ ai-sdk.pro เดิม API กับ Dashboard ใช้ `deploy-staging.ai-sdk.pro` ส่วนเว็บลูกค้าตั้งค่า `PROJECT_DOMAIN` ใน Wrangler ทั้งสองไฟล์ ค่าเริ่มต้น `o-sdk.quest` ตรงกับตัวอย่าง URL หลัง deploy โปรดแน่ใจว่าโซนอยู่ในบัญชีและมีใบรับรอง wildcard ก่อนเพิ่ม route
+โมดูลนี้เป็น staging แบบแยกจากระบบ ai-sdk.pro เดิม API กับ Dashboard ใช้ `deploy-staging.ai-sdk.pro` ส่วนเว็บลูกค้าตั้งค่า `PROJECT_DOMAIN` ใน Wrangler ทั้งสองไฟล์ ใช้ `ai-sdk.pro` สำหรับทั้ง Dashboard และ subdomain ของโปรเจกต์ หน้าเว็บหลักเชื่อมผ่านเมนู Deploy ไปที่ `/deploy`
 
 | ส่วน | งาน |
 | --- | --- |
@@ -64,8 +64,8 @@ npm run dry-run
    npx wrangler deploy --config wrangler.dispatch.jsonc
    ```
 
-5. ในโซนเว็บลูกค้า สร้าง wildcard DNS แบบ proxied, ตรวจ wildcard TLS แล้วเพิ่ม Workers Route ให้ Dispatch Worker เช่น `*.o-sdk.quest/*` หลีกเลี่ยง wildcard route บนโซนที่มีเว็บหรือ API เดิมจนกว่าจะตรวจรายการ hostname และ route conflict ครบ
-6. สำหรับ Custom Domains เปิด **SSL/TLS → Custom Hostnames** ตั้ง fallback origin ด้วยระเบียน proxied ในโซน Hosting และ route `*/*` ให้ Dispatch Worker เฉพาะโซน Hosting ที่ใช้กับ SaaS ตั้ง `SAAS_ZONE_ID`, `SAAS_CNAME_TARGET` และ `SAAS_API_TOKEN` แล้ว deploy API ใหม่ ใน Dashboard เพิ่ม hostname ทำ CNAME และ ownership/certificate verification ตามค่าที่แสดง จากนั้นกด **ตรวจ DNS** จนทั้งสองสถานะเป็น active
+5. ในโซน `ai-sdk.pro` ทดสอบด้วย DNS แบบ proxied และ Workers Route ของ hostname โครงการทดสอบเพียงชื่อเดียวก่อนตรวจ TLS แล้วจึงค่อยพิจารณา `*.ai-sdk.pro/*` ตรวจรายการ DNS และ Worker routes ของ www, docs, mcp, preview, staging และ subdomain อื่นทั้งหมด ให้มี route ที่เจาะจงกว่าหรือ no-script exclusion ตามปลายทางเดิมก่อนเปิด wildcard
+6. สำหรับ Custom Domains เปิด **SSL/TLS → Custom Hostnames** ตั้ง fallback origin ด้วยระเบียน proxied; ก่อนใช้ route `*/*` ในโซนร่วมกับเว็บหลัก ให้คงเส้นทาง apex และ subdomain เดิมด้วย route ที่เจาะจงกว่า หรือกำหนด Worker route เฉพาะ custom hostname ที่ทดสอบแล้ว ตั้ง `SAAS_ZONE_ID`, `SAAS_CNAME_TARGET` และ `SAAS_API_TOKEN` แล้ว deploy API ใหม่ ใน Dashboard เพิ่ม hostname ทำ CNAME และ ownership/certificate verification ตามค่าที่แสดง จากนั้นกด **ตรวจ DNS** จนทั้งสองสถานะเป็น active
 7. ทดสอบด้วยรีโป HTML ก่อน ล็อกอิน → ติดตั้ง GitHub App → import → Deploy → เปิด hostname และเทียบ `/_aisdk-commit.json` กับ SHA ใน Dashboard จากนั้น push commit ใหม่บน branch ที่ตั้งไว้และเทียบอีกครั้ง ตรวจว่า log เปิดได้เฉพาะเจ้าของ และทดสอบ DNS/TLS ด้วย custom hostname ที่เป็นของทีม
 
 ## เอกสารอ้างอิง

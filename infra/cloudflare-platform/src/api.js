@@ -181,7 +181,7 @@ async function api(request, env, url) {
   if (!id && method === 'POST') {
     const input = await body(request);
     const { name, installation_id, repository } = input;
-    if (!slugPattern.test(name ?? '') || ['www', 'api', 'deploy', 'preview', 'origin'].includes(name) ||
+    if (!slugPattern.test(name ?? '') || ['www', 'api', 'deploy', 'deploy-staging', 'preview', 'origin', 'staging', 'docs', 'mcp', 'sub', 'os', 'turbo', 'mail', 'urban-couscous'].includes(name) ||
         !Number.isSafeInteger(installation_id) || installation_id < 1 || !/^[\w.-]+\/[\w.-]+$/.test(repository ?? ''))
       throw new HttpError(400, 'Invalid project name, installation, or repository.');
     const token = await unseal(env, user.github_token_encrypted, user.tokenHash);

@@ -10,7 +10,7 @@ import {
 
 type SiteHeaderProps = Omit<
   ComponentProps<typeof Header>,
-  "accountHref" | "accountLabel"
+  "accountHref" | "accountLabel" | "deployHref"
 >;
 
 export default function SiteHeader(props: SiteHeaderProps) {
@@ -23,6 +23,7 @@ export default function SiteHeader(props: SiteHeaderProps) {
   return (
     <Header
       {...props}
+      deployHref="/deploy"
       accountHref={session.signedIn ? "/workspace" : "/login"}
       accountLabel={session.signedIn ? "Dashboard" : "Log in"}
     />

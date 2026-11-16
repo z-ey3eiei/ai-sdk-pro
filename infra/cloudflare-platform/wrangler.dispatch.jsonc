@@ -9,5 +9,5 @@
   "dispatch_namespaces": [{"binding": "TENANTS", "namespace": "aisdkpro-platform-staging"}],
   "d1_databases": [{"binding": "DB", "database_name": "aisdkpro-platform-staging", "database_id": "00000000-0000-0000-0000-000000000000"}],
   "kv_namespaces": [{"binding": "ROUTES", "id": "00000000000000000000000000000000"}],
-  "vars": {"PROJECT_DOMAIN": "o-sdk.quest"}
+  "vars": {"PROJECT_DOMAIN": "ai-sdk.pro"}
 }

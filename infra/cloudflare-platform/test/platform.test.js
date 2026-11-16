@@ -43,17 +43,17 @@ test('D1 schema enforces project and concurrent deployment limits and webhook de
 
 test('dispatcher ignores stale KV after a project is removed', async () => {
   const env = {
-    PROJECT_DOMAIN:'o-sdk.quest',
+    PROJECT_DOMAIN:'ai-sdk.pro',
     ROUTES:{get:async () => 'old'},
     DB:{prepare:() => ({bind:() => ({first:async () => null})})},
     TENANTS:{get:() => assert.fail('stale tenant was dispatched')},
   };
-  assert.equal((await dispatch.fetch(new Request('https://project.o-sdk.quest/'), env)).status, 404);
+  assert.equal((await dispatch.fetch(new Request('https://project.ai-sdk.pro/'), env)).status, 404);
 });
 
 test('dispatcher uses D1 publication when KV is stale and strips platform credentials', async () => {
   const env = {
-    PROJECT_DOMAIN:'o-sdk.quest',
+    PROJECT_DOMAIN:'ai-sdk.pro',
     ROUTES:{get:async () => 'old'},
     DB:{prepare:() => ({bind:() => ({first:async () => ({active_deployment_id:'test-uuid'})})})},
     TENANTS:{get:(name) => {
@@ -65,7 +65,7 @@ test('dispatcher uses D1 publication when KV is stale and strips platform creden
       } };
     }},
   };
-  const response = await dispatch.fetch(new Request('https://project.o-sdk.quest/', {
+  const response = await dispatch.fetch(new Request('https://project.ai-sdk.pro/', {
     headers: { Cookie:'session=secret', Authorization:'Bearer secret' }
   }), env);
   assert.equal(response.headers.get('set-cookie'), null);
