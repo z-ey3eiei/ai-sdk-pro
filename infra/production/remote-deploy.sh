@@ -9,6 +9,7 @@ cd "$REPO_ROOT"
 
 HOST="${VPS_SSH_HOST:-${HOST:-deploy@167.172.73.127}}"
 REV="$(git rev-parse --short=7 HEAD)"
+REMOTE_STAGE='.ai-sdk-deploy-staging'
 SSH_OPTS=(-o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new)
 SCP_OPTS=("${SSH_OPTS[@]}")
 
@@ -27,22 +28,23 @@ fi
 
 trap 'test -n "$CLEANUP_KEY" && rm -f "$KEY_FILE"; rm -f /tmp/ai-sdk-pro-source.tar.gz' EXIT
 
-ssh -i "$KEY_FILE" "${SSH_OPTS[@]}" -o BatchMode=yes "$HOST" 'echo VPS_OK'
+ssh -i "$KEY_FILE" "${SSH_OPTS[@]}" -o BatchMode=yes "$HOST" "mkdir -p ~/${REMOTE_STAGE} && chmod 700 ~/${REMOTE_STAGE} && echo VPS_OK"
 git archive --format=tar.gz --output=/tmp/ai-sdk-pro-source.tar.gz HEAD
+REMOTE="~/${REMOTE_STAGE}"
 scp -i "$KEY_FILE" "${SCP_OPTS[@]}" \
   /tmp/ai-sdk-pro-source.tar.gz \
-  "$HOST:/tmp/ai-sdk-pro-source.tar.gz"
+  "$HOST:${REMOTE}/ai-sdk-pro-source.tar.gz"
 scp -i "$KEY_FILE" "${SCP_OPTS[@]}" \
   infra/production/Caddyfile \
-  "$HOST:/tmp/ai-sdk-pro-Caddyfile"
+  "$HOST:${REMOTE}/ai-sdk-pro-Caddyfile"
 scp -i "$KEY_FILE" "${SCP_OPTS[@]}" \
   infra/production/docker-compose.yml \
-  "$HOST:/tmp/ai-sdk-pro-compose.yml"
+  "$HOST:${REMOTE}/ai-sdk-pro-compose.yml"
 scp -i "$KEY_FILE" "${SCP_OPTS[@]}" \
   infra/production/install-app.sh \
-  "$HOST:/tmp/ai-sdk-pro-install.sh"
+  "$HOST:${REMOTE}/ai-sdk-pro-install.sh"
 
-ssh -i "$KEY_FILE" "${SSH_OPTS[@]}" "$HOST" "bash /tmp/ai-sdk-pro-install.sh $REV"
+ssh -i "$KEY_FILE" "${SSH_OPTS[@]}" "$HOST" "AI_SDK_DEPLOY_STAGE=\$HOME/${REMOTE_STAGE} bash \$HOME/${REMOTE_STAGE}/ai-sdk-pro-install.sh $REV"
 
 ssh -i "$KEY_FILE" "${SSH_OPTS[@]}" "$HOST" \
   "set -euo pipefail; ENV_FILE=/opt/ai-sdk-pro/config/app.env; \

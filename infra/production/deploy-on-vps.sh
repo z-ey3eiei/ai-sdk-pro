@@ -7,14 +7,18 @@ REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$REPO_ROOT"
 
 REV="$(git rev-parse --short=7 HEAD)"
-printf 'Deploying checkpoint %s from %s\n' "$REV" "$REPO_ROOT"
+STAGE="${AI_SDK_DEPLOY_STAGE:-$HOME/.ai-sdk-deploy-staging}"
+mkdir -p "$STAGE"
+chmod 700 "$STAGE"
+export AI_SDK_DEPLOY_STAGE="$STAGE"
+printf 'Deploying checkpoint %s from %s (stage %s)\n' "$REV" "$REPO_ROOT" "$STAGE"
 
-git archive --format=tar.gz --output=/tmp/ai-sdk-pro-source.tar.gz HEAD
-install -m 644 infra/production/Caddyfile /tmp/ai-sdk-pro-Caddyfile
-install -m 644 infra/production/docker-compose.yml /tmp/ai-sdk-pro-compose.yml
-install -m 755 infra/production/install-app.sh /tmp/ai-sdk-pro-install.sh
+git archive --format=tar.gz --output="$STAGE/ai-sdk-pro-source.tar.gz" HEAD
+install -m 644 infra/production/Caddyfile "$STAGE/ai-sdk-pro-Caddyfile"
+install -m 644 infra/production/docker-compose.yml "$STAGE/ai-sdk-pro-compose.yml"
+install -m 755 infra/production/install-app.sh "$STAGE/ai-sdk-pro-install.sh"
 
-bash /tmp/ai-sdk-pro-install.sh "$REV"
+bash "$STAGE/ai-sdk-pro-install.sh" "$REV"
 
 ENV_FILE=/opt/ai-sdk-pro/config/app.env
 grep -q '^DEPLOY_DASHBOARD_ORIGIN=' "$ENV_FILE" 2>/dev/null || \
