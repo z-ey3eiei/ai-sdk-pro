@@ -119,6 +119,11 @@ function WorkspaceChrome({
             <KeyRound size={16} />
             <span>API tokens</span>
           </Link>
+          <Link href="/deploy" className="workspace-nav-item">
+            <Globe2 size={16} />
+            <span>Deploy (publish)</span>
+            <ArrowUpRight className="workspace-nav-external" size={12} />
+          </Link>
           <Link href="/docs/architecture" className="workspace-nav-item">
             <Database size={16} />
             <span>How snapshots work</span>
@@ -128,7 +133,7 @@ function WorkspaceChrome({
         <div className="workspace-sidebar-note">
           <ShieldCheck size={15} />
           <p>
-            Import a repository snapshot to inspect its files. Registered projects can be deployed from the workspace.
+            Import here to browse a read-only snapshot in Neon. To publish a live site from Git, open Deploy — same GitHub account, separate pilot login until auth is unified.
           </p>
         </div>
         <div className="workspace-sidebar-footer">

@@ -2163,6 +2163,38 @@ body {
   margin-top: 24px;
   height: 44px;
 }
+.deploy-page-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 56px);
+}
+.deploy-embed {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.deploy-embed-note {
+  margin: 0;
+  padding: 12px 20px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+.deploy-embed-frame {
+  flex: 1;
+  width: 100%;
+  min-height: min(72dvh, 900px);
+  border: 0;
+  background: #0a0a0a;
+}
+.deploy-embed-offline {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+}
 .deploy-command-panel {
   min-width: 0;
   border: 1px solid var(--border);
