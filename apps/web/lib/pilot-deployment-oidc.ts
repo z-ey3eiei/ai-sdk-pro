@@ -8,7 +8,7 @@ const branch = "aisdk/preview-pilot";
 const ref = "refs/heads/" + branch;
 const claimsSchema = z.object({
   iss: z.literal(issuer), aud: z.literal(audience),
-  sub: z.literal(`repo:${repository}:ref:${ref}`),
+  sub: z.enum([`repo:${repository}:ref:${ref}`, `repo:z-ey3eiei@312459747/urban-couscous@1458143895:ref:${ref}`]),
   repository: z.literal(repository), repository_id: z.literal("1458143895"),
   event_name: z.literal("push"), ref: z.literal(ref),
   workflow_ref: z.literal(`${repository}/.github/workflows/aisdk-preview.yml@${ref}`),
