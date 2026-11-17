@@ -54,7 +54,7 @@ export async function GET(request: Request): Promise<Response> {
     const file = await get(pathname,{access:"private",token});
     if (!file || file.statusCode !== 200 || !file.stream) return jsonError("File not found.",404);
     const headers = noStoreHeaders();
-    headers.set("Content-Type", DOWNLOAD_MIME.has(file.blob.contentType) ? file.blob.contentType : "application/octet-stream");
+    headers.set("Content-Type", DOWNLOAD_MIME.has(file.blob.contentType ?? "") ? file.blob.contentType! : "application/octet-stream");
     headers.set("Content-Disposition","attachment; filename=\"workspace-file\"");
     headers.set("X-Frame-Options","DENY");
     return new Response(file.stream,{status:200,headers});
