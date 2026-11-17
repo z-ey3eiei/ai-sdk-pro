@@ -36,8 +36,8 @@ COPY --from=builder --chown=nextjs:nodejs /repo/apps/web/public ./apps/web/publi
 # Next.js 16 writes prerender route-cache beside server assets. Production
 # uses a read-only rootfs with a writable /tmp tmpfs, so route-cache must be
 # redirected there instead of attempting mkdir on the immutable filesystem.
-RUN mkdir -p /app/apps/web/.next/server \\
-    && rm -rf /app/apps/web/.next/server/route-cache \\
+RUN mkdir -p /app/apps/web/.next/server \
+    && rm -rf /app/apps/web/.next/server/route-cache \
     && ln -s /tmp/ai-sdk-pro-route-cache /app/apps/web/.next/server/route-cache
 
 USER nextjs
