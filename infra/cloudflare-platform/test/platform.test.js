@@ -57,6 +57,9 @@ test('encrypted project values cannot be moved to a different key', async () => 
 test('D1 schema enforces project and concurrent deployment limits and webhook dedupe', () => {
   const db = new DatabaseSync(':memory:');
   db.exec(readFileSync(new URL('../migrations/0001_platform.sql', import.meta.url), 'utf8'));
+  db.exec(readFileSync(new URL('../migrations/0002_account_roles.sql', import.meta.url), 'utf8'));
+  db.exec("INSERT INTO account_roles(github_id,role) VALUES(1,'owner')");
+  assert.equal(db.prepare('SELECT role FROM account_roles WHERE github_id=1').get().role, 'owner');
   db.exec("INSERT INTO users(id,github_id,username) VALUES('u',1,'user')");
   const insert = db.prepare("INSERT INTO projects(id,user_id,name,repo_full_name,repo_id,installation_id,branch) VALUES(?,'u',?,'u/repo',1,2,'main')");
   for (const id of ['one','two','three']) insert.run(id, id);
