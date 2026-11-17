@@ -36,8 +36,8 @@ jobs:
       - name: Vitest regressions and security boundaries
         run: pnpm test
       - name: Install isolated Cloudflare platform test dependencies
-        run: pnpm install --dir infra/cloudflare-platform --no-frozen-lockfile --ignore-scripts
+        run: pnpm -C infra/cloudflare-platform install --no-frozen-lockfile
       - name: Cloudflare platform Node test suite
-        run: pnpm --dir infra/cloudflare-platform test
+        run: pnpm -C infra/cloudflare-platform test
       - name: Monorepo build
         run: pnpm build
