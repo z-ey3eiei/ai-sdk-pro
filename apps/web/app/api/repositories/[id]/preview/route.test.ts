@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   requireSessionUser: vi.fn(),
@@ -32,7 +32,10 @@ const postReq = () => new Request("https://ai-sdk.pro/api/repositories/repo-1/pr
   headers: { Origin: "https://ai-sdk.pro" },
 });
 
+afterEach(() => vi.unstubAllEnvs());
+
 beforeEach(() => {
+  vi.stubEnv("NEON_DATABASE_URL", "postgres://fixture.invalid/test");
   vi.clearAllMocks();
   mocks.requireSessionUser.mockResolvedValue({ id: "user-A" });
   mocks.getOwnedRepository.mockResolvedValue(repo);
