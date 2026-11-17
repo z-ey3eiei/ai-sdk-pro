@@ -37,7 +37,7 @@ export async function verifyAgentToken(
     const valid = await crypto.subtle.verify(
       "HMAC",
       key,
-      signatureBytes,
+      new Uint8Array(signatureBytes),
       new TextEncoder().encode(payload)
     );
     if (!valid) return null;
