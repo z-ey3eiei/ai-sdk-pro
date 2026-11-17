@@ -3,6 +3,8 @@ export interface Env {
   CHAT_AGENT: DurableObjectNamespace;
   BUDGET: DurableObjectNamespace;
   AGENT_AUTH_SECRET: string;
+  /** Explicit on/off gate; omitted or invalid values disable inference. */
+  KEYLESS_ENABLED?: string;
   ALLOWED_ORIGINS: string;
 }
 
