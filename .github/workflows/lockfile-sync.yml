@@ -6,6 +6,7 @@ on:
       - feat/platform-phases-0-6-20261117
     paths:
       - apps/agent-worker/package.json
+      - apps/web/package.json
       - .github/workflows/lockfile-sync.yml
 
 permissions:
