@@ -2,6 +2,7 @@ import { routeAgentRequest } from "agents/routing";
 import { ChatAgent } from "./chat-agent";
 import { BudgetCoordinator } from "./quota-guard";
 import { tokenFromRequest, verifyAgentToken } from "./token";
+import { keylessRuntimeEnabled } from "./runtime-gate";
 import type { Env } from "./types";
 
 export { ChatAgent, BudgetCoordinator };
@@ -28,8 +29,9 @@ function failure(message: string, status: number): Response {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    const enabled = keylessRuntimeEnabled(env);
     if (url.pathname === "/health" && request.method === "GET") {
-      return Response.json({ status: "up", model: "@cf/zai-org/glm-4.7-flash" }, { headers: { "Cache-Control": "no-store" } });
+      return Response.json({ status: enabled ? "up" : "disabled", model: "@cf/zai-org/glm-4.7-flash" }, { headers: { "Cache-Control": "no-store" } });
     }
 
     const origin = request.headers.get("Origin");
@@ -37,6 +39,8 @@ export default {
     if (request.method === "OPTIONS") {
       return withCors(new Response(null, { status: 204 }), origin!);
     }
+    // Fail closed until billing policy, signing secret and runtime have been verified.
+    if (!enabled) return withCors(failure("Keyless chat is disabled.", 503), origin!);
 
     if (url.pathname === "/usage" && request.method === "GET") {
       const claims = await verifyAgentToken(tokenFromRequest(request), env.AGENT_AUTH_SECRET);
