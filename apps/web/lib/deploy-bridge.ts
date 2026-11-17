@@ -23,6 +23,9 @@ export type ProjectList = {
   routingReady: boolean;
   frameworkBuilds: boolean;
   projectDomain: string;
+  plan?: 'free' | 'pro';
+  quota?: { maxProjects: number; usedProjects: number };
+  automaticUpdates?: boolean;
 };
 export type DeploymentEntry = {
   id: string;
