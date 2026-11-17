@@ -17,6 +17,7 @@
     { "tag": "keyless-v1", "new_sqlite_classes": ["ChatAgent", "BudgetCoordinator"] }
   ],
   "vars": {
-    "ALLOWED_ORIGINS": "https://ai-sdk.pro,http://localhost:3000"
+    "ALLOWED_ORIGINS": "https://ai-sdk.pro,http://localhost:3000",
+    "KEYLESS_ENABLED": "false"
   }
 }
