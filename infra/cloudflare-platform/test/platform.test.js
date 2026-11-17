@@ -7,6 +7,22 @@ import { normalizeAssets, sourceFiles } from '../src/assets.js';
 import dispatch from '../src/dispatch.js';
 import { b64, readCookie, seal, unseal, utf8 } from '../src/shared.js';
 import { githubAppIssuer } from '../src/github.js';
+import { allowUnifiedDeploy, quotaForPlan } from '../src/access-policy.js';
+
+test('public Free deploy is only available behind signed bridge and verified routing', () => {
+  const pilot = { BETA_GITHUB_IDS: '312459747' };
+  assert.equal(allowUnifiedDeploy(pilot, 312459747), true);
+  assert.equal(allowUnifiedDeploy(pilot, 87654321), false);
+  const pub = { ...pilot, PUBLIC_DEPLOY_ENABLED: 'true', PLATFORM_BRIDGE_ENABLED: 'true',
+    PROJECT_ROUTING_READY: 'true', PLATFORM_BRIDGE_SECRET: 'x'.repeat(64) };
+  assert.equal(allowUnifiedDeploy(pub, 87654321), true);
+  for (const partial of [
+    { PUBLIC_DEPLOY_ENABLED:'false' }, { PLATFORM_BRIDGE_ENABLED:'false' },
+    { PROJECT_ROUTING_READY:'false' }, { PLATFORM_BRIDGE_SECRET:'weak' }
+  ]) assert.equal(allowUnifiedDeploy({ ...pub, ...partial }, 87654321), false);
+  assert.equal(quotaForPlan('free'), 3);
+  assert.equal(quotaForPlan('pro'), 25);
+});
 
 test('readCookie parses __Host cookies regardless of spacing', () => {
   const oauth = 'a'.repeat(128);
