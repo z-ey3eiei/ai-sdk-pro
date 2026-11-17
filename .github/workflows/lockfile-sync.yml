@@ -1,0 +1,41 @@
+name: Refresh pnpm lockfile on feature branch (no deployment)
+
+on:
+  push:
+    branches:
+      - feat/platform-phases-0-6-20261117
+    paths:
+      - apps/agent-worker/package.json
+      - apps/web/package.json
+      - .github/workflows/lockfile-sync.yml
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/platform-phases-0-6-20261117
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.18.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Resolve exact Worker dependencies and update lockfile only
+        run: pnpm install --lockfile-only --no-frozen-lockfile
+      - name: Commit lockfile on feature branch only
+        run: |
+          if git diff --quiet -- pnpm-lock.yaml; then
+            echo "Lockfile already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          git commit -m "chore(lockfile): pin agent-worker dependencies"
+          git push origin HEAD:feat/platform-phases-0-6-20261117

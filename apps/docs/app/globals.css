@@ -3,12 +3,12 @@
 @import 'fumadocs-ui/css/preset.css';
 
 :root {
-  --docs-bg: #0b0b0b;
-  --docs-panel: #111111;
-  --docs-fg: #f6f6f6;
-  --docs-muted: #aaa;
-  --docs-subtle: #747474;
-  --docs-border: #262626;
+  --docs-bg: var(--bg);
+  --docs-panel: var(--panel);
+  --docs-fg: var(--fg);
+  --docs-muted: var(--muted);
+  --docs-subtle: var(--subtle);
+  --docs-border: var(--border);
   color-scheme: dark;
 }
 
@@ -89,16 +89,16 @@ body {
 }
 
 .docs-markdown blockquote {
-  border-inline-start: 2px solid #555;
+  border-inline-start: 2px solid var(--border);
   color: var(--docs-subtle);
   padding-inline-start: 1rem;
 }
 
 .docs-markdown :not(pre) > code {
-  background: #191919;
+  background: var(--soft);
   border: 1px solid var(--docs-border);
   border-radius: 0.25rem;
-  color: #e7e7e7;
+  color: var(--fg);
   font-size: 0.85em;
   padding: 0.12rem 0.3rem;
 }

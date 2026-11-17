@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "aisdkpro-keyless-agent-staging",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "ai": { "binding": "AI" },
+  "durable_objects": {
+    "bindings": [
+      { "name": "CHAT_AGENT", "class_name": "ChatAgent" },
+      { "name": "BUDGET", "class_name": "BudgetCoordinator" }
+    ]
+  },
+  "migrations": [
+    { "tag": "keyless-v1", "new_sqlite_classes": ["ChatAgent", "BudgetCoordinator"] }
+  ],
+  "vars": {
+    "ALLOWED_ORIGINS": "https://ai-sdk.pro,http://localhost:3000"
+  }
+}

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import RegistryDeployment from "./RegistryDeployment";
+import PreviewDeployment from "./PreviewDeployment";
 import {
   ArrowLeft,
   CircleAlert,
@@ -30,6 +31,8 @@ type DetailState =
   | { kind: "loading" }
   | { kind: "ready"; detail: RepositoryDetail }
   | { kind: "error"; error: RepositoryRequestErrorPresentation };
+
+type WorkspaceTab = "overview" | "files" | "deployments" | "activity";
 
 type FileState =
   | { kind: "idle" }
@@ -75,6 +78,8 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
   const [fileState, setFileState] = useState<FileState>({ kind: "idle" });
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [activeTab, setActiveTab] = useState<WorkspaceTab>("overview");
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -83,6 +88,7 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
     setDetailState({ kind: "loading" });
     setFileState({ kind: "idle" });
     setSelectedPath(null);
+    setCopyState("idle");
 
     void requestJson<RepositoryDetail>(
       `/api/repositories/${encodeURIComponent(repositoryId)}`,
@@ -146,9 +152,12 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
         <div className="repository-viewer-topbar-inner">
           <Brand />
           <div className="repository-viewer-topbar-links">
-            <Link href="/workspace" className="repository-viewer-back-link">
-              <ArrowLeft size={14} /> Back to workspace
-            </Link>
+            <nav className="repository-viewer-context-links" aria-label="Platform navigation">
+              <Link href="/workspace" aria-current="page">Workspace</Link>
+              <Link href="/chat">Chat</Link>
+              <Link href="/templates">Templates</Link>
+              <Link href="/docs/getting-started">Docs</Link>
+            </nav>
           </div>
         </div>
       </header>
@@ -192,7 +201,7 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
             <Link href="/deploy" className="button secondary">
               Cloudflare Deploy
             </Link>
-            <RegistryDeployment key={repositoryId} repositoryId={repositoryId} />
+
             <div className="repository-viewer-heading-row">
               <div className="repository-viewer-title-block">
                 <span className="repository-viewer-eyebrow">IMPORTED SNAPSHOT</span>
@@ -245,7 +254,27 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
             </div>
           </section>
 
-          <section className="repository-viewer-scope-note">
+          <nav className="repository-viewer-tabs" aria-label="Repository sections" role="tablist">
+            {([
+              ["overview", "Overview"],
+              ["files", "Files & Code"],
+              ["deployments", "Deployments & Registry"],
+              ["activity", "Activity & Settings"],
+            ] as const).map(([tab, label]) => (
+              <button
+                key={tab}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === tab}
+                className={activeTab === tab ? "active" : ""}
+                onClick={() => setActiveTab(tab)}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+
+          {activeTab === "overview" && <section className="repository-viewer-scope-note">
             <ShieldCheck size={16} />
             <p>
               This view is a server-persisted, read-only snapshot: up to {detail.snapshotLimits.maxFiles} files,
@@ -253,9 +282,39 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
               {" "}{detail.repository.skippedFiles} files were skipped during import; binaries, dependencies, and sensitive paths are not shown.
             </p>
             {detail.repository.snapshotTruncated && <span>Snapshot cap reached</span>}
-          </section>
+          </section>}
 
-          <section className="repository-viewer-workbench" aria-label="Repository source viewer">
+          {activeTab === "overview" && (
+            <section className="repository-viewer-overview-actions">
+              <p>Agent Registry and preview readiness must be checked before deployment. Imported source is never executed in the web container.</p>
+              <button type="button" className="repository-viewer-button repository-viewer-button-primary" onClick={() => setActiveTab("deployments")}>
+                Review deployment options
+              </button>
+            </section>
+          )}
+
+          {activeTab === "deployments" && (
+            <section className="repository-viewer-deployment-tab" aria-label="Repository deployment">
+              <h2>Deployments & Registry</h2>
+              <p>Current integration triggers a GitHub Actions production deployment. Preview dispatch is not enabled; review the target before clicking Deploy.</p>
+              <PreviewDeployment repositoryId={repositoryId} />
+              <h3>Legacy production workflow</h3>
+              <RegistryDeployment key={repositoryId} repositoryId={repositoryId} />
+            </section>
+          )}
+
+          {activeTab === "activity" && (
+            <section className="repository-viewer-activity-tab" aria-label="Workspace activity and settings">
+              <h2>Activity & Settings</h2>
+              <p>For security, the workspace login session expires after 3 hours of inactivity. Repository snapshots stay protected by per-user authorization.</p>
+              <Link href="/workspace/tokens" className="repository-viewer-button repository-viewer-button-secondary">
+                Manage platform API tokens
+              </Link>
+              <p>Deployment history will appear here once the event timeline endpoint is connected. No activity is fabricated.</p>
+            </section>
+          )}
+
+          {activeTab === "files" && <section className="repository-viewer-workbench" aria-label="Repository source viewer">
             <aside className="repository-viewer-files">
               <div className="repository-viewer-files-heading">
                 <div>
@@ -327,10 +386,30 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
                 </div>
               )}
               {fileState.kind === "ready" && (
-                <pre className="repository-viewer-code"><code>{fileState.file.content}</code></pre>
+                <>
+                  <div className="repository-viewer-copy-row">
+                    <span>Read-only pinned source · sensitive and SSH private-key paths excluded during import</span>
+                    <button
+                      type="button"
+                      className="repository-viewer-button repository-viewer-button-secondary"
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(fileState.file.content);
+                          setCopyState("copied");
+                        } catch {
+                          setCopyState("failed");
+                        }
+                      }}
+                    >
+                      Copy code
+                    </button>
+                    <span role="status">{copyState === "copied" ? "Copied" : copyState === "failed" ? "Copy unavailable" : ""}</span>
+                  </div>
+                  <pre className="repository-viewer-code"><code>{fileState.file.content}</code></pre>
+                </>
               )}
             </div>
-          </section>
+          </section>}
         </>
       )}
     </main>

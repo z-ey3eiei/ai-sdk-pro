@@ -92,3 +92,28 @@ Application source checkpoint `bc5aac7287952bb92f8514d906196b221934bf31` was exp
 Read-only public GETs through `https://ai-sdk.pro` confirmed IBM Plex Sans Thai and local Next styles on `/`, `/templates`, `/templates/streaming-chat`, `/chat`, `/docs/getting-started`, `/workspace` and `/login`. No `fonts.googleapis.com` or `fonts.gstatic.com` URLs were found in those HTML documents or their stylesheets. All 16 unique WOFF2 assets referenced by the homepage stylesheet returned HTTP 200 with a font MIME type; the stylesheet includes the Thai unicode range. `/api/health` returned 200, `/api/ready` remained `ready-for-byok` with `byokRequired=true`, the route manifest returned 200 with 15 entries, and an unknown template remained a real 404.
 
 The Docker app port `3000` remains intentionally unbound on the host (`docker ps` shows container-only `3000/tcp`); the app health check passed from inside the container and via public HTTPS. A direct host-loopback request to `127.0.0.1:3000` is expected to fail and is not a reason to publish that port. Caddy remains the public HTTP/HTTPS entrypoint. No DNS/Cloudflare configuration, application secrets, provider settings, database rows, DevStack service, VPS resource or paid add-on changed. No inference/model call was made; chat remains BYOK-only.
+
+
+## Feature-branch integration record — 2026-11-17 (NOT a production release)
+
+Source: `z-ey3eiei/ai-sdk-pro`, branch
+`feat/platform-phases-0-6-20261117`, review PR #12 (draft).
+The verified production checkpoint above remains the last recorded VPS state.
+This branch has **not** been merged to `main`, deployed to the VPS,
+or deployed as a new Cloudflare Keyless Worker.
+
+Implemented on the feature branch: shared black/red tokens and UI primitives,
+repository detail tabs and copy code, standalone HMAC-signed chat-session token
+endpoint, isolated Cloudflare `apps/agent-worker` source, shared per-user daily
+quota/global monthly budget reservation coordinator, dual-mode BYOK/Edge chat
+UI, isolated preview intake API with ownership/pinned-commit checks, and
+read-only deployment timeline. Private R2 authorization policy is implemented
+as a pure helper with synthetic tests; R2 upload/download are **not enabled**.
+
+Existing BYOK endpoint and legacy deployment workflow are retained; the new
+preview path does **not** execute imported repository code. Tests, Worker
+runtime verification, actual Cloudflare account inventory and end-to-end
+WebSocket/inference smoke must pass before opening service to users.
+
+Do not equate this source implementation to a deployed working service.
+New infrastructure cost or public deployment requires explicit approval.
