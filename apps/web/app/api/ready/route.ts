@@ -5,6 +5,9 @@ export const dynamic = "force-dynamic";
 
 export function GET() {
   const owner = publicModelConfig();
+  const agentUrl = process.env.NEXT_PUBLIC_CF_AGENT_URL?.trim() ?? "";
+  const agentAuthSecret = process.env.AGENT_AUTH_SECRET ?? "";
+  const keylessConfigured = /^https:\/\//.test(agentUrl) && Buffer.byteLength(agentAuthSecret, "utf8") >= 32;
   const byokRequired = isBYOKRequired();
   const readyForRequestCredentials = byokRequired;
   const status = byokRequired
@@ -22,6 +25,11 @@ export function GET() {
       model: owner.model,
       providerConfigured: owner.configured,
       ownerProviderConfigured: owner.configured,
+      keylessEdge: {
+        configured: keylessConfigured,
+        status: keylessConfigured ? "configured-not-probed" : "disabled",
+        model: "@cf/zai-org/glm-4.7-flash",
+      },
       // Readiness does not call a provider or validate a credential. Each chat
       // request must still supply and test a valid client-owned key.
       credentialsTested: false,
