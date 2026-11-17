@@ -5,6 +5,7 @@ import {
 import { github, githubExchange, installationToken, githubAppIssuer, verifySignature } from './github.js';
 import { cloudflare } from './cloudflare.js';
 import { readBridgeMessage } from './bridge.js';
+import { allowUnifiedDeploy, quotaForPlan } from './access-policy.js';
 export { DeploymentWorkflow, BuildSandbox, ContainerProxy } from './pipeline.js';
 
 const projectColumns = 'id,name,repo_full_name,repo_id,branch,framework,build_command,output_dir,auto_deploy,active_deployment_id,created_at';
@@ -287,9 +288,10 @@ async function internalWorkspace(request, env) {
   if (env.PLATFORM_BRIDGE_ENABLED !== 'true') throw new HttpError(503, 'Unified deployment is not enabled.');
   const input = await readBridgeMessage(request, env);
   const actor = input.actor;
-  // Keep this pilot invite-only until external builds and routing are verified.
-  const permitted = (env.BETA_GITHUB_IDS ?? '').split(',').map(value => value.trim()).includes(String(actor.githubId));
-  if (!permitted) throw new HttpError(403, 'Deployment pilot is not enabled for this account.');
+  // Public access is only from the signed Better Auth server-to-server bridge.
+  // Legacy standalone OAuth remains beta-allowlisted.
+  if (!allowUnifiedDeploy(env, actor.githubId))
+    throw new HttpError(403, 'Deploy is not enabled for this account.');
   await run(env, 'INSERT INTO users(id,github_id,username) VALUES(?,?,?) ' +
     'ON CONFLICT(github_id) DO UPDATE SET username=excluded.username',
     uuid(), actor.githubId, actor.login);
@@ -304,6 +306,9 @@ async function internalWorkspace(request, env) {
       routingReady: env.PROJECT_ROUTING_READY === 'true',
       frameworkBuilds: env.FRAMEWORK_BUILDS === 'enabled',
       projectDomain: env.PROJECT_DOMAIN,
+      plan: user.plan,
+      quota: { maxProjects: quotaForPlan(user.plan), usedProjects: items.length },
+      automaticUpdates: true,
     });
   }
 
