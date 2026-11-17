@@ -33,8 +33,15 @@ COPY --from=builder --chown=nextjs:nodejs /repo/apps/web/.next/standalone/ ./
 COPY --from=builder --chown=nextjs:nodejs /repo/apps/web/.next/static ./apps/web/.next/static
 COPY --from=builder --chown=nextjs:nodejs /repo/apps/web/public ./apps/web/public
 
+# Next.js 16 writes prerender route-cache beside server assets. Production
+# uses a read-only rootfs with a writable /tmp tmpfs, so route-cache must be
+# redirected there instead of attempting mkdir on the immutable filesystem.
+RUN mkdir -p /app/apps/web/.next/server \\
+    && rm -rf /app/apps/web/.next/server/route-cache \\
+    && ln -s /tmp/ai-sdk-pro-route-cache /app/apps/web/.next/server/route-cache
+
 USER nextjs
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:3000/api/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
-CMD ["node", "apps/web/server.js"]
+CMD ["sh", "-c", "mkdir -p /tmp/ai-sdk-pro-route-cache && exec node apps/web/server.js"]
