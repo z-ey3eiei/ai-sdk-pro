@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import RegistryDeployment from "./RegistryDeployment";
+import PreviewDeployment from "./PreviewDeployment";
 import {
   ArrowLeft,
   CircleAlert,
@@ -296,6 +297,8 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
             <section className="repository-viewer-deployment-tab" aria-label="Repository deployment">
               <h2>Deployments & Registry</h2>
               <p>Current integration triggers a GitHub Actions production deployment. Preview dispatch is not enabled; review the target before clicking Deploy.</p>
+              <PreviewDeployment repositoryId={repositoryId} />
+              <h3>Legacy production workflow</h3>
               <RegistryDeployment key={repositoryId} repositoryId={repositoryId} />
             </section>
           )}
