@@ -4862,3 +4862,61 @@ body {
 .empty-state-box__title { font-size: 15px; font-weight: 600; }
 .empty-state-box__description { max-width: 460px; line-height: 1.65; font-size: 13px; color: var(--muted); }
 .empty-state-box__action { margin-top: 8px; }
+
+
+/* Repository dashboard tab navigation; preserves the existing split-pane viewer. */
+.repository-viewer-context-links { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.repository-viewer-context-links a { font-size: 12px; color: var(--muted); padding-block: 8px; }
+.repository-viewer-context-links a:hover, .repository-viewer-context-links a[aria-current="page"] {
+  color: var(--fg);
+  border-bottom: 2px solid var(--accent);
+}
+.repository-viewer-tabs {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  margin: 0 auto 22px;
+  max-width: 1200px;
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+}
+.repository-viewer-tabs button {
+  flex-shrink: 0;
+  min-height: 44px;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.repository-viewer-tabs button.active {
+  color: var(--fg);
+  border-bottom-color: var(--accent);
+}
+.repository-viewer-overview-actions,
+.repository-viewer-deployment-tab,
+.repository-viewer-activity-tab {
+  max-width: 1200px;
+  margin: 0 auto 32px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--fg);
+}
+.repository-viewer-overview-actions p,
+.repository-viewer-deployment-tab p,
+.repository-viewer-activity-tab p { color: var(--muted); font-size: 13px; line-height: 1.65; margin: 8px 0 18px; }
+.repository-viewer-deployment-tab h2,
+.repository-viewer-activity-tab h2 { font-size: 16px; font-weight: 600; }
+.repository-viewer-copy-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between;
+  padding: 8px 14px; border-bottom: 1px solid var(--border);
+  color: var(--muted); font-size: 10px;
+}
+@media (max-width: 680px) {
+  .repository-viewer-tabs { gap: 15px; }
+  .repository-viewer-context-links { gap: 9px; }
+  .repository-viewer-overview-actions,
+  .repository-viewer-deployment-tab,
+  .repository-viewer-activity-tab { padding: 16px; }
+}
