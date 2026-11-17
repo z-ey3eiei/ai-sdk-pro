@@ -74,7 +74,7 @@ export function createPlatformAuth() {
       github: {
         clientId: config.githubClientId,
         clientSecret: config.githubClientSecret,
-        scopes: ["read:user", "user:email"],
+        scope: ["read:user", "user:email"],
       },
     } : undefined,
     emailAndPassword: {
