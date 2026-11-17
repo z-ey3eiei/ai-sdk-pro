@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { useState, type FormEvent } from "react";
 import { ArrowRight, LoaderCircle, Mail, ShieldCheck } from "lucide-react";
 import { authClient } from "../lib/auth-client";
 import "./native-auth.css";

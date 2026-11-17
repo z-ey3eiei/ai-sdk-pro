@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import {
   ArrowUpRight, ChevronRight, Database, KeyRound, Library,
-  HardDrive, LoaderCircle, LogOut, Rocket, ShieldCheck,
+  HardDrive, LoaderCircle, LogOut, Rocket, ShieldCheck, UserRound,
 } from "lucide-react";
 import { Brand } from "@aisdkpro/ui";
 import type { PlatformSession } from "../lib/platform-types";
