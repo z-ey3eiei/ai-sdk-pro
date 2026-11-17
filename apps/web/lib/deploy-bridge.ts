@@ -24,6 +24,7 @@ export type ProjectList = {
   frameworkBuilds: boolean;
   projectDomain: string;
   plan?: 'free' | 'pro';
+  role?: 'member' | 'developer' | 'owner';
   quota?: { maxProjects: number; usedProjects: number };
   automaticUpdates?: boolean;
 };
