@@ -98,3 +98,137 @@ sudo journalctl -u ai-sdk-pro -f
 `/api/health` ตรวจว่า process ทำงาน ส่วน `/api/ready` ตรวจว่ามี runtime provider configuration โดยไม่เรียกโมเดลและไม่รับรองว่า key ใช้งานได้จริง หลัง deploy ให้ทดสอบ `/api/chat` และตรวจ SSE ว่าไม่มี `type: error` พร้อมมีข้อความตอบกลับจากโมเดล การใช้ curl exit code อย่างเดียวไม่พอ เพราะ stream อาจเริ่มที่ HTTP 200 แล้วพบ error ภายหลัง
 
 Caddy overwrite `X-Real-IP` และ Compose ไม่เปิด app port จึงเปิด `TRUST_PROXY=true` ได้อย่างมีขอบเขต หากใช้ proxy อื่นต้อง overwrite identity header และปิด public app port ก่อนเปิดค่านี้ ค่าเริ่มต้นที่ไม่เชื่อ proxy จะใช้ shared anonymous quota 20 คำขอต่อนาที พร้อม process-wide cap 120 คำขอต่อนาทีและ cache ที่มี hard bound สำหรับ public SaaS ต้องเพิ่ม authorization และ distributed limits ก่อนเปิดให้ผู้ใช้ทั่วไป
+
+
+## Platform Phase 0–6 release procedure (staging branch, 2026-11-17)
+
+The platform modernization is currently under review in
+`feat/platform-phases-0-6-20261117`. It is **not** the running VPS release.
+The original BYOK route remains the default and must not silently consume the
+platform owner's provider key. Never merge or deploy from the feature branch
+without the owner's explicit production approval.
+
+### Gate A: Validate exact source and all isolated tests
+
+```bash
+git status --short --branch
+git log -1 --oneline
+git remote -v
+node --version
+pnpm --version
+pnpm install --frozen-lockfile
+pnpm typecheck
+pnpm test
+# This directory is a standalone Node.js test package, not part of pnpm-workspace.yaml.
+pnpm -C infra/cloudflare-platform install --no-frozen-lockfile
+pnpm -C infra/cloudflare-platform test
+pnpm build
+```
+
+Only synthetic data must be used for tests. The Cloudflare Worker has a
+separate package `apps/agent-worker`; its typecheck/build are included in
+Turborepo. A successful TypeScript build alone does not establish that the
+Durable Object authentication, WebSocket reconnect or budget accounting pass
+runtime tests.
+
+### Gate B: Cloudflare inventory and isolated Keyless Worker
+
+**Do not run these deploy commands until the owner approves the specific
+Cloudflare account, budget and hostname.** Read-only inventory comes first:
+
+```bash
+pnpm -C apps/agent-worker exec wrangler whoami
+pnpm -C apps/agent-worker exec wrangler deployments list
+pnpm -C apps/agent-worker exec wrangler r2 bucket list
+pnpm -C apps/agent-worker exec wrangler deploy --dry-run --config wrangler.jsonc
+```
+
+Review Workers, DO classes/migrations, existing R2 buckets, queues, inference
+pricing, account spend notifications and any paid plan minimums. The
+`BudgetCoordinator` is intended to reserve a conservative amount for each
+request across all threads and users; it is not an invoice-wide spending cap.
+Set `AGENT_AUTH_SECRET` on **both** apps/web and the Worker with the same
+secure random value (minimum 32 bytes). Never commit or echo the value.
+Maintain `ALLOWED_ORIGINS` as a strict allowlist, and verify that the
+`CHAT_AGENT` and `BUDGET` bindings reference distinct SQLite DO classes.
+
+After security and billing approval only:
+
+```bash
+pnpm -C apps/agent-worker exec wrangler deploy --config wrangler.jsonc
+```
+
+Verify `/health` and the following negative cases: unauthorized HTTP/WS
+connections return 401, user A cannot route to user B's agent (403), expired
+tokens cannot generate new messages, 31st user question is blocked, and
+monthly-budget exhaustion prevents model invocation. Run real inference only
+with an explicitly approved paid test budget.
+
+Set `NEXT_PUBLIC_CF_AGENT_URL` to the verified HTTPS Worker URL on a new
+**test build** only. Next.js `NEXT_PUBLIC_*` values are embedded during build,
+not toggled by changing a server environment variable after compilation.
+
+### Gate C: Preview control plane and R2
+
+Existing `infra/cloudflare-platform` is a separate staging control plane
+with D1, Queue, Workers for Platforms and private `BUILD_DATA` R2 binding.
+Do not recreate it, grant a public bucket, or execute imported source inside
+`apps/web`. The `/api/repositories/[id]/preview` handler only records
+authorized pinned-SHA intake and reads status from migrations 0007/0008;
+`apps/web/scripts/dispatch-preview.ts` performs external GitHub Actions
+dispatch with explicit pilot credentials. Review duplicate delivery IDs,
+in-flight `uncertain` states, tenant ownership, runner sandbox isolation and
+workflow permissions before enabling `auto_deploy`.
+
+The `private-r2-policy.ts` file is a **pure fail-closed boundary**, not an
+enabled upload/download API. Storage access is disabled until a private bucket
+is inventoried, size limits and repository/thread ownership checks are
+implemented around all R2 requests, and the dedicated tests pass.
+
+### Gate D: VPS release and smoke tests
+
+Live infrastructure described in `DEPLOYMENT-STATE.md` uses Caddy as the only
+public listener. Keep app port 3000 private and the app filesystem read-only.
+Do not confuse Manus Webdev publishing, Cloudflare Worker deployment and
+the VPS Docker image: they are independent release paths.
+
+Operator must build a **new immutable** `ai-sdk-pro-web:<approved-sha>` image
+from the reviewed source and smoke-test it privately before changing the
+Compose `APP_IMAGE`. Production changes require an explicit owner approval.
+
+```bash
+cd /opt/ai-sdk-pro
+docker compose ps
+docker compose config
+docker compose logs --tail=100 app caddy
+for route in / /templates /chat /docs/getting-started /workspace /login /api/health /api/ready; do
+  curl --fail-with-body --silent --show-error "https://ai-sdk.pro${route}" >/dev/null || exit 1
+done
+curl --fail-with-body --silent https://ai-sdk.pro/api/ready
+```
+
+Verify visual font and theme, login, BYOK error sanitization, CSP, ownership
+boundaries, real WebSocket authorization, quotas and Stream cancellation in
+addition to these GET smoke checks.
+
+### Gate E: Emergency rollback (VPS only)
+
+The last recorded accepted checkpoint in `DEPLOYMENT-STATE.md` is
+`ai-sdk-pro-web:bc5aac7` and the other retained image is
+`ai-sdk-pro-web:f3ecac1`. Confirm the actual images exist on the VPS first:
+
+```bash
+cd /opt/ai-sdk-pro
+docker image inspect ai-sdk-pro-web:bc5aac7
+docker image inspect ai-sdk-pro-web:f3ecac1
+export APP_IMAGE=ai-sdk-pro-web:bc5aac7
+docker compose up -d --no-deps app
+curl --fail-with-body https://ai-sdk.pro/api/health
+curl --fail-with-body https://ai-sdk.pro/api/ready
+docker compose logs --tail=100 app caddy
+```
+
+Keep the old `APP_IMAGE` Compose configuration consistent with the rollback
+after validating health. Do not remove historical images before a successful
+smoke test. A VPS rollback does not automatically roll back the separately
+deployed Cloudflare Worker or Durable Object schema.
