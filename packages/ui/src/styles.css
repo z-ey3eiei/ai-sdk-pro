@@ -2,7 +2,7 @@
 @source '../../../apps/web/**/*.{ts,tsx}';
 @source './**/*.{ts,tsx}';
 @theme inline {
-  --font-sans: var(--font-app-sans), Arial, Helvetica, sans-serif;
+  --font-sans: var(--font-app-sans), system-ui, sans-serif;
 }
 :root {
   --bg: #fafafa;
@@ -15,16 +15,26 @@
   --blue: #009dfa;
   --pink: #ed2476;
   --purple: #8d72d1;
+  --accent: #e5484d;
+  --status-success: #239b66;
+  --status-warning: #ad7300;
+  --status-error: #d92d39;
+  --surface-elevated: #ffffff;
   color-scheme: light;
 }
 :root.dark {
-  --bg: #0b0b0b;
+  --bg: #000000;
   --fg: #f6f6f6;
   --muted: #aaa;
   --subtle: #747474;
-  --border: #262626;
-  --panel: #111;
+  --border: #292929;
+  --panel: #101010;
   --soft: #191919;
+  --surface-elevated: #1d1d1d;
+  --accent: #f04452;
+  --status-success: #4acb89;
+  --status-warning: #efb657;
+  --status-error: #ff626e;
   color-scheme: dark;
 }
 * {
@@ -72,7 +82,7 @@ a {
 }
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid #8a75dc;
+  outline: 2px solid var(--accent);
   outline-offset: 4px;
 }
 input:focus-visible,
@@ -4773,3 +4783,82 @@ body {
     margin-left: 27px;
   }
 }
+
+
+/* Shared platform primitives. Semantic values are sourced from the theme tokens. */
+.geist-card {
+  min-width: 0;
+  background: var(--panel);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.status-badge__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.status-badge--ready { color: var(--status-success); }
+.status-badge--building { color: var(--status-warning); }
+.status-badge--error { color: var(--status-error); }
+.status-badge--byok { color: var(--muted); }
+.status-badge--edge { color: var(--accent); }
+.sub-nav-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+}
+.sub-nav-tabs__tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  flex-shrink: 0;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.sub-nav-tabs__tab:hover,
+.sub-nav-tabs__tab--active { color: var(--fg); }
+.sub-nav-tabs__tab--active { border-bottom-color: var(--accent); }
+.sub-nav-tabs__tab--disabled { opacity: .45; cursor: not-allowed; }
+.skeleton-block {
+  display: block;
+  max-width: 100%;
+  border-radius: 4px;
+  background: var(--soft);
+  animation: ui-skeleton-shimmer 1.5s ease-in-out infinite alternate;
+}
+@keyframes ui-skeleton-shimmer { to { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .skeleton-block { animation: none; } }
+.empty-state-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 50px 24px;
+  text-align: center;
+  background: var(--panel);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.empty-state-box__icon { color: var(--subtle); }
+.empty-state-box__title { font-size: 15px; font-weight: 600; }
+.empty-state-box__description { max-width: 460px; line-height: 1.65; font-size: 13px; color: var(--muted); }
+.empty-state-box__action { margin-top: 8px; }
