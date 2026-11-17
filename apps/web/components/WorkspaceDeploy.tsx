@@ -46,6 +46,7 @@ export default function WorkspaceDeploy() {
   const [session, setSession] = useState<PlatformSession>({ user: null });
   const [backend, setBackend] = useState<State>(null);
   const [backendError, setBackendError] = useState("");
+  const [githubLinked, setGithubLinked] = useState(false);
   const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
   const [installUrl, setInstallUrl] = useState<string | null>(null);
   const [selectedRepo, setSelectedRepo] = useState("");
@@ -80,11 +81,13 @@ export default function WorkspaceDeploy() {
         ]);
         if (controller.signal.aborted) return;
         if (repoResult.status === "fulfilled") {
+          setGithubLinked(true);
           setRepositories(repoResult.value.repositories);
           setInstallUrl(repoResult.value.installUrl);
           setSelectedRepo(previous => previous || repoResult.value.repositories.find(item => item.fullName === hintedRepo)?.fullName || repoResult.value.repositories[0]?.fullName || "");
         } else {
-          setError("Could not load the GitHub App repositories for this account.");
+          setGithubLinked(false);
+          setError("Connect GitHub in Account Settings to import repositories.");
         }
         if (control.status === "fulfilled") {
           setBackend(control.value);
@@ -173,15 +176,16 @@ export default function WorkspaceDeploy() {
         </div>
         {phase === "loading" && <p role="status"><LoaderCircle size={16} className="workspace-spin" /> กำลังตรวจสอบ Session และ Deploy Backend…</p>}
         {phase === "signed-out" && <div className="unified-deploy-notice"><h2>เข้าสู่ระบบก่อนใช้งาน</h2>
-          <p>ใช้ GitHub Login ของ ai-sdk.pro เพียงจุดเดียว</p><Link href="/login" className="workspace-button workspace-button-primary">Sign in</Link></div>}
+          <p>ใช้บัญชี ai-sdk.pro ของคุณได้เลย ไม่จำเป็นต้องมี GitHub ในขั้นตอนสมัคร</p><Link href="/login" className="workspace-button workspace-button-primary">Sign in</Link></div>}
         {phase === "setup" && <p role="alert">ระบบบัญชี Workspace ยังตั้งค่าไม่ครบ</p>}
         {phase === "error" && <p role="alert">ไม่สามารถตรวจสอบ Workspace ได้ กรุณาลอง Refresh</p>}
         {phase === "ready" && <>
           <div className="unified-deploy-state">
-            <span><ShieldCheck size={15} /> GitHub signed in</span>
+            <span><ShieldCheck size={15} /> ai-sdk.pro account signed in</span>
             <span><Cloud size={15} /> Cloudflare control plane: {backend ? "Connected" : "Not activated"}</span>
             <span><Rocket size={15} /> Project routing: {backend?.routingReady ? "Ready" : "Not enabled"}</span>
           </div>
+          {!githubLinked && <div className="unified-deploy-warning">กรุณา <Link href="/workspace/account">เชื่อม GitHub ใน Account Settings</Link> ก่อน Import หรือ Deploy</div>}
           {backendError && <p className="unified-deploy-warning" role="alert">{backendError} ไม่ได้เปิดหน้า Login หรือ Dashboard ที่แยกโดเมน</p>}
           {notice && <p className="unified-deploy-success" role="status">{notice}</p>}
           {error && <p className="unified-deploy-warning" role="alert">{error}</p>}

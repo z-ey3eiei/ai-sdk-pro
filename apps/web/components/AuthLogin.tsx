@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AlertCircle, ArrowLeft, Github, LoaderCircle, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Brand } from "@aisdkpro/ui";
+import EmailAuthPanel from "./EmailAuthPanel";
 import { authClient } from "../lib/auth-client";
 import {
   getBrowserSessionSnapshot,
@@ -34,7 +35,7 @@ async function readStatus(signal: AbortSignal): Promise<PlatformStatus> {
   return (await response.json()) as PlatformStatus;
 }
 
-export default function AuthLogin() {
+export default function AuthLogin({initialMode = "sign-in"}: {initialMode?: "sign-in" | "sign-up"}) {
   const router = useRouter();
   const [statusState, setStatusState] = useState<StatusState>({ kind: "loading" });
   const [sessionState, setSessionState] = useState<SessionState>("loading");
@@ -100,7 +101,8 @@ export default function AuthLogin() {
   }, [router]);
 
   const configured =
-    statusState.kind === "ready" && statusState.status.configured === true;
+    statusState.kind === "ready" && statusState.status.configured === true && statusState.status.githubConfigured !== false;
+  const emailEnabled = statusState.kind === "ready" && statusState.status.emailRegistrationAvailable === true;
 
   async function signInWithGitHub() {
     if (!configured || signingIn || sessionState !== "signed-out") return;
@@ -143,10 +145,10 @@ export default function AuthLogin() {
             <Github size={25} strokeWidth={1.8} />
           </div>
           <span className="auth-eyebrow">REPOSITORY WORKSPACE</span>
-          <h1 id="login-title">Sign in to your workspace.</h1>
+          <h1 id="login-title">Your ai-sdk.pro account.</h1>
           <p className="auth-intro">
-            Connect GitHub to review selected repositories and save bounded,
-            read-only snapshots. No repository code is built or deployed here.
+            Create an account using email and password. Connect GitHub later
+            to import repositories and deploy projects, all in one workspace.
           </p>
 
           {oauthReturned && (
@@ -171,6 +173,8 @@ export default function AuthLogin() {
             </div>
           )}
 
+          <EmailAuthPanel enabled={emailEnabled} initialMode={initialMode} />
+          <p className="native-auth-help" style={{textAlign:"center"}}>หรือเข้าสู่ระบบด้วย GitHub</p>
           <button
             type="button"
             className="auth-github-button"
@@ -232,14 +236,13 @@ export default function AuthLogin() {
           <div className="auth-trust-row">
             <ShieldCheck size={15} />
             <span>
-              Authentication uses GitHub OAuth. We do not show access tokens or
-              database connection values in the browser.
+              Authentication supports verified email accounts or GitHub OAuth.
+              GitHub is connected explicitly after signing up; tokens remain server-side.
             </span>
           </div>
           <p className="auth-privacy">
-            Workspace access is read-only and scoped to repositories you select
-            through the GitHub App. Imported snapshots have explicit file and
-            byte limits and remain separate from the BYOK chat.
+            Accounts are stored in the existing Neon database. Access to GitHub
+            repositories requires a separate connection and GitHub App installation.
           </p>
         </section>
       </div>

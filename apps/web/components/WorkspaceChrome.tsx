@@ -56,6 +56,10 @@ export default function WorkspaceChrome({
             <HardDrive size={16} />
             <span>Storage</span>
           </Link>
+          <Link href="/workspace/account" className={pathname.startsWith("/workspace/account") ? "workspace-nav-item active" : "workspace-nav-item"}>
+            <UserRound size={16} />
+            <span>Account & GitHub</span>
+          </Link>
           <Link href="/workspace/tokens" className="workspace-nav-item">
             <KeyRound size={16} />
             <span>API tokens</span>
@@ -83,7 +87,7 @@ export default function WorkspaceChrome({
           <div className="workspace-breadcrumb">
             <Link href="/workspace">Workspace</Link>
             <ChevronRight size={14} />
-            <span>Repositories</span>
+            <span>{pathname.startsWith("/workspace/account") ? "Account" : pathname.startsWith("/workspace/storage") ? "Storage" : pathname.startsWith("/workspace/deploy") ? "Deployments" : "Repositories"}</span>
           </div>
           <div className="workspace-account">
             {user ? (

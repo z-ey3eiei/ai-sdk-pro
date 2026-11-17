@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Sign in",
+  title: "Sign in or register",
   description:
-    "Sign in with GitHub to review selected repositories and read-only snapshots.",
+    "Register directly with ai-sdk.pro, then connect GitHub for repositories and deployments.",
   alternates: { canonical: "/login" },
   robots: { index: false, follow: false },
 };

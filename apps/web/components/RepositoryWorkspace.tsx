@@ -230,6 +230,7 @@ export default function RepositoryWorkspace() {
   const [status, setStatus] = useState<PlatformStatus | null>(null);
   const [session, setSession] = useState<PlatformSession>({ user: null });
   const [githubRepositories, setGithubRepositories] = useState<GitHubRepositoryList | null>(null);
+  const [githubConnectionRequired, setGithubConnectionRequired] = useState(false);
   const [importedRepositories, setImportedRepositories] = useState<ImportedRepository[]>([]);
   const [tab, setTab] = useState<Tab>("imported");
   const [query, setQuery] = useState("");
@@ -264,7 +265,7 @@ export default function RepositoryWorkspace() {
           return;
         }
 
-        const [nextGithubRepositories, nextImportedRepositories] = await Promise.all([
+        const [githubResult, importedResult] = await Promise.allSettled([
           requestJson<GitHubRepositoryList>("/api/github/repositories", controller.signal),
           requestJson<{ repositories: ImportedRepository[] }>(
             "/api/repositories",
@@ -272,9 +273,21 @@ export default function RepositoryWorkspace() {
           ),
         ]);
         if (!mounted) return;
-
-        setGithubRepositories(nextGithubRepositories);
-        setImportedRepositories(nextImportedRepositories.repositories);
+        if (importedResult.status !== "fulfilled") throw importedResult.reason;
+        if (githubResult.status === "fulfilled") {
+          setGithubRepositories(githubResult.value);
+          setGithubConnectionRequired(false);
+        } else {
+          const error = githubResult.reason;
+          if (!(error instanceof RepositoryRequestError) ||
+              ![401, 403, 409].includes(error.status))
+            throw error;
+          setGithubRepositories({
+            repositories: [], capped: false, installUrl: nextStatus.githubAppInstallUrl,
+          });
+          setGithubConnectionRequired(true);
+        }
+        setImportedRepositories(importedResult.value.repositories);
         setPhase("ready");
       } catch (error) {
         if (!mounted || (error as { name?: string }).name === "AbortError") return;
@@ -468,6 +481,17 @@ export default function RepositoryWorkspace() {
               </span>
             </div>
           </section>
+
+          {githubConnectionRequired && (
+            <section className="workspace-state-panel">
+              <div className="workspace-state-icon"><Github size={22} /></div>
+              <h2>เชื่อม GitHub เพื่อ Import และ Deploy</h2>
+              <p>บัญชี ai-sdk.pro ของคุณใช้งานได้แล้ว ส่วน GitHub เป็นการเชื่อมเพิ่มเติม และไม่เปลี่ยน User ID เดิม</p>
+              <Link href="/workspace/account" className="workspace-button workspace-button-primary">
+                Connect GitHub <ArrowUpRight size={14} />
+              </Link>
+            </section>
+          )}
 
           {requestError && (
             <div className="workspace-inline-alert" role="alert">

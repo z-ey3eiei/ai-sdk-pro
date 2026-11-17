@@ -27,6 +27,11 @@ export function isAllowedAuthEndpoint(method: string, path: string): boolean {
   return AUTH_ENDPOINTS.has(`${method} ${path}`);
 }
 
+export class GitHubConnectionRequiredError extends Error {
+  readonly status = 409;
+  constructor() { super("Connect GitHub in account settings."); this.name = "GitHubConnectionRequiredError"; }
+}
+
 export class AuthPolicyError extends Error {
   readonly status = 400;
   constructor(message = "Invalid authentication request.") {
@@ -126,13 +131,13 @@ export async function getGitHubAccessToken(
     .limit(1);
   const githubAccount = rows[0];
   if (!githubAccount)
-    throw new PlatformAuthenticationError("GitHub authorization is required.");
+    throw new GitHubConnectionRequiredError();
   const result = await getAuth().api.getAccessToken({
     headers: request.headers,
     body: { accountId: githubAccount.id },
   });
   if (!result?.accessToken)
-    throw new PlatformAuthenticationError("GitHub authorization is required.");
+    throw new GitHubConnectionRequiredError();
   return result.accessToken;
 }
 

@@ -138,6 +138,8 @@ export function safePlatformError(error: unknown): {
     return { message: "Platform setup is required.", status: 503 };
   if (error instanceof PlatformAuthenticationError)
     return { message: "Authentication is required.", status: 401 };
+  if (error instanceof Error && error.name === "GitHubConnectionRequiredError")
+    return { message: "Connect GitHub in account settings.", status: 409 };
   if (error instanceof Error && error.name === "GitHubPermissionError")
     return {
       message: "GitHub access was denied for this repository.",
