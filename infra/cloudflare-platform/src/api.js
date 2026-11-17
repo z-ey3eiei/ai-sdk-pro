@@ -295,7 +295,7 @@ async function internalWorkspace(request, env) {
   await run(env, 'INSERT INTO users(id,github_id,username) VALUES(?,?,?) ' +
     'ON CONFLICT(github_id) DO UPDATE SET username=excluded.username',
     uuid(), actor.githubId, actor.login);
-  const user = await first(env, 'SELECT id,plan FROM users WHERE github_id=?', actor.githubId);
+  const user = await first(env, `SELECT u.id,u.plan,COALESCE(r.role,'member') AS role FROM users u LEFT JOIN account_roles r ON r.github_id=u.github_id WHERE u.github_id=?`, actor.githubId);
   if (!user?.id) throw new HttpError(503, 'Deployment account is unavailable.');
 
   if (input.operation === 'list') {
@@ -307,6 +307,7 @@ async function internalWorkspace(request, env) {
       frameworkBuilds: env.FRAMEWORK_BUILDS === 'enabled',
       projectDomain: env.PROJECT_DOMAIN,
       plan: user.plan,
+      role: user.role,
       quota: { maxProjects: quotaForPlan(user.plan), usedProjects: items.length },
       automaticUpdates: true,
     });
