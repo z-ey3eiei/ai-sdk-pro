@@ -38,3 +38,17 @@ cd infra/cloudflare-platform
 export CLOUDFLARE_API_TOKEN=...
 ./scripts/verify-assembly.sh
 ```
+## Unified workspace rollout gate (2026-11-17)
+
+The running Staging Worker must be updated from approved source before the
+first-party Workspace Deploy can be used. Current Cloudflare live code
+requires a numeric GITHUB_APP_ID which has no binding. The source fix uses
+GITHUB_CLIENT_ID as a valid GitHub App JWT issuer when there is no numeric ID,
+consistent with GitHub's official API requirements. This is a code fix,
+not another GitHub App registration.
+
+Set PLATFORM_BRIDGE_SECRET as a Worker secret and server-only Next.js
+runtime secret. Keep PLATFORM_BRIDGE_ENABLED=false until paired values
+and backend are smoke-tested. Keep PROJECT_ROUTING_READY=false until pilot
+hostname maps through dispatch to the correct deployment. The main site
+and BYOK Chat must remain operational.

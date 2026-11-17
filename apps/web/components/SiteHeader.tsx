@@ -23,7 +23,7 @@ export default function SiteHeader(props: SiteHeaderProps) {
   return (
     <Header
       {...props}
-      deployHref="/deploy"
+      deployHref="/workspace/deploy"
       accountHref={session.signedIn ? "/workspace" : "/login"}
       accountLabel={session.signedIn ? "Dashboard" : "Log in"}
     />

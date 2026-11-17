@@ -80,3 +80,35 @@ npm run dry-run
 - [User Worker static assets upload](https://developers.cloudflare.com/cloudflare-for-platforms/workers-for-platforms/configuration/static-assets/)
 - [Cloudflare Sandbox security](https://developers.cloudflare.com/sandbox/concepts/security/)
 - [Cloudflare for SaaS Worker fallback origin](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/start/advanced-settings/worker-as-origin/)
+
+
+## First-party integration (in development)
+
+The Cloudflare Worker is the deployment control plane, not a second public
+login/dashboard for the finished product. The user-facing entrypoint is
+https://ai-sdk.pro/workspace/deploy, authenticated by the existing
+Next.js Better Auth GitHub session. /deploy redirects to that page.
+
+The Next.js BFF requires the same GitHub identity used for repository import,
+then verifies the user's installation/repository access. It sends only a signed
+HMAC control message to the existing Cloudflare Worker. The user's GitHub OAuth
+token stays on the Next.js server and is NOT forwarded to the Worker.
+Cloudflare resolves the existing users.github_id to existing D1 project records.
+
+The signing secret PLATFORM_BRIDGE_SECRET must be independently generated
+(minimum 32 bytes), installed in both Next.js server-only environment and
+the Cloudflare API Worker. Never expose it as a NEXT_PUBLIC_ value, commit it,
+log it, or reuse a GitHub or Better Auth encryption key.
+
+Two independent gates default to false:
+- PLATFORM_BRIDGE_ENABLED: allow authenticated first-party control-plane
+  reads/imports after signing and origin are verified.
+- PROJECT_ROUTING_READY: allow actual queue/deploy only after DNS/Workers
+  routing and isolated build checks pass. Without it, deployment requests
+  fail closed with HTTP 503; no fake URL or success status is returned.
+
+The stage currently supports static HTML deployment. Astro/Next.js exports
+require separate Sandbox/egress validation and FRAMEWORK_BUILDS=enabled.
+Existing D1/KV/R2/Queue and Workers for Platforms bindings remain authoritative;
+do not create a second registry or a second GitHub login. Do not enable
+a wildcard route over the existing VPS.
