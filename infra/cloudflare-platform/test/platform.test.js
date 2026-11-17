@@ -7,6 +7,22 @@ import { normalizeAssets, sourceFiles } from '../src/assets.js';
 import dispatch from '../src/dispatch.js';
 import { b64, readCookie, seal, unseal, utf8 } from '../src/shared.js';
 import { githubAppIssuer } from '../src/github.js';
+import { allowUnifiedDeploy, quotaForPlan } from '../src/access-policy.js';
+
+test('public Free deploy is only available behind signed bridge and verified routing', () => {
+  const pilot = { BETA_GITHUB_IDS: '312459747' };
+  assert.equal(allowUnifiedDeploy(pilot, 312459747), true);
+  assert.equal(allowUnifiedDeploy(pilot, 87654321), false);
+  const pub = { ...pilot, PUBLIC_DEPLOY_ENABLED: 'true', PLATFORM_BRIDGE_ENABLED: 'true',
+    PROJECT_ROUTING_READY: 'true', PLATFORM_BRIDGE_SECRET: 'x'.repeat(64) };
+  assert.equal(allowUnifiedDeploy(pub, 87654321), true);
+  for (const partial of [
+    { PUBLIC_DEPLOY_ENABLED:'false' }, { PLATFORM_BRIDGE_ENABLED:'false' },
+    { PROJECT_ROUTING_READY:'false' }, { PLATFORM_BRIDGE_SECRET:'weak' }
+  ]) assert.equal(allowUnifiedDeploy({ ...pub, ...partial }, 87654321), false);
+  assert.equal(quotaForPlan('free'), 3);
+  assert.equal(quotaForPlan('pro'), 25);
+});
 
 test('readCookie parses __Host cookies regardless of spacing', () => {
   const oauth = 'a'.repeat(128);
@@ -41,6 +57,9 @@ test('encrypted project values cannot be moved to a different key', async () => 
 test('D1 schema enforces project and concurrent deployment limits and webhook dedupe', () => {
   const db = new DatabaseSync(':memory:');
   db.exec(readFileSync(new URL('../migrations/0001_platform.sql', import.meta.url), 'utf8'));
+  db.exec(readFileSync(new URL('../migrations/0002_account_roles.sql', import.meta.url), 'utf8'));
+  db.exec("INSERT INTO account_roles(github_id,role) VALUES(1,'owner')");
+  assert.equal(db.prepare('SELECT role FROM account_roles WHERE github_id=1').get().role, 'owner');
   db.exec("INSERT INTO users(id,github_id,username) VALUES('u',1,'user')");
   const insert = db.prepare("INSERT INTO projects(id,user_id,name,repo_full_name,repo_id,installation_id,branch) VALUES(?,'u',?,'u/repo',1,2,'main')");
   for (const id of ['one','two','three']) insert.run(id, id);
@@ -83,6 +102,27 @@ test('dispatcher uses D1 publication when KV is stale and strips platform creden
   assert.equal(await response.text(), 'site');
 });
 
+
+test('GitHub push deployments replace content while preserving one stable project URL', async () => {
+  const url = 'https://testsdkpro.ai-sdk.pro/';
+  let activeId = '11111111-1111-4111-8111-111111111111';
+  const env = {
+    PROJECT_DOMAIN: 'ai-sdk.pro',
+    ROUTES: { get: async () => 'stale-mapping' },
+    DB: { prepare: () => ({bind: () => ({ first: async () => ({
+      active_deployment_id: activeId,
+    }) })}) },
+    TENANTS: { get: name => ({ fetch: async () => new Response(name) }) },
+  };
+  const initial = await dispatch.fetch(new Request(url), env);
+  assert.equal(initial.status, 200);
+  assert.equal(await initial.text(), 'site-11111111111141118111111111111111');
+  activeId = '22222222-2222-4222-8222-222222222222';
+  const updated = await dispatch.fetch(new Request(url), env);
+  assert.equal(updated.status, 200);
+  assert.equal(await updated.text(), 'site-22222222222242228222222222222222');
+  assert.equal(url, 'https://testsdkpro.ai-sdk.pro/');
+});
 
 test('GitHub App JWT issuer accepts configured client ID when numeric App ID is absent', () => {
   const client = 'Iv23liL0Mb8HQeuqbTgE';
