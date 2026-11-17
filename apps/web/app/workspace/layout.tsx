@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Repository workspace",
+  title: "Workspace | ai-sdk.pro",
   description:
-    "Review authorized GitHub repositories and bounded read-only snapshots.",
+    "One platform account for chat, storage, repositories and deployments.",
   alternates: { canonical: "/workspace" },
   robots: { index: false, follow: false },
 };

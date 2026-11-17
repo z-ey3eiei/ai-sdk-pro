@@ -1,6 +1,7 @@
 export type RepositoryRequestErrorKind =
   | "signed-out"
   | "permission-denied"
+  | "github-connection-required"
   | "not-found"
   | "rate-limit"
   | "setup"
@@ -32,6 +33,12 @@ export function mapRepositoryRequestStatus(
         kind: "signed-out",
         title: "Sign in required",
         message: "Your session has expired or is not active. Sign in again to continue.",
+      };
+    case 409:
+      return {
+        kind: "github-connection-required",
+        title: "Connect GitHub",
+        message: "Your platform account is ready. Link GitHub in Account Settings.",
       };
     case 403:
       return {

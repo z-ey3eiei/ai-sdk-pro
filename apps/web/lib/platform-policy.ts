@@ -7,8 +7,6 @@ const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]", "::1"]);
 const CONFIG_KEYS = [
   "NEON_DATABASE_URL",
   "BETTER_AUTH_SECRET",
-  "GITHUB_CLIENT_ID",
-  "GITHUB_CLIENT_SECRET",
 ] as const;
 
 export class PlatformSetupRequiredError extends Error {
@@ -33,6 +31,8 @@ export type PlatformConfig = {
   githubClientId: string;
   githubClientSecret: string;
   githubAppSlug: string;
+  githubConfigured: boolean;
+  emailRegistrationAvailable: boolean;
   missingConfiguration: string[];
   configured: boolean;
 };
@@ -66,6 +66,14 @@ export function getPlatformConfig(): PlatformConfig {
     missingConfiguration.push("GITHUB_APP_SLUG");
   }
   const baseURL = base?.origin ?? DEFAULT_PLATFORM_URL;
+  const githubConfigured = Boolean(
+    process.env.GITHUB_CLIENT_ID?.trim() && process.env.GITHUB_CLIENT_SECRET?.trim()
+  );
+  const emailRegistrationAvailable = Boolean(
+    process.env.PLATFORM_EMAIL_AUTH_ENABLED === "true" &&
+    process.env.RESEND_API_KEY?.trim() &&
+    process.env.RESEND_FROM_EMAIL?.trim().toLowerCase().endsWith("@mail.ai-sdk.pro")
+  );
   return {
     baseURL,
     baseOrigin: baseURL,
@@ -74,6 +82,8 @@ export function getPlatformConfig(): PlatformConfig {
     githubClientId: process.env.GITHUB_CLIENT_ID?.trim() || "",
     githubClientSecret: process.env.GITHUB_CLIENT_SECRET?.trim() || "",
     githubAppSlug,
+    githubConfigured,
+    emailRegistrationAvailable,
     missingConfiguration: [...new Set(missingConfiguration)],
     configured: Boolean(base) && missingConfiguration.length === 0,
   };
@@ -89,6 +99,8 @@ export function platformStatus(): PlatformStatus {
   const config = getPlatformConfig();
   return {
     configured: config.configured,
+    githubConfigured: config.githubConfigured,
+    emailRegistrationAvailable: config.emailRegistrationAvailable,
     missingConfiguration: config.missingConfiguration,
     githubAppInstallUrl: config.githubAppSlug
       ? `https://github.com/apps/${encodeURIComponent(config.githubAppSlug)}/installations/new`
@@ -138,6 +150,8 @@ export function safePlatformError(error: unknown): {
     return { message: "Platform setup is required.", status: 503 };
   if (error instanceof PlatformAuthenticationError)
     return { message: "Authentication is required.", status: 401 };
+  if (error instanceof Error && error.name === "GitHubConnectionRequiredError")
+    return { message: "Connect GitHub in account settings.", status: 409 };
   if (error instanceof Error && error.name === "GitHubPermissionError")
     return {
       message: "GitHub access was denied for this repository.",

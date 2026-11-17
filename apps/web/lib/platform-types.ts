@@ -15,6 +15,8 @@ export interface PlatformSession {
   expiresAt?: string | null;
 }
 export interface PlatformStatus {
+  githubConfigured?: boolean;
+  emailRegistrationAvailable?: boolean;
   configured: boolean;
   missingConfiguration: string[];
   githubAppInstallUrl: string | null;
