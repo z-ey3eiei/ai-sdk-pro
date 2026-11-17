@@ -31,6 +31,7 @@
     "FRAMEWORK_BUILDS": "disabled",
     "PLATFORM_BRIDGE_ENABLED": "false",
     "PROJECT_ROUTING_READY": "false",
+    "PUBLIC_DEPLOY_ENABLED": "false",
     "BETA_GITHUB_IDS": "312459747",
     "SAAS_ZONE_ID": "",
     "SAAS_CNAME_TARGET": ""
