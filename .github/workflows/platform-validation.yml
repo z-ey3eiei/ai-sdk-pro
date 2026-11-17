@@ -38,3 +38,5 @@ jobs:
         run: pnpm -C infra/cloudflare-platform test
       - name: Monorepo build
         run: pnpm build
+      - name: Cloudflare Keyless Worker dry-run bundle (no deployment)
+        run: pnpm -C apps/agent-worker exec wrangler deploy --dry-run --config wrangler.jsonc --outdir /tmp/aisdkpro-agent-preview
