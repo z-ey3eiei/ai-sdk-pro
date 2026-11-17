@@ -14,7 +14,22 @@ async function api(path, method = 'GET', payload) {
     method, headers: payload ? { 'Content-Type':'application/json' } : undefined,
     body: payload ? JSON.stringify(payload) : undefined,
   });
-  if (!response.ok) throw Error((await response.json()).error || `HTTP ${response.status}`);
+  if (!response.ok) {
+    let message = `HTTP ${response.status}`;
+    const type = response.headers.get('content-type') ?? '';
+    if (type.includes('application/json')) {
+      try {
+        const body = await response.json();
+        if (typeof body.error === 'string') message = body.detail ? `${body.error} (${body.detail})` : body.error;
+      } catch { /* keep default */ }
+    } else {
+      try {
+        const text = (await response.text()).trim();
+        if (text) message = text.slice(0, 240);
+      } catch { /* keep default */ }
+    }
+    throw Error(message);
+  }
   return response.status === 204 ? undefined : response.headers.get('content-type')?.startsWith('text/plain') ? response.text() : response.json();
 }
 

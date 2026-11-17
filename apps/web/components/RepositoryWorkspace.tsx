@@ -21,7 +21,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Brand } from "@aisdkpro/ui";
+import WorkspaceChrome from "./WorkspaceChrome";
 import { authClient } from "../lib/auth-client";
 import type {
   GitHubRepository,
@@ -62,20 +62,6 @@ async function requestJson<T>(
   return (await response.json()) as T;
 }
 
-function displayName(user: PlatformSession["user"]): string {
-  return user?.name?.trim() || user?.email?.trim() || "Signed-in account";
-}
-
-function initials(user: PlatformSession["user"]): string {
-  const value = displayName(user);
-  return value
-    .split(/\s+/)
-    .map(part => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
-
 function formatDate(value: string): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "Date unavailable";
@@ -90,96 +76,6 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KiB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MiB`;
-}
-
-function WorkspaceChrome({
-  children,
-  user,
-  onLogout,
-  logoutPending,
-}: {
-  children: React.ReactNode;
-  user: PlatformSession["user"];
-  onLogout: () => void;
-  logoutPending: boolean;
-}) {
-  return (
-    <main className="workspace-shell">
-      <aside className="workspace-sidebar">
-        <div className="workspace-sidebar-top">
-          <Brand />
-          <span className="workspace-product-label">WORKSPACE</span>
-        </div>
-        <nav className="workspace-nav" aria-label="Workspace navigation">
-          <Link href="/workspace" className="workspace-nav-item active">
-            <Library size={16} />
-            <span>Repositories</span>
-          </Link>
-          <Link href="/workspace/tokens" className="workspace-nav-item">
-            <KeyRound size={16} />
-            <span>API tokens</span>
-          </Link>
-          <Link href="/docs/architecture" className="workspace-nav-item">
-            <Database size={16} />
-            <span>How snapshots work</span>
-            <ArrowUpRight className="workspace-nav-external" size={12} />
-          </Link>
-        </nav>
-        <div className="workspace-sidebar-note">
-          <ShieldCheck size={15} />
-          <p>
-            Import a repository snapshot to inspect its files. Registered projects can be deployed from the workspace.
-          </p>
-        </div>
-        <div className="workspace-sidebar-footer">
-          <span className="workspace-sidebar-kicker">AI-SDK.PRO</span>
-          <span>Repository import preview</span>
-        </div>
-      </aside>
-
-      <section className="workspace-main">
-        <header className="workspace-topbar">
-          <div className="workspace-breadcrumb">
-            <Link href="/workspace">Workspace</Link>
-            <ChevronRight size={14} />
-            <span>Repositories</span>
-          </div>
-          <div className="workspace-account">
-            {user ? (
-              <>
-                <span className="workspace-account-copy">
-                  <strong>{displayName(user)}</strong>
-                  <span>GitHub account</span>
-                </span>
-                <span className="workspace-avatar" aria-hidden="true">
-                  {initials(user)}
-                </span>
-                <button
-                  type="button"
-                  className="workspace-icon-button"
-                  onClick={onLogout}
-                  disabled={logoutPending}
-                  aria-label="Sign out"
-                  title="Sign out"
-                >
-                  {logoutPending ? (
-                    <LoaderCircle className="workspace-spin" size={15} />
-                  ) : (
-                    <LogOut size={15} />
-                  )}
-                </button>
-              </>
-            ) : (
-              <Link href="/login" className="workspace-sign-in-link">
-                Sign in
-              </Link>
-            )}
-          </div>
-        </header>
-        <div className="workspace-content">{children}</div>
-      </section>
-    </main>
-  );
 }
 
 function StatePanel({

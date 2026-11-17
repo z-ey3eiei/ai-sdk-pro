@@ -29,6 +29,8 @@
     "GITHUB_APP_SLUG": "ai-sdk-pro",
     "GITHUB_CLIENT_ID": "Iv23liL0Mb8HQeuqbTgE",
     "FRAMEWORK_BUILDS": "disabled",
+    "PLATFORM_BRIDGE_ENABLED": "false",
+    "PROJECT_ROUTING_READY": "false",
     "BETA_GITHUB_IDS": "312459747",
     "SAAS_ZONE_ID": "",
     "SAAS_CNAME_TARGET": ""

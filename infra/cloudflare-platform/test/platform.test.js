@@ -5,7 +5,18 @@ import { DatabaseSync } from 'node:sqlite';
 import { zipSync } from 'fflate';
 import { normalizeAssets, sourceFiles } from '../src/assets.js';
 import dispatch from '../src/dispatch.js';
-import { b64, seal, unseal, utf8 } from '../src/shared.js';
+import { b64, readCookie, seal, unseal, utf8 } from '../src/shared.js';
+import { githubAppIssuer } from '../src/github.js';
+
+test('readCookie parses __Host cookies regardless of spacing', () => {
+  const oauth = 'a'.repeat(128);
+  const request = new Request('https://deploy-staging.ai-sdk.pro/auth/github/callback', {
+    headers: { Cookie: `other=1; __Host-oauth=${oauth}; __Host-session=${'b'.repeat(64)}` },
+  });
+  assert.equal(readCookie(request, 'oauth'), oauth);
+  assert.equal(readCookie(request, 'session'), 'b'.repeat(64));
+  assert.equal(readCookie(new Request('https://x'), 'oauth'), undefined);
+});
 
 test('archive selection omits hidden files and paths that escape the project', () => {
   const zip = zipSync({
@@ -70,4 +81,23 @@ test('dispatcher uses D1 publication when KV is stale and strips platform creden
   }), env);
   assert.equal(response.headers.get('set-cookie'), null);
   assert.equal(await response.text(), 'site');
+});
+
+
+test('GitHub App JWT issuer accepts configured client ID when numeric App ID is absent', () => {
+  const client = 'Iv23liL0Mb8HQeuqbTgE';
+  assert.equal(githubAppIssuer({GITHUB_CLIENT_ID:client}),client);
+  assert.equal(githubAppIssuer({GITHUB_CLIENT_ID:client,GITHUB_APP_ID:'123456'}),'123456');
+  assert.equal(githubAppIssuer({GITHUB_CLIENT_ID:client,GITHUB_APP_ID:'not-a-number'}),client);
+  assert.throws(() => githubAppIssuer({GITHUB_APP_ID:'invalid',GITHUB_CLIENT_ID:'missing'}),/not configured/);
+});
+
+test('deployment bridge rejects unsigned and stale requests without touching data', async () => {
+  const { readBridgeMessage } = await import('../src/bridge.js');
+  const env = { PLATFORM_BRIDGE_SECRET: 'synthetic-bridge-secret-with-32-plus-characters' };
+  const body = JSON.stringify({ actor: { githubId: 123, login: 'test-user' }, operation: 'list' });
+  const url = 'https://deploy-staging.ai-sdk.pro/internal/workspace';
+  await assert.rejects(() => readBridgeMessage(new Request(url, {method:'POST',body}), env), /Invalid bridge authorization/);
+  const request = new Request(url, {method:'POST',headers: {'x-aisdk-timestamp':String(Date.now()-45000),'x-aisdk-signature':'a'.repeat(64)},body});
+  await assert.rejects(() => readBridgeMessage(request, env), /Invalid bridge authorization/);
 });

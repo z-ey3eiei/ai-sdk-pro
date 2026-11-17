@@ -211,6 +211,10 @@ export default function RepositoryViewer({ repositoryId }: { repositoryId: strin
                 </p>
               </div>
               <div className="repository-viewer-header-actions">
+                <Link href={"/workspace/deploy?repo=" + encodeURIComponent(detail.repository.fullName)}
+                  className="repository-viewer-button repository-viewer-button-secondary">
+                  Deploy in Workspace
+                </Link>
                 <a
                   href={detail.repository.htmlUrl}
                   target="_blank"
