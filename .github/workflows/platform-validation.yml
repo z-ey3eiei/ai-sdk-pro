@@ -5,6 +5,7 @@ on:
     branches:
       - feat/platform-phases-0-6-20261117
       - feat/unified-deploy-workspace-20261117
+      - feat/flags-sdk-vercel-blob-20261117
 
 permissions:
   contents: read
