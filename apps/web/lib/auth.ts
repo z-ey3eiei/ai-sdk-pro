@@ -76,7 +76,7 @@ export function createPlatformAuth() {
         clientSecret: config.githubClientSecret,
         scopes: ["read:user", "user:email"],
       },
-    } : {},
+    } : undefined,
     emailAndPassword: {
       enabled: emailReady,
       minPasswordLength: 12,
