@@ -54,3 +54,7 @@ References:
 - https://flags-sdk.dev/docs/frameworks/next
 - https://vercel.com/docs/vercel-blob/using-blob-sdk
 - https://vercel.com/docs/vercel-blob/private-storage
+
+CI policy: keep this feature branch unmerged until frozen-lockfile install, strict
+TypeScript checks, regression tests and the Next.js build succeed. Activation
+on production is separate from code review and requires a private Blob token.
