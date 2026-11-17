@@ -186,6 +186,9 @@ export default function WorkspaceDeploy() {
             <span><Rocket size={15} /> Project routing: {backend?.routingReady ? "Ready" : "Not enabled"}</span>
           </div>
           {!githubLinked && <div className="unified-deploy-warning">กรุณา <Link href="/workspace/account">เชื่อม GitHub ใน Account Settings</Link> ก่อน Import หรือ Deploy</div>}
+          {backend?.quota && <p className="unified-deploy-plan" role="status">
+            {backend.plan === "free" ? "Free" : "Developer / Pro"} · {backend.quota.usedProjects}/{backend.quota.maxProjects} projects · GitHub Push updates the existing URL automatically
+          </p>}
           {backendError && <p className="unified-deploy-warning" role="alert">{backendError} ไม่ได้เปิดหน้า Login หรือ Dashboard ที่แยกโดเมน</p>}
           {notice && <p className="unified-deploy-success" role="status">{notice}</p>}
           {error && <p className="unified-deploy-warning" role="alert">{error}</p>}
