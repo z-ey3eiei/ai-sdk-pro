@@ -103,6 +103,27 @@ test('dispatcher uses D1 publication when KV is stale and strips platform creden
 });
 
 
+test('GitHub push deployments replace content while preserving one stable project URL', async () => {
+  const url = 'https://testsdkpro.ai-sdk.pro/';
+  let activeId = '11111111-1111-4111-8111-111111111111';
+  const env = {
+    PROJECT_DOMAIN: 'ai-sdk.pro',
+    ROUTES: { get: async () => 'stale-mapping' },
+    DB: { prepare: () => ({bind: () => ({ first: async () => ({
+      active_deployment_id: activeId,
+    }) })}) },
+    TENANTS: { get: name => ({ fetch: async () => new Response(name) }) },
+  };
+  const initial = await dispatch.fetch(new Request(url), env);
+  assert.equal(initial.status, 200);
+  assert.equal(await initial.text(), 'site-11111111111141118111111111111111');
+  activeId = '22222222-2222-4222-8222-222222222222';
+  const updated = await dispatch.fetch(new Request(url), env);
+  assert.equal(updated.status, 200);
+  assert.equal(await updated.text(), 'site-22222222222242228222222222222222');
+  assert.equal(url, 'https://testsdkpro.ai-sdk.pro/');
+});
+
 test('GitHub App JWT issuer accepts configured client ID when numeric App ID is absent', () => {
   const client = 'Iv23liL0Mb8HQeuqbTgE';
   assert.equal(githubAppIssuer({GITHUB_CLIENT_ID:client}),client);
