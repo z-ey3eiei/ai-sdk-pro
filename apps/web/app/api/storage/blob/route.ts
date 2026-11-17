@@ -45,7 +45,9 @@ export async function GET(request: Request): Promise<Response> {
           pathname: item.pathname,
           size: item.size,
           uploadedAt: item.uploadedAt,
-          contentType: item.contentType,
+          contentType: item.pathname.endsWith(".pdf") ? "application/pdf" :
+            item.pathname.endsWith(".jpg") ? "image/jpeg" :
+            item.pathname.endsWith(".webp") ? "image/webp" : "image/png",
         })),
         hasMore: objects.hasMore,
       }, {headers:noStoreHeaders()});
