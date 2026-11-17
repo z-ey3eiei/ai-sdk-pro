@@ -20,10 +20,14 @@
     "@aisdkpro/client": "workspace:*",
     "@aisdkpro/ui": "workspace:*",
     "@better-auth/drizzle-adapter": "1.7.19",
+    "@cloudflare/ai-chat": "0.12.2",
     "@neondatabase/serverless": "1.2.0",
+    "@vercel/blob": "2.9.0",
+    "agents": "0.33.0",
     "ai": "6.0.326",
     "better-auth": "1.7.19",
     "drizzle-orm": "0.45.4",
+    "flags": "4.4.0",
     "fumadocs-core": "16.18.4",
     "fumadocs-ui": "16.18.4",
     "geist": "1.4.2",
@@ -33,9 +37,7 @@
     "react-dom": "19.2.1",
     "server-only": "^0.0.1",
     "streamdown": "^1.4.0",
-    "zod": "^4.1.12",
-    "agents": "0.33.0",
-    "@cloudflare/ai-chat": "0.12.2"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.14",

@@ -1,0 +1,14 @@
+.workspace-storage {padding:32px 0 80px;color:#f7f7f7}
+.workspace-storage-header {display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:24px}
+.workspace-storage-header h1 {font-size:clamp(28px,4vw,42px);letter-spacing:-.04em;margin:10px 0}
+.workspace-storage-header p,.workspace-storage-panel p {color:#aaa;line-height:1.6}
+.workspace-storage-grid {display:grid;grid-template-columns:minmax(260px,0.9fr) minmax(280px,1.1fr);gap:18px}
+.workspace-storage-panel {display:flex;flex-direction:column;align-items:flex-start;gap:14px;min-width:0;padding:22px;background:#0a0a0a;border:1px solid #303030;border-radius:12px}
+.workspace-storage-panel h2 {font-size:20px;margin:0}
+.workspace-storage-panel input {max-width:100%;color:#fff}
+.workspace-storage-file {display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:12px 0;border-bottom:1px solid #303030}
+.workspace-storage-file strong {display:block;word-break:break-word;font-size:13px}
+.workspace-storage-file small {display:block;color:#999;margin-top:4px}
+.workspace-storage-file-actions {display:flex;align-items:center;gap:6px}
+.workspace-storage-error {color:#ffc4c4}
+@media(max-width:840px){.workspace-storage-grid{grid-template-columns:1fr}.workspace-storage-header{flex-direction:column}}

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import {
   ArrowUpRight, ChevronRight, Database, KeyRound, Library,
-  LoaderCircle, LogOut, Rocket, ShieldCheck,
+  HardDrive, LoaderCircle, LogOut, Rocket, ShieldCheck,
 } from "lucide-react";
 import { Brand } from "@aisdkpro/ui";
 import type { PlatformSession } from "../lib/platform-types";
@@ -51,6 +51,10 @@ export default function WorkspaceChrome({
           <Link href="/workspace/deploy" className={pathname.startsWith("/workspace/deploy") ? "workspace-nav-item active" : "workspace-nav-item"}>
             <Rocket size={16} />
             <span>Deployments</span>
+          </Link>
+          <Link href="/workspace/storage" className={pathname.startsWith("/workspace/storage") ? "workspace-nav-item active" : "workspace-nav-item"}>
+            <HardDrive size={16} />
+            <span>Storage</span>
           </Link>
           <Link href="/workspace/tokens" className="workspace-nav-item">
             <KeyRound size={16} />
