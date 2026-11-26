@@ -2,7 +2,7 @@ import type { PlatformStatus } from "./platform-types";
 import { SNAPSHOT_LIMITS } from "./platform-types";
 import { SESSION_IDLE_SECONDS } from "./session-policy";
 
-export const DEFAULT_PLATFORM_URL = "https://ai-sdk.pro";
+export const DEFAULT_PLATFORM_URL = "https://www.ai-sdk.pro";
 const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]", "::1"]);
 const CONFIG_KEYS = [
   "NEON_DATABASE_URL",
@@ -23,6 +23,9 @@ export class PlatformAuthenticationError extends Error {
     this.name = "PlatformAuthenticationError";
   }
 }
+export type SocialProvider = "github" | "google";
+export type SocialProviderConfig = Record<SocialProvider, { clientId: string; clientSecret: string } | null>;
+
 export type PlatformConfig = {
   baseURL: string;
   baseOrigin: string;
@@ -30,9 +33,9 @@ export type PlatformConfig = {
   neonDatabaseUrl: string;
   githubClientId: string;
   githubClientSecret: string;
+  socialProviders: SocialProviderConfig;
   githubAppSlug: string;
   githubConfigured: boolean;
-  emailRegistrationAvailable: boolean;
   missingConfiguration: string[];
   configured: boolean;
 };
@@ -65,15 +68,23 @@ export function getPlatformConfig(): PlatformConfig {
   ) {
     missingConfiguration.push("GITHUB_APP_SLUG");
   }
-  const baseURL = base?.origin ?? DEFAULT_PLATFORM_URL;
+  const requestedBaseURL = base?.origin ?? DEFAULT_PLATFORM_URL;
+  // Keep OAuth and session cookies on the prepared canonical www host.
+  const baseURL = requestedBaseURL === "https://ai-sdk.pro"
+    ? DEFAULT_PLATFORM_URL
+    : requestedBaseURL;
   const githubConfigured = Boolean(
     process.env.GITHUB_CLIENT_ID?.trim() && process.env.GITHUB_CLIENT_SECRET?.trim()
   );
-  const emailRegistrationAvailable = Boolean(
-    process.env.PLATFORM_EMAIL_AUTH_ENABLED === "true" &&
-    process.env.RESEND_API_KEY?.trim() &&
-    process.env.RESEND_FROM_EMAIL?.trim().toLowerCase().endsWith("@mail.ai-sdk.pro")
-  );
+  const credential = (id: string, secret: string) => {
+    const clientId = process.env[id]?.trim() || "";
+    const clientSecret = process.env[secret]?.trim() || "";
+    return clientId && clientSecret ? { clientId, clientSecret } : null;
+  };
+  const socialProviders: SocialProviderConfig = {
+    github: credential("GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET"),
+    google: credential("GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"),
+  };
   return {
     baseURL,
     baseOrigin: baseURL,
@@ -81,9 +92,9 @@ export function getPlatformConfig(): PlatformConfig {
     neonDatabaseUrl: process.env.NEON_DATABASE_URL?.trim() || "",
     githubClientId: process.env.GITHUB_CLIENT_ID?.trim() || "",
     githubClientSecret: process.env.GITHUB_CLIENT_SECRET?.trim() || "",
+    socialProviders,
     githubAppSlug,
     githubConfigured,
-    emailRegistrationAvailable,
     missingConfiguration: [...new Set(missingConfiguration)],
     configured: Boolean(base) && missingConfiguration.length === 0,
   };
@@ -100,7 +111,9 @@ export function platformStatus(): PlatformStatus {
   return {
     configured: config.configured,
     githubConfigured: config.githubConfigured,
-    emailRegistrationAvailable: config.emailRegistrationAvailable,
+    socialProviders: Object.fromEntries(
+      Object.entries(config.socialProviders).map(([provider, credentials]) => [provider, Boolean(credentials)])
+    ) as Record<SocialProvider, boolean>,
     missingConfiguration: config.missingConfiguration,
     githubAppInstallUrl: config.githubAppSlug
       ? `https://github.com/apps/${encodeURIComponent(config.githubAppSlug)}/installations/new`
@@ -112,6 +125,8 @@ export function platformStatus(): PlatformStatus {
 
 export function trustedPlatformOrigins(config = getPlatformConfig()): string[] {
   const origins = [config.baseOrigin];
+  if (config.baseOrigin === DEFAULT_PLATFORM_URL)
+    origins.push("https://ai-sdk.pro");
   try {
     const url = new URL(config.baseOrigin);
     if (url.protocol === "http:" && LOOPBACK_HOSTS.has(url.hostname))
