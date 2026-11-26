@@ -39,10 +39,6 @@ describe("platform configuration", () => {
     vi.stubEnv("GITHUB_CLIENT_SECRET", "");
     vi.stubEnv("GOOGLE_CLIENT_ID", "");
     vi.stubEnv("GOOGLE_CLIENT_SECRET", "");
-    vi.stubEnv("FACEBOOK_CLIENT_ID", "");
-    vi.stubEnv("FACEBOOK_CLIENT_SECRET", "");
-    vi.stubEnv("APPLE_CLIENT_ID", "");
-    vi.stubEnv("APPLE_CLIENT_SECRET", "");
     expect(getPlatformConfig().configured).toBe(true);
     expect(getPlatformConfig().githubConfigured).toBe(false);
     expect(platformStatus().socialProviders).toEqual({

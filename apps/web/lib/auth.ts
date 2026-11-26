@@ -78,7 +78,6 @@ export function createPlatformAuth() {
     account: {
       accountLinking: {
         enabled: true,
-        disableImplicitLinking: true,
         allowDifferentEmails: true,
       },
       encryptOAuthTokens: true,

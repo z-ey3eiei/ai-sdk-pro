@@ -12,6 +12,6 @@ Better Auth handles the OAuth response on this path and forwards it to its inter
 
 GitHub sign-in remains available only as an explicit account connection for repository access. Its callback is `https://www.ai-sdk.pro/api/auth/callback/github`. The GitHub App installation is separate from OAuth login and grants access to repositories selected by each user.
 
-Google identifies the ai-sdk.pro account. GitHub is connected separately when the user wants to import repositories or deploy projects. Keep OAuth secrets server-side. Public BYOK chat remains available without login.
+Google identifies the ai-sdk.pro account. When the verified Google email matches an existing verified platform account, Better Auth links the Google identity to that same account. GitHub is connected separately when the user wants to import repositories or deploy projects. Keep OAuth secrets server-side. Public BYOK chat remains available without login.
 
 The existing platform account and session database remains Neon. This change replaces the login method and does not migrate stored accounts.
