@@ -5,30 +5,29 @@ vi.mock("server-only", () => ({}));
 import { isAllowedAuthEndpoint } from "./auth";
 
 describe("auth endpoint allowlist", () => {
-  it("allows bounded native auth and explicit GitHub linking", () => {
-    expect(isAllowedAuthEndpoint("POST", "sign-up/email")).toBe(true);
-    expect(isAllowedAuthEndpoint("POST", "sign-in/email")).toBe(true);
-    expect(isAllowedAuthEndpoint("POST", "send-verification-email")).toBe(true);
-    expect(isAllowedAuthEndpoint("GET", "verify-email")).toBe(true);
-    expect(isAllowedAuthEndpoint("POST", "request-password-reset")).toBe(true);
-    expect(isAllowedAuthEndpoint("POST", "reset-password")).toBe(true);
+  it("allows only the configured social login and session routes", () => {
     expect(isAllowedAuthEndpoint("POST", "link-social")).toBe(true);
     expect(isAllowedAuthEndpoint("POST", "sign-in/social")).toBe(true);
-    expect(isAllowedAuthEndpoint("GET", "callback/github")).toBe(true);
-    expect(isAllowedAuthEndpoint("POST", "callback/github")).toBe(true);
+    for (const provider of ["github", "google", "facebook", "apple"]) {
+      expect(isAllowedAuthEndpoint("GET", `callback/${provider}`)).toBe(true);
+      expect(isAllowedAuthEndpoint("POST", `callback/${provider}`)).toBe(true);
+    }
+    expect(isAllowedAuthEndpoint("GET", "get-session")).toBe(true);
     expect(isAllowedAuthEndpoint("POST", "sign-out")).toBe(true);
     expect(isAllowedAuthEndpoint("POST", "get-access-token")).toBe(false);
-
-    expect(isAllowedAuthEndpoint("GET", "list-accounts")).toBe(false);
   });
 
   it.each([
+    ["POST", "sign-up/email"],
+    ["POST", "sign-in/email"],
+    ["POST", "send-verification-email"],
+    ["GET", "verify-email"],
+    ["POST", "request-password-reset"],
+    ["POST", "reset-password"],
     ["GET", "sign-in/social"],
-    ["GET", "sign-out"],
-    ["POST", "link-account"],
     ["POST", "delete-user"],
     ["POST", "get-session/extra"],
-  ])("denies unsupported auth operation %s %s", (method, path) => {
+  ])("denies removed or unsupported auth operation %s %s", (method, path) => {
     expect(isAllowedAuthEndpoint(method, path)).toBe(false);
   });
 });

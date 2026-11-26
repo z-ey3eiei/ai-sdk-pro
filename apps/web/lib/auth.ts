@@ -13,19 +13,15 @@ import {
   trustedPlatformOrigins,
 } from "./platform-policy";
 import { PLATFORM_SESSION_POLICY } from "./session-policy";
-import { sendAuthEmail } from "./registration-email";
+const SOCIAL_PROVIDERS = ["github", "google", "facebook", "apple"] as const;
 
 const AUTH_ENDPOINTS = new Set([
-  "POST sign-up/email",
-  "POST sign-in/email",
-  "POST send-verification-email",
-  "GET verify-email",
-  "POST request-password-reset",
-  "POST reset-password",
   "POST link-social",
   "POST sign-in/social",
-  "GET callback/github",
-  "POST callback/github",
+  ...SOCIAL_PROVIDERS.flatMap(provider => [
+    `GET callback/${provider}`,
+    `POST callback/${provider}`,
+  ]),
   "GET get-session",
   "POST get-session",
   "POST sign-out",
@@ -56,7 +52,14 @@ export function createPlatformAuth() {
   const database = getPlatformDb();
   if (!database) throw new Error("Platform database is unavailable.");
   const secureCookies = config.baseURL.startsWith("https://");
-  const emailReady = config.emailRegistrationAvailable;
+  const providers = {
+    ...(config.socialProviders.github ? { github: {
+      ...config.socialProviders.github, scope: ["read:user", "user:email"],
+    }} : {}),
+    ...(config.socialProviders.google ? { google: config.socialProviders.google } : {}),
+    ...(config.socialProviders.facebook ? { facebook: config.socialProviders.facebook } : {}),
+    ...(config.socialProviders.apple ? { apple: config.socialProviders.apple } : {}),
+  };
 
   return betterAuth({
     appName: "ai-sdk.pro",
@@ -70,36 +73,7 @@ export function createPlatformAuth() {
       transaction: false,
       debugLogs: false,
     }),
-    socialProviders: config.githubConfigured ? {
-      github: {
-        clientId: config.githubClientId,
-        clientSecret: config.githubClientSecret,
-        scope: ["read:user", "user:email"],
-      },
-    } : undefined,
-    emailAndPassword: {
-      enabled: emailReady,
-      minPasswordLength: 12,
-      maxPasswordLength: 128,
-      requireEmailVerification: true,
-      revokeSessionsOnPasswordReset: true,
-      sendResetPassword: async ({ user, token }) => {
-        const url = new URL("/reset-password", config.baseURL);
-        url.searchParams.set("token", token);
-        void sendAuthEmail(user.email, "Reset your ai-sdk.pro password",
-          "Reset your password using this single-use link: " + url.toString()).catch(() => {});
-      },
-    },
-    emailVerification: {
-      sendOnSignUp: emailReady,
-      sendOnSignIn: emailReady,
-      expiresIn: 3600,
-      autoSignInAfterVerification: false,
-      sendVerificationEmail: async ({ user, url }) => {
-        void sendAuthEmail(user.email, "Verify your ai-sdk.pro email",
-          "Verify your email to activate the account: " + url).catch(() => {});
-      },
-    },
+    socialProviders: providers,
     account: {
       accountLinking: {
         enabled: true,
@@ -128,7 +102,7 @@ export function getAuth() {
   const config = requirePlatformConfig();
   const database = getPlatformDb();
   if (!database) throw new Error("Platform database is unavailable.");
-  const cacheKey = `${config.baseURL}:${config.githubClientId}:${config.neonDatabaseUrl}:${config.emailRegistrationAvailable}`;
+  const cacheKey = `${config.baseURL}:${config.neonDatabaseUrl}:${JSON.stringify(config.socialProviders)}`;
   if (!authInstance || authCacheKey !== cacheKey) {
     authInstance = createPlatformAuth();
     authCacheKey = cacheKey;

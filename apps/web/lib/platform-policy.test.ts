@@ -23,27 +23,31 @@ describe("platform configuration", () => {
       ])
     );
     expect(platformStatus().githubConfigured).toBe(false);
+    expect(platformStatus().socialProviders).toEqual({
+      github: false, google: false, facebook: false, apple: false,
+    });
     expect(platformStatus().missingConfiguration).not.toContain("GITHUB_CLIENT_ID");
     expect(platformStatus().githubAppInstallUrl).toBe(
       "https://github.com/apps/ai-sdk-pro/installations/new"
     );
   });
 
-  it("allows a native account without GitHub and gates email signup on a verified sender", () => {
+  it("allows the platform to load with no optional social provider configured", () => {
     vi.stubEnv("NEON_DATABASE_URL", "postgres://unit-test");
     vi.stubEnv("BETTER_AUTH_SECRET", "test-only-secret");
     vi.stubEnv("GITHUB_CLIENT_ID", "");
     vi.stubEnv("GITHUB_CLIENT_SECRET", "");
-    vi.stubEnv("PLATFORM_EMAIL_AUTH_ENABLED", "true");
-    vi.stubEnv("RESEND_API_KEY", "unit-test-key");
-    vi.stubEnv("RESEND_FROM_EMAIL", "no-reply@mail.ai-sdk.pro");
+    vi.stubEnv("GOOGLE_CLIENT_ID", "");
+    vi.stubEnv("GOOGLE_CLIENT_SECRET", "");
+    vi.stubEnv("FACEBOOK_CLIENT_ID", "");
+    vi.stubEnv("FACEBOOK_CLIENT_SECRET", "");
+    vi.stubEnv("APPLE_CLIENT_ID", "");
+    vi.stubEnv("APPLE_CLIENT_SECRET", "");
     expect(getPlatformConfig().configured).toBe(true);
     expect(getPlatformConfig().githubConfigured).toBe(false);
-    expect(getPlatformConfig().emailRegistrationAvailable).toBe(true);
-    vi.stubEnv("RESEND_FROM_EMAIL", "noreply@unverified.example");
-    expect(getPlatformConfig().emailRegistrationAvailable).toBe(false);
-    vi.stubEnv("PLATFORM_EMAIL_AUTH_ENABLED", "false");
-    expect(getPlatformConfig().emailRegistrationAvailable).toBe(false);
+    expect(platformStatus().socialProviders).toEqual({
+      github: false, google: false, facebook: false, apple: false,
+    });
   });
 
   it("only accepts the fixed HTTPS origin for mutations", () => {
