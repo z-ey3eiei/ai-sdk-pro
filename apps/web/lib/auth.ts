@@ -13,7 +13,7 @@ import {
   trustedPlatformOrigins,
 } from "./platform-policy";
 import { PLATFORM_SESSION_POLICY } from "./session-policy";
-const SOCIAL_PROVIDERS = ["github", "google", "facebook", "apple"] as const;
+const SOCIAL_PROVIDERS = ["github", "google"] as const;
 
 const AUTH_ENDPOINTS = new Set([
   "POST link-social",
@@ -56,9 +56,10 @@ export function createPlatformAuth() {
     ...(config.socialProviders.github ? { github: {
       ...config.socialProviders.github, scope: ["read:user", "user:email"],
     }} : {}),
-    ...(config.socialProviders.google ? { google: config.socialProviders.google } : {}),
-    ...(config.socialProviders.facebook ? { facebook: config.socialProviders.facebook } : {}),
-    ...(config.socialProviders.apple ? { apple: config.socialProviders.apple } : {}),
+    ...(config.socialProviders.google ? { google: {
+      ...config.socialProviders.google,
+      redirectURI: "https://www.ai-sdk.pro/auth/platform",
+    }} : {}),
   };
 
   return betterAuth({

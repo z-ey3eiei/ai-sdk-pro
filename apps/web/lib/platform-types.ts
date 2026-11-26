@@ -16,7 +16,7 @@ export interface PlatformSession {
 }
 export interface PlatformStatus {
   githubConfigured?: boolean;
-  socialProviders?: Record<"github" | "google" | "facebook" | "apple", boolean>;
+  socialProviders?: Record<"github" | "google", boolean>;
   configured: boolean;
   missingConfiguration: string[];
   githubAppInstallUrl: string | null;

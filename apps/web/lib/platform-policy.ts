@@ -2,7 +2,7 @@ import type { PlatformStatus } from "./platform-types";
 import { SNAPSHOT_LIMITS } from "./platform-types";
 import { SESSION_IDLE_SECONDS } from "./session-policy";
 
-export const DEFAULT_PLATFORM_URL = "https://ai-sdk.pro";
+export const DEFAULT_PLATFORM_URL = "https://www.ai-sdk.pro";
 const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]", "::1"]);
 const CONFIG_KEYS = [
   "NEON_DATABASE_URL",
@@ -23,7 +23,7 @@ export class PlatformAuthenticationError extends Error {
     this.name = "PlatformAuthenticationError";
   }
 }
-export type SocialProvider = "github" | "google" | "facebook" | "apple";
+export type SocialProvider = "github" | "google";
 export type SocialProviderConfig = Record<SocialProvider, { clientId: string; clientSecret: string } | null>;
 
 export type PlatformConfig = {
@@ -68,7 +68,11 @@ export function getPlatformConfig(): PlatformConfig {
   ) {
     missingConfiguration.push("GITHUB_APP_SLUG");
   }
-  const baseURL = base?.origin ?? DEFAULT_PLATFORM_URL;
+  const requestedBaseURL = base?.origin ?? DEFAULT_PLATFORM_URL;
+  // Keep OAuth and session cookies on the prepared canonical www host.
+  const baseURL = requestedBaseURL === "https://ai-sdk.pro"
+    ? DEFAULT_PLATFORM_URL
+    : requestedBaseURL;
   const githubConfigured = Boolean(
     process.env.GITHUB_CLIENT_ID?.trim() && process.env.GITHUB_CLIENT_SECRET?.trim()
   );
@@ -80,8 +84,6 @@ export function getPlatformConfig(): PlatformConfig {
   const socialProviders: SocialProviderConfig = {
     github: credential("GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET"),
     google: credential("GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"),
-    facebook: credential("FACEBOOK_CLIENT_ID", "FACEBOOK_CLIENT_SECRET"),
-    apple: credential("APPLE_CLIENT_ID", "APPLE_CLIENT_SECRET"),
   };
   return {
     baseURL,
@@ -123,6 +125,8 @@ export function platformStatus(): PlatformStatus {
 
 export function trustedPlatformOrigins(config = getPlatformConfig()): string[] {
   const origins = [config.baseOrigin];
+  if (config.baseOrigin === DEFAULT_PLATFORM_URL)
+    origins.push("https://ai-sdk.pro");
   try {
     const url = new URL(config.baseOrigin);
     if (url.protocol === "http:" && LOOPBACK_HOSTS.has(url.hostname))

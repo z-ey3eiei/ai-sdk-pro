@@ -24,7 +24,7 @@ describe("platform configuration", () => {
     );
     expect(platformStatus().githubConfigured).toBe(false);
     expect(platformStatus().socialProviders).toEqual({
-      github: false, google: false, facebook: false, apple: false,
+      github: false, google: false,
     });
     expect(platformStatus().missingConfiguration).not.toContain("GITHUB_CLIENT_ID");
     expect(platformStatus().githubAppInstallUrl).toBe(
@@ -46,7 +46,7 @@ describe("platform configuration", () => {
     expect(getPlatformConfig().configured).toBe(true);
     expect(getPlatformConfig().githubConfigured).toBe(false);
     expect(platformStatus().socialProviders).toEqual({
-      github: false, google: false, facebook: false, apple: false,
+      github: false, google: false,
     });
   });
 

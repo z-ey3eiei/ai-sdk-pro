@@ -8,7 +8,7 @@ describe("auth endpoint allowlist", () => {
   it("allows only the configured social login and session routes", () => {
     expect(isAllowedAuthEndpoint("POST", "link-social")).toBe(true);
     expect(isAllowedAuthEndpoint("POST", "sign-in/social")).toBe(true);
-    for (const provider of ["github", "google", "facebook", "apple"]) {
+    for (const provider of ["github", "google"]) {
       expect(isAllowedAuthEndpoint("GET", `callback/${provider}`)).toBe(true);
       expect(isAllowedAuthEndpoint("POST", `callback/${provider}`)).toBe(true);
     }

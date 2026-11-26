@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 type Context = { params: Promise<{ all?: string[] }> };
 type Input = Record<string, unknown>;
-type SocialProvider = "github" | "google" | "facebook" | "apple";
+type SocialProvider = "github" | "google";
 
 function fixedRedirect(path: string): string {
   return new URL(path, getPlatformConfig().baseURL).toString();
@@ -23,7 +23,7 @@ function fixedSocialRequest(input: Input, linking: boolean): Input {
   const allowed = new Set(["provider", "callbackURL", "errorCallbackURL"]);
   const provider = input.provider;
   if (Object.keys(input).some(key => !allowed.has(key)) ||
-      !["github", "google", "facebook", "apple"].includes(String(provider)) ||
+      !["github", "google"].includes(String(provider)) ||
       (linking && provider !== "github"))
     throw new AuthPolicyError("Unsupported social sign-in provider.");
   const callback = linking ? "/workspace/account?linked=1" : "/workspace";
@@ -83,7 +83,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
   const params = await context.params;
   const path = (params.all ?? []).join("/");
   if (!isAllowedAuthEndpoint(request.method, path)) return jsonError("Not found.", 404);
-  const isCallback = /^callback\/(github|google|facebook|apple)$/.test(path);
+  const isCallback = /^callback\/(github|google)$/.test(path);
   if (request.method === "POST" && !isCallback && !isTrustedMutationOrigin(request))
     return jsonError("Origin is not allowed.", 403);
   try {
