@@ -1,3 +1,5 @@
-import AuthLogin from "../../components/AuthLogin";
+import { redirect } from "next/navigation";
 
-export default function SignupPage() { return <AuthLogin initialMode="sign-up" />; }
+export default function SignupPage(): never {
+  redirect("/login");
+}
